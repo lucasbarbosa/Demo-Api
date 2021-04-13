@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Demo.Api.Controllers
 {
     [ApiController]
-    public class MainController : Controller
+    public class MainApiController : Controller
     {
         #region Protected Methods
 
