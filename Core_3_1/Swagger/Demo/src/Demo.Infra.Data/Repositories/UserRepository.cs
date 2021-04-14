@@ -36,6 +36,8 @@ namespace Demo.Infra.Data.Repositories
 
         public User Create(User user)
         {
+            user.Id = NewId();
+            
             _memoryUsers.Add(user);
             user = _memoryUsers.FirstOrDefault(u => u.Id == user.Id);
 
@@ -71,6 +73,20 @@ namespace Demo.Infra.Data.Repositories
             {
                 return false;
             }
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private uint NewId()
+        {
+            var id = _memoryUsers.Max(u => u?.Id) + 1;
+
+            if (id == null)
+                id = 1;
+
+            return (uint)id;
         }
 
         #endregion

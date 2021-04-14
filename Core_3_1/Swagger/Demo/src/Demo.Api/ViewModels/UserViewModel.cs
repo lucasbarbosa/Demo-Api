@@ -8,12 +8,12 @@ namespace Demo.Api.ViewModels
 
         public uint Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Campo Name é obrigatório")]
         public string Name { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Campo E-mail é obrigatório")]
         [DataType(DataType.EmailAddress)]
-        [EmailAddress]
+        [EmailAddress(ErrorMessage = "E-mail inválido")]
         public string Email { get; set; }
 
         #endregion
