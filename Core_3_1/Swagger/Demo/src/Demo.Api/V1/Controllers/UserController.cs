@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using Demo.Api.Controllers;
 using Demo.Api.ViewModels;
+using Demo.Domain.Entities;
 using Demo.Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Demo.Api.V1.Controllers
 {
@@ -21,7 +21,7 @@ namespace Demo.Api.V1.Controllers
 
         #region Constructors
 
-        public UserController(IMapper mapper, IUserApplication userApplication)
+        public UserController(INotificator notificator, IMapper mapper, IUserApplication userApplication) : base(notificator)
         {
             _mapper = mapper;
             _userApplication = userApplication;
@@ -32,11 +32,47 @@ namespace Demo.Api.V1.Controllers
         #region Public Methods
 
         [HttpGet("GetAll")]
-        public async Task<ActionResult<IList<UserViewModel>>> GetAll()
+        public ActionResult<IList<UserViewModel>> GetAll()
         {
-            var users = _mapper.Map<IList<UserViewModel>>(_userApplication.GetAll());
+            var response = _mapper.Map<IList<UserViewModel>>(_userApplication.GetAll());
 
-            return CustomResponse(users);
+            return CustomResponse(response);
+        }
+
+        [HttpGet("GetById/{Id}")]
+        public ActionResult<UserViewModel> GetById(uint Id)
+        {
+            var response = _mapper.Map<UserViewModel>(_userApplication.GetById(Id));
+
+            return CustomResponse(response);
+        }
+
+        [HttpPost("Create")]
+        public ActionResult<UserViewModel> Create(UserViewModel user)
+        {
+            if (!ModelState.IsValid) return CustomResponse(ModelState);
+
+            var response = _mapper.Map<UserViewModel>(_userApplication.Create(_mapper.Map<User>(user)));
+
+            return CustomResponse(response);
+        }
+
+        [HttpPut("Update")]
+        public ActionResult<UserViewModel> Update(UserViewModel user)
+        {
+            if (!ModelState.IsValid) return CustomResponse(ModelState);
+
+            var response = _mapper.Map<UserViewModel>(_userApplication.Update(_mapper.Map<User>(user)));
+
+            return CustomResponse(response);
+        }
+
+        [HttpDelete("DeleteById/{Id}")]
+        public ActionResult<bool> DeleteById(uint Id)
+        {
+            var response = _userApplication.DeleteById(Id);
+
+            return CustomResponse(response);
         }
 
         #endregion

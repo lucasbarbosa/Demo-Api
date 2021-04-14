@@ -21,7 +21,8 @@ namespace Demo.Api.Configuration
                 options.ReportApiVersions = true;
             });
 
-            services.AddVersionedApiExplorer(options => {
+            services.AddVersionedApiExplorer(options =>
+            {
                 options.GroupNameFormat = "'v'VVV";
                 options.SubstituteApiVersionInUrl = true;
             });

@@ -8,14 +8,16 @@ namespace Demo.Application
     {
         #region Attributes
 
+        private readonly INotificator _notificator;
         private readonly IUserRepository _userRepository;
 
         #endregion
 
         #region Constructors
 
-        public UserApplication(IUserRepository userRepository)
+        public UserApplication(INotificator notificator, IUserRepository userRepository)
         {
+            _notificator = notificator;
             _userRepository = userRepository;
         }
 
@@ -25,27 +27,55 @@ namespace Demo.Application
 
         public IList<User> GetAll()
         {
-            return _userRepository.GetAll();
+            var response = _userRepository.GetAll();
+
+            return response;
         }
 
         public User GetById(uint id)
         {
-            return _userRepository.GetById(id);
+            var response = _userRepository.GetById(id);
+
+            if (response == null)
+                _notificator.AddError("Usuário não encontrado");
+
+            return response;
         }
 
         public User Create(User user)
         {
-            return _userRepository.Create(user);
+            var response = _userRepository.GetById(user.Id);
+
+            if (response != null)
+            {
+                _notificator.AddError($"Usuário (Id: {user.Id}) já cadastrado.");
+            }
+            else
+            {
+                response = _userRepository.Create(user);
+            }
+
+            return response;
         }
 
         public User Update(User user)
         {
-            return _userRepository.Update(user);
+            var response = _userRepository.Update(user);
+
+            if (response == null)
+                _notificator.AddError("Usuário não encontrado");
+
+            return response;
         }
 
         public bool DeleteById(uint id)
         {
-            return _userRepository.DeleteById(id);
+            var response = _userRepository.DeleteById(id);
+
+            if (!response)
+                _notificator.AddError("Usuário não encontrado");
+
+            return response;
         }
 
         #endregion

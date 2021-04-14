@@ -1,6 +1,7 @@
 ﻿using Demo.Domain.Entities;
 using Demo.Domain.Interfaces;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Demo.Domain.Handlers
 {
@@ -12,19 +13,32 @@ namespace Demo.Domain.Handlers
 
         #endregion
 
-        public bool HasErrors()
+        #region Constructors
+
+        public NotificatorHandler()
         {
-            throw new System.NotImplementedException();
+            _errors = new List<Notification>();
         }
 
-        public System.Collections.Generic.List<Notification> GetErrors()
+        #endregion
+
+        #region Public Methods
+
+        public bool HasErrors()
         {
-            throw new System.NotImplementedException();
+            return _errors.Any();
         }
 
         public void AddError(string error)
         {
-            throw new System.NotImplementedException();
+            _errors.Add(new Notification(error));
         }
+
+        public List<Notification> GetErrors()
+        {
+            return _errors;
+        }
+
+        #endregion
     }
 }
