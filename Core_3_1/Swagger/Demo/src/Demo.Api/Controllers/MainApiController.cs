@@ -70,7 +70,7 @@ namespace Demo.Api.Controllers
 
         protected bool ValidOperation()
         {
-            return _notificator.GetErrors().Count > 0 ? false : true;
+            return _notificator.GetErrors().Count <= 0;
         }
 
         protected IList<string> GetErrors()

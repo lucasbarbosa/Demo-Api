@@ -9,7 +9,7 @@ namespace Demo.Infra.Data.Repositories
     {
         #region Properties
 
-        private static List<User> _memoryUsers = new List<User>();
+        private static readonly List<User> _memoryUsers = new List<User>();
 
         #endregion
 
