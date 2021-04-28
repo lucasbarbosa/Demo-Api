@@ -7,7 +7,7 @@ namespace Demo.Domain.Handlers
 {
     public class NotificatorHandler : INotificator
     {
-        #region Attributes
+        #region Properties
 
         private readonly List<Notification> _errors;
 

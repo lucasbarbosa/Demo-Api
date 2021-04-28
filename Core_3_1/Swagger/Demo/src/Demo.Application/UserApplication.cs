@@ -6,7 +6,7 @@ namespace Demo.Application
 {
     public class UserApplication : IUserApplication
     {
-        #region Attributes
+        #region Properties
 
         private readonly INotificator _notificator;
         private readonly IUserRepository _userRepository;
@@ -53,6 +53,9 @@ namespace Demo.Application
             else
             {
                 response = _userRepository.Create(user);
+
+                if (response == null)
+                    _notificator.AddError("Usuário não cadastrado");
             }
 
             return response;

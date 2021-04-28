@@ -1,6 +1,7 @@
 ﻿using Demo.Application;
 using Demo.Domain.Handlers;
 using Demo.Domain.Interfaces;
+using Demo.Infra.CrossCutting.Logging;
 using Demo.Infra.Data.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -26,7 +27,7 @@ namespace Demo.Api.Configuration
 
             #region Others
 
-            //services.AddScoped<ILogger, NLogLogger>();
+            services.AddScoped<ILogger, NLogLogger>();
             services.AddScoped<INotificator, NotificatorHandler>();
 
             #endregion

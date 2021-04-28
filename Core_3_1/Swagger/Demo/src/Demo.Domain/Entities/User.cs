@@ -2,7 +2,7 @@
 {
     public class User
     {
-        #region Attributes
+        #region Properties
 
         public uint Id { get; set; }
 

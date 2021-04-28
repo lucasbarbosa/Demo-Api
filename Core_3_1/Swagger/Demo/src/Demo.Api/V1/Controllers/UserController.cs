@@ -12,7 +12,7 @@ namespace Demo.Api.V1.Controllers
     [Route("api/v{version:apiVersion}/[controller]")]
     public class UserController : MainApiController
     {
-        #region Attributes
+        #region Properties
 
         private readonly IMapper _mapper;
         private readonly IUserApplication _userApplication;

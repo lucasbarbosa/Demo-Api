@@ -4,7 +4,7 @@ namespace Demo.Api.ViewModels
 {
     public class UserViewModel
     {
-        #region Attributes
+        #region Properties
 
         public uint Id { get; set; }
 

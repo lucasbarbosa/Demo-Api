@@ -10,7 +10,7 @@ namespace Demo.Api.Controllers
     [ApiController]
     public class MainApiController : Controller
     {
-        #region Attributes
+        #region Properties
 
         private readonly INotificator _notificator;
 
@@ -33,15 +33,15 @@ namespace Demo.Api.Controllers
             {
                 return BadRequest(new ResponseViewModel
                 {
-                    success = false,
-                    errors = GetErrors()
+                    Success = false,
+                    Errors = GetErrors()
                 });
             }
 
             return Ok(new ResponseViewModel
             {
-                success = true,
-                data = result
+                Success = true,
+                Data = result
             });
         }
 

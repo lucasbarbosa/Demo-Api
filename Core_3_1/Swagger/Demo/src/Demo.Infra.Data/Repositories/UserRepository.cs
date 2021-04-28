@@ -7,7 +7,7 @@ namespace Demo.Infra.Data.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        #region Attributes
+        #region Properties
 
         private static List<User> _memoryUsers = new List<User>();
 

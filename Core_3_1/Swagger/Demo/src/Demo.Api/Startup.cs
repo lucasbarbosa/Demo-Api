@@ -8,7 +8,7 @@ namespace Demo.Api
 {
     public class Startup
     {
-        #region Attributes
+        #region Properties
 
         public IConfiguration Configuration { get; }
 
