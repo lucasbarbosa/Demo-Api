@@ -15,15 +15,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4 - Infra", "4 - Infra", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5 - Test", "5 - Test", "{FB51AF27-9127-4C6D-8ADC-F5FFCF4C4164}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Application", "src\Demo.Application\Demo.Application.csproj", "{990B0709-4CC7-4611-BD8D-503359F2A4BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Application", "src\Demo.Application\Demo.Application.csproj", "{990B0709-4CC7-4611-BD8D-503359F2A4BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Domain", "src\Demo.Domain\Demo.Domain.csproj", "{BEB2C9DC-01FF-42D7-AFA2-03E8C50C719A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Domain", "src\Demo.Domain\Demo.Domain.csproj", "{BEB2C9DC-01FF-42D7-AFA2-03E8C50C719A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Infra.Data", "src\Demo.Infra.Data\Demo.Infra.Data.csproj", "{27589661-B360-4A08-B34D-598258CF00E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Infra.Data", "src\Demo.Infra.Data\Demo.Infra.Data.csproj", "{27589661-B360-4A08-B34D-598258CF00E4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Infra.CrossCutting", "src\Demo.Infra.CrossCutting\Demo.Infra.CrossCutting.csproj", "{2EF662CA-8014-40DA-B15B-7AC4B1299163}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Infra.CrossCutting", "src\Demo.Infra.CrossCutting\Demo.Infra.CrossCutting.csproj", "{2EF662CA-8014-40DA-B15B-7AC4B1299163}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Application.Test", "src\Demo.Application.Test\Demo.Application.Test.csproj", "{6D567B79-1178-48BC-AF0B-58AA35A09631}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Application.Test", "src\Demo.Application.Test\Demo.Application.Test.csproj", "{6D567B79-1178-48BC-AF0B-58AA35A09631}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Api.Test", "src\Demo.Api.Test\Demo.Api.Test.csproj", "{96888676-0008-4327-9457-B4EB3CCF4312}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,10 @@ Global
 		{6D567B79-1178-48BC-AF0B-58AA35A09631}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D567B79-1178-48BC-AF0B-58AA35A09631}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D567B79-1178-48BC-AF0B-58AA35A09631}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96888676-0008-4327-9457-B4EB3CCF4312}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96888676-0008-4327-9457-B4EB3CCF4312}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96888676-0008-4327-9457-B4EB3CCF4312}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96888676-0008-4327-9457-B4EB3CCF4312}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,6 +72,7 @@ Global
 		{27589661-B360-4A08-B34D-598258CF00E4} = {40E0E883-950C-4356-9A00-B999F4D6AD71}
 		{2EF662CA-8014-40DA-B15B-7AC4B1299163} = {40E0E883-950C-4356-9A00-B999F4D6AD71}
 		{6D567B79-1178-48BC-AF0B-58AA35A09631} = {FB51AF27-9127-4C6D-8ADC-F5FFCF4C4164}
+		{96888676-0008-4327-9457-B4EB3CCF4312} = {FB51AF27-9127-4C6D-8ADC-F5FFCF4C4164}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DC549A76-1F92-4A62-855E-3CE4055AB8E4}
