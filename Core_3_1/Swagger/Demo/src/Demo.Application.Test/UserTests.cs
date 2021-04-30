@@ -1,3 +1,4 @@
+using Demo.Application.Services;
 using Demo.Domain.Entities;
 using Demo.Domain.Interfaces;
 using Moq;
@@ -15,7 +16,7 @@ namespace Demo.Application.Test
             // Arrange
             var notificator = new Mock<INotificator>();
             var userRepository = new Mock<IUserRepository>();
-            var userApplication = new UserApplication(notificator.Object, userRepository.Object);
+            var userApplication = new UserAppService(notificator.Object, userRepository.Object);
             var userFake = NewUser();
             userRepository.Setup(x => x.Create(userFake)).Returns(userFake);
 
@@ -32,7 +33,7 @@ namespace Demo.Application.Test
             // Arrange
             var notificator = new Mock<INotificator>();
             var userRepository = new Mock<IUserRepository>();
-            var userApplication = new UserApplication(notificator.Object, userRepository.Object);
+            var userApplication = new UserAppService(notificator.Object, userRepository.Object);
             var userFake = NewUser();
 
             // Act
@@ -48,7 +49,7 @@ namespace Demo.Application.Test
             // Arrange
             var notificator = new Mock<INotificator>();
             var userRepository = new Mock<IUserRepository>();
-            var userApplication = new UserApplication(notificator.Object, userRepository.Object);
+            var userApplication = new UserAppService(notificator.Object, userRepository.Object);
             var userFake = NewUser();
             userRepository.Setup(x => x.Update(userFake)).Returns(userFake);
 
@@ -65,7 +66,7 @@ namespace Demo.Application.Test
             // Arrange
             var notificator = new Mock<INotificator>();
             var userRepository = new Mock<IUserRepository>();
-            var userApplication = new UserApplication(notificator.Object, userRepository.Object);
+            var userApplication = new UserAppService(notificator.Object, userRepository.Object);
             var userFake = NewUser();
 
             // Act
@@ -81,7 +82,7 @@ namespace Demo.Application.Test
             // Arrange
             var notificator = new Mock<INotificator>();
             var userRepository = new Mock<IUserRepository>();
-            var userApplication = new UserApplication(notificator.Object, userRepository.Object);
+            var userApplication = new UserAppService(notificator.Object, userRepository.Object);
             userRepository.Setup(x => x.DeleteById(1)).Returns(true);
 
             // Act
@@ -97,7 +98,7 @@ namespace Demo.Application.Test
             // Arrange
             var notificator = new Mock<INotificator>();
             var userRepository = new Mock<IUserRepository>();
-            var userApplication = new UserApplication(notificator.Object, userRepository.Object);
+            var userApplication = new UserAppService(notificator.Object, userRepository.Object);
             userRepository.Setup(x => x.DeleteById(1)).Returns(false);
 
             // Act

@@ -1,9 +1,9 @@
 ﻿using Demo.Domain.Entities;
 using System.Collections.Generic;
 
-namespace Demo.Domain.Interfaces
+namespace Demo.Application.Interfaces
 {
-    public interface IUserApplication
+    public interface IUserAppService
     {
         IList<User> GetAll();
 

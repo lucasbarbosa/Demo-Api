@@ -2,9 +2,9 @@
 using Demo.Domain.Interfaces;
 using System.Collections.Generic;
 
-namespace Demo.Application
+namespace Demo.Application.Services
 {
-    public class UserApplication : IUserApplication
+    public class UserAppService : IUserAppService
     {
         #region Properties
 
@@ -15,7 +15,7 @@ namespace Demo.Application
 
         #region Constructors
 
-        public UserApplication(INotificator notificator, IUserRepository userRepository)
+        public UserAppService(INotificator notificator, IUserRepository userRepository)
         {
             _notificator = notificator;
             _userRepository = userRepository;

@@ -15,13 +15,13 @@ namespace Demo.Api.V1.Controllers
         #region Properties
 
         private readonly IMapper _mapper;
-        private readonly IUserApplication _userApplication;
+        private readonly IUserAppService _userApplication;
 
         #endregion
 
         #region Constructors
 
-        public UserController(INotificator notificator, IMapper mapper, IUserApplication userApplication) : base(notificator)
+        public UserController(INotificator notificator, IMapper mapper, IUserAppService userApplication) : base(notificator)
         {
             _mapper = mapper;
             _userApplication = userApplication;

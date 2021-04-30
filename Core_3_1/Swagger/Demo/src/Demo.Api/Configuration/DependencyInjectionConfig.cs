@@ -1,4 +1,4 @@
-﻿using Demo.Application;
+﻿using Demo.Application.Services;
 using Demo.Domain.Handlers;
 using Demo.Domain.Interfaces;
 using Demo.Infra.CrossCutting.Logging;
@@ -15,7 +15,7 @@ namespace Demo.Api.Configuration
         {
             #region Applications
 
-            services.AddScoped<IUserApplication, UserApplication>();
+            services.AddScoped<IUserAppService, UserAppService>();
 
             #endregion
 
