@@ -1,6 +1,7 @@
 using Demo.Application.Services;
 using Demo.Domain.Entities;
 using Demo.Domain.Interfaces;
+using Demo.Infra.Data.Interfaces;
 using Moq;
 using Xunit;
 

@@ -1,7 +1,9 @@
-﻿using Demo.Application.Services;
+﻿using Demo.Application.Interfaces;
+using Demo.Application.Services;
 using Demo.Domain.Handlers;
 using Demo.Domain.Interfaces;
 using Demo.Infra.CrossCutting.Logging;
+using Demo.Infra.Data.Interfaces;
 using Demo.Infra.Data.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 

@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Infra.CrossCutting", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Application.Test", "src\Demo.Application.Test\Demo.Application.Test.csproj", "{6D567B79-1178-48BC-AF0B-58AA35A09631}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Api.Test", "src\Demo.Api.Test\Demo.Api.Test.csproj", "{96888676-0008-4327-9457-B4EB3CCF4312}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Api.Test", "src\Demo.Api.Test\Demo.Api.Test.csproj", "{96888676-0008-4327-9457-B4EB3CCF4312}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

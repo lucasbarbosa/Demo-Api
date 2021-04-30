@@ -1,5 +1,7 @@
-﻿using Demo.Domain.Entities;
+﻿using Demo.Application.Interfaces;
+using Demo.Domain.Entities;
 using Demo.Domain.Interfaces;
+using Demo.Infra.Data.Interfaces;
 using System.Collections.Generic;
 
 namespace Demo.Application.Services

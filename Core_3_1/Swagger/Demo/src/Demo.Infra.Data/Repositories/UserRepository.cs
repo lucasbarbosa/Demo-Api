@@ -1,5 +1,6 @@
 ﻿using Demo.Domain.Entities;
 using Demo.Domain.Interfaces;
+using Demo.Infra.Data.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 

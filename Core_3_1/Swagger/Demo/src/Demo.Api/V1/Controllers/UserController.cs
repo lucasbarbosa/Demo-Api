@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Demo.Api.Controllers;
 using Demo.Api.ViewModels;
+using Demo.Application.Interfaces;
 using Demo.Domain.Entities;
 using Demo.Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
