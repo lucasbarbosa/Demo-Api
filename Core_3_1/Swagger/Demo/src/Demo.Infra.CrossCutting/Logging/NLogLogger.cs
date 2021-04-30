@@ -1,4 +1,4 @@
-﻿using Demo.Domain.Interfaces;
+﻿using Demo.Infra.CrossCutting.Interfaces;
 using System;
 
 namespace Demo.Infra.CrossCutting.Logging

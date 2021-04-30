@@ -1,5 +1,6 @@
 ﻿using Demo.Api.ViewModels;
 using Demo.Domain.Interfaces;
+using Demo.Infra.CrossCutting.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;

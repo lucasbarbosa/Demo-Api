@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Demo.Domain.Interfaces
+namespace Demo.Infra.CrossCutting.Interfaces
 {
     public interface ILogger
     {
