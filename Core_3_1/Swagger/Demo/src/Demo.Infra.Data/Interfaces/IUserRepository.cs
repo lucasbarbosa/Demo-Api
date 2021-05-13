@@ -1,17 +1,10 @@
 ﻿using Demo.Domain.Entities;
-using System.Collections.Generic;
 
 namespace Demo.Infra.Data.Interfaces
 {
-    public interface IUserRepository
+    public interface IUserRepository : IRepository<User>
     {
-        IList<User> GetAll();
-
         User GetById(uint id);
-
-        User Create(User user);
-
-        User Update(User user);
 
         bool DeleteById(uint id);
     }

@@ -1,6 +1,6 @@
 ﻿namespace Demo.Domain.Entities
 {
-    public class User
+    public class User : Entity
     {
         #region Properties
 
