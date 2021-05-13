@@ -1,4 +1,4 @@
-﻿using Demo.Api.ViewModels;
+﻿using Demo.Application.ViewModels;
 using Demo.Domain.Interfaces;
 using Demo.Infra.CrossCutting.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -31,7 +31,7 @@ namespace Demo.Api.Extensions
 
         #region Public Methods
 
-        public async Task InvokeAsync(HttpContext httpContext, ILogger logger, INotificator notificator)
+        public async Task InvokeAsync(HttpContext httpContext, ILogger logger, INotificatorHandler notificator)
         {
             try
             {
@@ -47,7 +47,7 @@ namespace Demo.Api.Extensions
 
         #region Private Methods
 
-        private static void HandleExceptionAsync(HttpContext context, Exception exception, ILogger logger, INotificator notificator)
+        private static void HandleExceptionAsync(HttpContext context, Exception exception, ILogger logger, INotificatorHandler notificator)
         {
             logger.LogException(exception);
 

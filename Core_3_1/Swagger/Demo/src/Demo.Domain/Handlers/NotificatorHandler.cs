@@ -1,11 +1,10 @@
-﻿using Demo.Domain.Entities;
-using Demo.Domain.Interfaces;
+﻿using Demo.Domain.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Demo.Domain.Handlers
 {
-    public class NotificatorHandler : INotificator
+    public class NotificatorHandler : INotificatorHandler
     {
         #region Properties
 

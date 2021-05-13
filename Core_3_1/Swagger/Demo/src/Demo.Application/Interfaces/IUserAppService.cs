@@ -1,17 +1,17 @@
-﻿using Demo.Domain.Entities;
+﻿using Demo.Application.ViewModels;
 using System.Collections.Generic;
 
 namespace Demo.Application.Interfaces
 {
     public interface IUserAppService
     {
-        IList<User> GetAll();
+        IList<UserViewModel> GetAll();
 
-        User GetById(uint id);
+        UserViewModel GetById(uint id);
 
-        User Create(User user);
+        UserViewModel Create(UserViewModel user);
 
-        User Update(User user);
+        UserViewModel Update(UserViewModel user);
 
         bool DeleteById(uint id);
     }

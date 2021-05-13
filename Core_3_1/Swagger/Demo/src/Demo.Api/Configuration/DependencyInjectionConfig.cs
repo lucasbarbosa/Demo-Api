@@ -31,7 +31,7 @@ namespace Demo.Api.Configuration
             #region Others
 
             services.AddScoped<ILogger, NLogLogger>();
-            services.AddScoped<INotificator, NotificatorHandler>();
+            services.AddScoped<INotificatorHandler, NotificatorHandler>();
 
             #endregion
 

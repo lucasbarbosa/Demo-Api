@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace Demo.Api.ViewModels
+namespace Demo.Application.ViewModels
 {
-    public class ResponseViewModel
+    public class ResponseViewModel : BaseViewModel
     {
         #region Constructors
 

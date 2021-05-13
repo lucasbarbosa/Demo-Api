@@ -1,4 +1,6 @@
-﻿using Demo.Application.Interfaces;
+﻿using AutoMapper;
+using Demo.Application.Interfaces;
+using Demo.Application.ViewModels;
 using Demo.Domain.Entities;
 using Demo.Domain.Interfaces;
 using Demo.Infra.Data.Interfaces;
@@ -6,19 +8,21 @@ using System.Collections.Generic;
 
 namespace Demo.Application.Services
 {
-    public class UserAppService : IUserAppService
+    public class UserAppService : BaseServices, IUserAppService
     {
         #region Properties
 
-        private readonly INotificator _notificator;
+        private readonly IMapper _mapper;
+        private readonly INotificatorHandler _notificator;
         private readonly IUserRepository _userRepository;
 
         #endregion
 
         #region Constructors
 
-        public UserAppService(INotificator notificator, IUserRepository userRepository)
+        public UserAppService(IMapper mapper, INotificatorHandler notificator, IUserRepository userRepository)
         {
+            _mapper = mapper;
             _notificator = notificator;
             _userRepository = userRepository;
         }
@@ -27,16 +31,16 @@ namespace Demo.Application.Services
 
         #region Public Methods
 
-        public IList<User> GetAll()
+        public IList<UserViewModel> GetAll()
         {
-            var response = _userRepository.GetAll();
+            var response = _mapper.Map<IList<UserViewModel>>(_userRepository.GetAll());
 
             return response;
         }
 
-        public User GetById(uint id)
+        public UserViewModel GetById(uint id)
         {
-            var response = _userRepository.GetById(id);
+            var response = _mapper.Map<UserViewModel>(_userRepository.GetById(id));
 
             if (response == null)
                 _notificator.AddError("Usuário não encontrado");
@@ -44,9 +48,9 @@ namespace Demo.Application.Services
             return response;
         }
 
-        public User Create(User user)
+        public UserViewModel Create(UserViewModel user)
         {
-            var response = _userRepository.GetById(user.Id);
+            var response = _mapper.Map<UserViewModel>(_userRepository.GetById(user.Id));
 
             if (response != null)
             {
@@ -54,7 +58,7 @@ namespace Demo.Application.Services
             }
             else
             {
-                response = _userRepository.Create(user);
+                response = _mapper.Map<UserViewModel>(_userRepository.Create(_mapper.Map<User>(user)));
 
                 if (response == null)
                     _notificator.AddError("Usuário não cadastrado");
@@ -63,9 +67,9 @@ namespace Demo.Application.Services
             return response;
         }
 
-        public User Update(User user)
+        public UserViewModel Update(UserViewModel user)
         {
-            var response = _userRepository.Update(user);
+            var response = _mapper.Map<UserViewModel>(_userRepository.Update(_mapper.Map<User>(user)));
 
             if (response == null)
                 _notificator.AddError("Usuário não encontrado");

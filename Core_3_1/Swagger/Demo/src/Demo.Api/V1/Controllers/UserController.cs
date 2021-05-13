@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using Demo.Api.Controllers;
-using Demo.Api.ViewModels;
+﻿using Demo.Api.Controllers;
+using Demo.Application.ViewModels;
 using Demo.Application.Interfaces;
-using Demo.Domain.Entities;
 using Demo.Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -15,16 +13,14 @@ namespace Demo.Api.V1.Controllers
     {
         #region Properties
 
-        private readonly IMapper _mapper;
         private readonly IUserAppService _userApplication;
 
         #endregion
 
         #region Constructors
 
-        public UserController(INotificator notificator, IMapper mapper, IUserAppService userApplication) : base(notificator)
+        public UserController(INotificatorHandler notificator, IUserAppService userApplication) : base(notificator)
         {
-            _mapper = mapper;
             _userApplication = userApplication;
         }
 
@@ -35,7 +31,7 @@ namespace Demo.Api.V1.Controllers
         [HttpGet("GetAll")]
         public ActionResult<IList<UserViewModel>> GetAll()
         {
-            var response = _mapper.Map<IList<UserViewModel>>(_userApplication.GetAll());
+            var response = _userApplication.GetAll();
 
             return CustomResponse(response);
         }
@@ -43,7 +39,7 @@ namespace Demo.Api.V1.Controllers
         [HttpGet("GetById/{Id}")]
         public ActionResult<UserViewModel> GetById(uint Id)
         {
-            var response = _mapper.Map<UserViewModel>(_userApplication.GetById(Id));
+            var response = _userApplication.GetById(Id);
 
             return CustomResponse(response);
         }
@@ -53,7 +49,7 @@ namespace Demo.Api.V1.Controllers
         {
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
-            var response = _mapper.Map<UserViewModel>(_userApplication.Create(_mapper.Map<User>(user)));
+            var response = _userApplication.Create(user);
 
             return CustomResponse(response);
         }
@@ -63,7 +59,7 @@ namespace Demo.Api.V1.Controllers
         {
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
-            var response = _mapper.Map<UserViewModel>(_userApplication.Update(_mapper.Map<User>(user)));
+            var response = _userApplication.Update(user);
 
             return CustomResponse(response);
         }

@@ -1,4 +1,4 @@
-﻿using Demo.Api.ViewModels;
+﻿using Demo.Application.ViewModels;
 using Demo.Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -12,13 +12,13 @@ namespace Demo.Api.Controllers
     {
         #region Properties
 
-        private readonly INotificator _notificator;
+        private readonly INotificatorHandler _notificator;
 
         #endregion
 
         #region Constructors
 
-        public MainApiController(INotificator notificator)
+        public MainApiController(INotificatorHandler notificator)
         {
             _notificator = notificator;
         }

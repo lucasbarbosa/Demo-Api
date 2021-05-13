@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Demo.Api.ViewModels
+namespace Demo.Application.ViewModels
 {
-    public class UserViewModel
+    public class UserViewModel : BaseViewModel
     {
         #region Properties
 

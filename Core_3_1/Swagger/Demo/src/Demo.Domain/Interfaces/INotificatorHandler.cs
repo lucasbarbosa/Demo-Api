@@ -1,9 +1,9 @@
-﻿using Demo.Domain.Entities;
+﻿using Demo.Domain.Handlers;
 using System.Collections.Generic;
 
 namespace Demo.Domain.Interfaces
 {
-    public interface INotificator
+    public interface INotificatorHandler
     {
         bool HasErrors();
 

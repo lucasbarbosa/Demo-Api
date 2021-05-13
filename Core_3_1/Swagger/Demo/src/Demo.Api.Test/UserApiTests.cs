@@ -1,5 +1,5 @@
 using Demo.Api.Test.Configuration;
-using Demo.Api.ViewModels;
+using Demo.Application.ViewModels;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Newtonsoft.Json;

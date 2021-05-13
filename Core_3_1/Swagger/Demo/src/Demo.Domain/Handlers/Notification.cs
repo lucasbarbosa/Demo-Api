@@ -1,4 +1,4 @@
-﻿namespace Demo.Domain.Entities
+﻿namespace Demo.Domain.Handlers
 {
     public class Notification
     {
