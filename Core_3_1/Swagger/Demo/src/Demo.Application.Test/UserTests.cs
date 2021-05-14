@@ -41,14 +41,11 @@ namespace Demo.Application.Test
             var userRepository = new Mock<IUserRepository>();
             var userApplication = new UserAppService(_mapper, notificator.Object, userRepository.Object);
             var userFake = NewUser();
-            userRepository.Setup(x => x.Create(userFake)).Returns(userFake);
+            var userMapperView = _mapper.Map<UserViewModel>(userFake);
+            userRepository.Setup(x => x.Create(It.IsAny<User>())).Returns(userFake);
 
             // Act
-            var user = userApplication.Create(_mapper.Map<UserViewModel>(userFake));
-
-            // ToDo: Return Repository Setup
-            if (user == null)
-                user = _mapper.Map<UserViewModel>(userFake);
+            var user = userApplication.Create(userMapperView);
 
             // Asset
             Assert.NotNull(user);
@@ -62,9 +59,10 @@ namespace Demo.Application.Test
             var userRepository = new Mock<IUserRepository>();
             var userApplication = new UserAppService(_mapper, notificator.Object, userRepository.Object);
             var userFake = NewUser();
+            var userMapperView = _mapper.Map<UserViewModel>(userFake);
 
             // Act
-            var user = userApplication.Create(_mapper.Map<UserViewModel>(userFake));
+            var user = userApplication.Create(userMapperView);
 
             // Asset
             Assert.Null(user);
@@ -78,14 +76,11 @@ namespace Demo.Application.Test
             var userRepository = new Mock<IUserRepository>();
             var userApplication = new UserAppService(_mapper, notificator.Object, userRepository.Object);
             var userFake = NewUser();
-            userRepository.Setup(x => x.Update(userFake)).Returns(userFake);
+            var userMapperView = _mapper.Map<UserViewModel>(userFake);
+            userRepository.Setup(x => x.Update(It.IsAny<User>())).Returns(userFake);
 
             // Act
-            var user = userApplication.Update(_mapper.Map<UserViewModel>(userFake));
-
-            // ToDo: Return Repository Setup
-            if (user == null)
-                user = _mapper.Map<UserViewModel>(userFake);
+            var user = userApplication.Update(userMapperView);
 
             // Asset
             Assert.NotNull(user);
@@ -99,9 +94,10 @@ namespace Demo.Application.Test
             var userRepository = new Mock<IUserRepository>();
             var userApplication = new UserAppService(_mapper, notificator.Object, userRepository.Object);
             var userFake = NewUser();
+            var userMapperView = _mapper.Map<UserViewModel>(userFake);
 
             // Act
-            var user = userApplication.Update(_mapper.Map<UserViewModel>(userFake));
+            var user = userApplication.Update(userMapperView);
 
             // Asset
             Assert.Null(user);
@@ -114,10 +110,11 @@ namespace Demo.Application.Test
             var notificator = new Mock<INotificatorHandler>();
             var userRepository = new Mock<IUserRepository>();
             var userApplication = new UserAppService(_mapper, notificator.Object, userRepository.Object);
-            userRepository.Setup(x => x.DeleteById(1)).Returns(true);
+            uint userIdDelete = 1;
+            userRepository.Setup(x => x.DeleteById(userIdDelete)).Returns(true);
 
             // Act
-            var response = userApplication.DeleteById(1);
+            var response = userApplication.DeleteById(userIdDelete);
 
             // Asset
             Assert.True(response);
@@ -130,10 +127,11 @@ namespace Demo.Application.Test
             var notificator = new Mock<INotificatorHandler>();
             var userRepository = new Mock<IUserRepository>();
             var userApplication = new UserAppService(_mapper, notificator.Object, userRepository.Object);
-            userRepository.Setup(x => x.DeleteById(1)).Returns(false);
+            uint userIdDelete = 1;
+            userRepository.Setup(x => x.DeleteById(userIdDelete)).Returns(false);
 
             // Act
-            var response = userApplication.DeleteById(1);
+            var response = userApplication.DeleteById(userIdDelete);
 
             // Asset
             Assert.False(response);
