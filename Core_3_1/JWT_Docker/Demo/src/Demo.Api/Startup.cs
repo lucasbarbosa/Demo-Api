@@ -35,6 +35,8 @@ namespace Demo.Api
 
             services.AddApiConfig();
 
+            services.AddJwtConfig(Configuration["Authorization:SecurityKey"]);
+
             services.AddSwaggerConfig();
         }
 
@@ -42,6 +44,8 @@ namespace Demo.Api
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseApiConfig(env);
+
+            app.UseJwtConfig();
 
             app.UseSwaggerConfig();
         }
