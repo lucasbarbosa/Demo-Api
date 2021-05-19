@@ -1,7 +1,10 @@
-﻿using Demo.Domain.Interfaces;
+﻿using Demo.Api.Extensions;
+using Demo.Application.ViewModels;
+using Demo.Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
@@ -17,14 +20,22 @@ namespace Demo.Api.Controllers
 
         private readonly IConfiguration _configuration;
         private readonly INotificatorHandler _notificator;
+        private readonly AuthorizationSettings _authorizationSettings;
 
         #endregion
 
-        public TokenController(INotificatorHandler notificator, IConfiguration configuration) : base(notificator)
+        #region Constructors
+
+        public TokenController(INotificatorHandler notificator, IConfiguration configuration, IOptions<AuthorizationSettings> authorizationSettings) : base(notificator)
         {
             _configuration = configuration;
             _notificator = notificator;
+            _authorizationSettings = authorizationSettings.Value;
         }
+
+        #endregion
+
+        #region Public Methods
 
         [AllowAnonymous]
         [HttpGet("RequestToken")]
@@ -36,24 +47,49 @@ namespace Demo.Api.Controllers
                 return CustomResponse();
             }
 
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_configuration["Authorization:SecurityKey"])
-            );
+            #region Macoratti
 
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            //var key = new SymmetricSecurityKey(
+            //    Encoding.UTF8.GetBytes(_configuration["Authorization:SecurityKey"])
+            //);
 
-            var token = new JwtSecurityToken(
-                issuer: "Demo.Api",
-                audience: "Demo.Api",
-                notBefore: DateTime.Now,
-                expires: DateTime.Now.AddMinutes(30),
-                signingCredentials: creds
-            );
+            //var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            return CustomResponse(new
+            //var token = new JwtSecurityToken(
+            //    issuer: "Demo.Api",
+            //    audience: "Demo.Api",
+            //    notBefore: DateTime.Now,
+            //    expires: DateTime.Now.AddMinutes(30),
+            //    signingCredentials: creds
+            //);
+            //var encodedToken = new JwtSecurityTokenHandler().WriteToken(token);
+
+            #endregion
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_authorizationSettings.SecurityKey);
+            var created = DateTime.UtcNow;
+            var expires = DateTime.UtcNow.AddMinutes(_authorizationSettings.ExpirationMinutes);
+            var token = tokenHandler.CreateToken(new SecurityTokenDescriptor()
             {
-                token = new JwtSecurityTokenHandler().WriteToken(token)
+                Issuer = _authorizationSettings.Sender,
+                Audience = _authorizationSettings.ValidOn,
+                NotBefore = created,
+                Expires = expires,
+                SigningCredentials = new SigningCredentials(
+                    new SymmetricSecurityKey(key),
+                    SecurityAlgorithms.HmacSha256Signature)
+            });
+            var encodedToken = tokenHandler.WriteToken(token);
+
+            return CustomResponse(new TokenViewModel
+            {
+                AccessToken = encodedToken,
+                Created = created.ToString("yyyy-MM-dd HH:mm:ss"),
+                ExpiresIn = expires.ToString("yyyy-MM-dd HH:mm:ss")
             });
         }
+
+        #endregion
     }
 }

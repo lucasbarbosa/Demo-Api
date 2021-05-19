@@ -35,7 +35,7 @@ namespace Demo.Api
 
             services.AddApiConfig();
 
-            services.AddJwtConfig(Configuration["Authorization:SecurityKey"]);
+            services.AddJwtConfig(Configuration);
 
             services.AddSwaggerConfig();
         }
