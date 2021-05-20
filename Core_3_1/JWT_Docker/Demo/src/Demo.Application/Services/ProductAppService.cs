@@ -8,39 +8,39 @@ using System.Collections.Generic;
 
 namespace Demo.Application.Services
 {
-    public class UserAppService : BaseServices, IUserAppService
+    public class ProductAppService : BaseServices, IProductAppService
     {
         #region Properties
 
         private readonly IMapper _mapper;
         private readonly INotificatorHandler _notificator;
-        private readonly IUserRepository _userRepository;
+        private readonly IProductRepository _ProductRepository;
 
         #endregion
 
         #region Constructors
 
-        public UserAppService(IMapper mapper, INotificatorHandler notificator, IUserRepository userRepository)
+        public ProductAppService(IMapper mapper, INotificatorHandler notificator, IProductRepository ProductRepository)
         {
             _mapper = mapper;
             _notificator = notificator;
-            _userRepository = userRepository;
+            _ProductRepository = ProductRepository;
         }
 
         #endregion
 
         #region Public Methods
 
-        public IList<UserViewModel> GetAll()
+        public IList<ProductViewModel> GetAll()
         {
-            var response = _mapper.Map<IList<UserViewModel>>(_userRepository.GetAll());
+            var response = _mapper.Map<IList<ProductViewModel>>(_ProductRepository.GetAll());
 
             return response;
         }
 
-        public UserViewModel GetById(uint id)
+        public ProductViewModel GetById(uint id)
         {
-            var response = _mapper.Map<UserViewModel>(_userRepository.GetById(id));
+            var response = _mapper.Map<ProductViewModel>(_ProductRepository.GetById(id));
 
             if (response == null)
                 _notificator.AddError("Usuário não encontrado");
@@ -48,17 +48,17 @@ namespace Demo.Application.Services
             return response;
         }
 
-        public UserViewModel Create(UserViewModel user)
+        public ProductViewModel Create(ProductViewModel Product)
         {
-            var response = _mapper.Map<UserViewModel>(_userRepository.GetById(user.Id));
+            var response = _mapper.Map<ProductViewModel>(_ProductRepository.GetById(Product.Id));
 
             if (response != null)
             {
-                _notificator.AddError($"Usuário (Id: {user.Id}) já cadastrado.");
+                _notificator.AddError($"Usuário (Id: {Product.Id}) já cadastrado.");
             }
             else
             {
-                response = _mapper.Map<UserViewModel>(_userRepository.Create(_mapper.Map<User>(user)));
+                response = _mapper.Map<ProductViewModel>(_ProductRepository.Create(_mapper.Map<Product>(Product)));
 
                 if (response == null)
                     _notificator.AddError("Usuário não cadastrado");
@@ -67,9 +67,9 @@ namespace Demo.Application.Services
             return response;
         }
 
-        public UserViewModel Update(UserViewModel user)
+        public ProductViewModel Update(ProductViewModel Product)
         {
-            var response = _mapper.Map<UserViewModel>(_userRepository.Update(_mapper.Map<User>(user)));
+            var response = _mapper.Map<ProductViewModel>(_ProductRepository.Update(_mapper.Map<Product>(Product)));
 
             if (response == null)
                 _notificator.AddError("Usuário não encontrado");
@@ -79,7 +79,7 @@ namespace Demo.Application.Services
 
         public bool DeleteById(uint id)
         {
-            var response = _userRepository.DeleteById(id);
+            var response = _ProductRepository.DeleteById(id);
 
             if (!response)
                 _notificator.AddError("Usuário não encontrado");

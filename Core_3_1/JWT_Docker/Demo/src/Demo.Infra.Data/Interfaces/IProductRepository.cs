@@ -2,9 +2,9 @@
 
 namespace Demo.Infra.Data.Interfaces
 {
-    public interface IUserRepository : IRepository<User>
+    public interface IProductRepository : IRepository<Product>
     {
-        User GetById(uint id);
+        Product GetById(uint id);
 
         bool DeleteById(uint id);
     }
