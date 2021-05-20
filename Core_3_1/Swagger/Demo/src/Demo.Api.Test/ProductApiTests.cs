@@ -11,7 +11,7 @@ using Xunit;
 namespace Demo.Api.Test
 {
     [TestCaseOrderer("Demo.Api.Test.Configuration.PriorityOrderer", "Demo.Api.Test")]
-    public class UserApiTests
+    public class ProductApiTests
     {
         #region Attributes
 
@@ -22,7 +22,7 @@ namespace Demo.Api.Test
 
         #region Constructors
 
-        public UserApiTests()
+        public ProductApiTests()
         {
             _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
 
@@ -34,82 +34,82 @@ namespace Demo.Api.Test
         #region Public Methods
 
         [Fact, TestPriority(1)]
-        public async Task User_Create_Ok()
+        public async Task Product_Create_Ok()
         {
             // Arrange
-            var userFake = NewUser();
-            var userJson = JsonConvert.SerializeObject(userFake);
-            var userContent = new StringContent(userJson, UnicodeEncoding.UTF8, "application/json");
+            var ProductFake = NewProduct();
+            var ProductJson = JsonConvert.SerializeObject(ProductFake);
+            var ProductContent = new StringContent(ProductJson, UnicodeEncoding.UTF8, "application/json");
 
             // Act
-            var response = await _client.PostAsync("/api/v1/User/Create", userContent);
+            var response = await _client.PostAsync("/api/v1/Product/Create", ProductContent);
 
             // Assert
             Assert.True(response.IsSuccessStatusCode);
         }
 
         [Fact, TestPriority(2)]
-        public async Task User_Update_Ok()
+        public async Task Product_Update_Ok()
         {
             // Arrange
-            var userFake = NewUser();
-            userFake.Name = "User Name Update";
-            var userJson = JsonConvert.SerializeObject(userFake);
-            var userContent = new StringContent(userJson, UnicodeEncoding.UTF8, "application/json");
+            var ProductFake = NewProduct();
+            ProductFake.Name = "Product Name Update";
+            var ProductJson = JsonConvert.SerializeObject(ProductFake);
+            var ProductContent = new StringContent(ProductJson, UnicodeEncoding.UTF8, "application/json");
 
             // Act
-            var response = await _client.PutAsync("/api/v1/User/Update", userContent);
+            var response = await _client.PutAsync("/api/v1/Product/Update", ProductContent);
 
             // Assert
             Assert.True(response.IsSuccessStatusCode);
         }
 
         [Fact, TestPriority(3)]
-        public async Task User_GetAll_Ok()
+        public async Task Product_GetAll_Ok()
         {
             // Act
-            var response = await _client.GetAsync("/api/v1/User/GetAll");
+            var response = await _client.GetAsync("/api/v1/Product/GetAll");
 
             // Assert
             Assert.True(response.IsSuccessStatusCode);
         }
 
         [Fact, TestPriority(4)]
-        public async Task User_GetById_Ok()
+        public async Task Product_GetById_Ok()
         {
             // Arrange
-            var userFake = NewUser();
+            var ProductFake = NewProduct();
 
             // Act
-            var response = await _client.GetAsync($"/api/v1/User/GetById/{userFake.Id}");
+            var response = await _client.GetAsync($"/api/v1/Product/GetById/{ProductFake.Id}");
 
             // Assert
             Assert.True(response.IsSuccessStatusCode);
         }
 
         [Fact, TestPriority(5)]
-        public async Task User_Delete_Ok()
+        public async Task Product_Delete_Ok()
         {
             // Arrange
-            var userFake = NewUser();
+            var ProductFake = NewProduct();
 
             // Act
-            var response = await _client.DeleteAsync($"/api/v1/User/DeleteById/{userFake.Id}");
+            var response = await _client.DeleteAsync($"/api/v1/Product/DeleteById/{ProductFake.Id}");
 
             // Assert
             Assert.True(response.IsSuccessStatusCode);
         }
 
         [Fact, TestPriority(6)]
-        public async Task User_Create_WithOutId()
+        public async Task Product_Create_WithOutId()
         {
             // Arrange
-            var userFake = NewUserWithOutId();
-            var userJson = JsonConvert.SerializeObject(userFake);
-            var userContent = new StringContent(userJson, UnicodeEncoding.UTF8, "application/json");
+            var ProductFake = NewProductWithOutId();
+            var ProductJson = JsonConvert.SerializeObject(ProductFake);
+            var ProductContent = new StringContent(ProductJson, UnicodeEncoding.UTF8, "application/json");
 
             // Act
-            var response = await _client.PostAsync("/api/v1/User/Create", userContent);
+            var response = await _client.PostAsync("/api/v1/Product/Create", ProductContent);
             var responseString = await response.Content.ReadAsStringAsync();
             var responseObject = JsonConvert.DeserializeObject<ResponseViewModel>(responseString);
 
@@ -119,15 +119,15 @@ namespace Demo.Api.Test
         }
 
         [Fact, TestPriority(7)]
-        public async Task User_Create_WithOutName()
+        public async Task Product_Create_WithOutName()
         {
             // Arrange
-            var userFake = NewUserWithOutName();
-            var userJson = JsonConvert.SerializeObject(userFake);
-            var userContent = new StringContent(userJson, UnicodeEncoding.UTF8, "application/json");
+            var ProductFake = NewProductWithOutName();
+            var ProductJson = JsonConvert.SerializeObject(ProductFake);
+            var ProductContent = new StringContent(ProductJson, UnicodeEncoding.UTF8, "application/json");
 
             // Act
-            var response = await _client.PostAsync("/api/v1/User/Create", userContent);
+            var response = await _client.PostAsync("/api/v1/Product/Create", ProductContent);
             var responseString = await response.Content.ReadAsStringAsync();
             var responseObject = JsonConvert.DeserializeObject<ResponseViewModel>(responseString);
 
@@ -137,61 +137,61 @@ namespace Demo.Api.Test
         }
 
         [Fact, TestPriority(8)]
-        public async Task User_Create_WithOutEmail()
+        public async Task Product_Create_WithOutWeight()
         {
             // Arrange
-            var userFake = NewUserWithOutEmail();
-            var userJson = JsonConvert.SerializeObject(userFake);
-            var userContent = new StringContent(userJson, UnicodeEncoding.UTF8, "application/json");
+            var ProductFake = NewProductWithOutWeight();
+            var ProductJson = JsonConvert.SerializeObject(ProductFake);
+            var ProductContent = new StringContent(ProductJson, UnicodeEncoding.UTF8, "application/json");
 
             // Act
-            var response = await _client.PostAsync("/api/v1/User/Create", userContent);
+            var response = await _client.PostAsync("/api/v1/Product/Create", ProductContent);
             var responseString = await response.Content.ReadAsStringAsync();
             var responseObject = JsonConvert.DeserializeObject<ResponseViewModel>(responseString);
 
             // Assert
             Assert.False(responseObject.Success);
-            Assert.Contains(responseObject.Errors, x => x.Contains("Campo E-mail é obrigatório"));
+            Assert.Contains(responseObject.Errors, x => x.Contains("Weight deve ser maior que 0"));
         }
 
         #endregion
 
         #region Private Methods
 
-        private UserViewModel NewUser()
+        private ProductViewModel NewProduct()
         {
-            return new UserViewModel
+            return new ProductViewModel
             {
                 Id = 1,
-                Name = "User Name 1",
-                Email = "name1@email.com"
+                Name = "Product Name 1",
+                Weight = 3.12
             };
         }
 
-        private UserViewModel NewUserWithOutId()
+        private ProductViewModel NewProductWithOutId()
         {
-            return new UserViewModel
+            return new ProductViewModel
             {
-                Name = "User Name 2",
-                Email = "name2@email.com"
+                Name = "Product Name 2",
+                Weight = 5.7
             };
         }
 
-        private UserViewModel NewUserWithOutName()
+        private ProductViewModel NewProductWithOutName()
         {
-            return new UserViewModel
+            return new ProductViewModel
             {
                 Id = 3,
-                Email = "name3@email.com"
+                Weight = 4.65
             };
         }
 
-        private UserViewModel NewUserWithOutEmail()
+        private ProductViewModel NewProductWithOutWeight()
         {
-            return new UserViewModel
+            return new ProductViewModel
             {
                 Id = 4,
-                Name = "User Name 4"
+                Name = "Product Name 4"
             };
         }
 

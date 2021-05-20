@@ -1,6 +1,6 @@
 ﻿namespace Demo.Domain.Entities
 {
-    public class User : Entity
+    public class Product : Entity
     {
         #region Properties
 
@@ -8,7 +8,7 @@
 
         public string Name { get; set; }
 
-        public string Email { get; set; }
+        public double Weight { get; set; }
 
         #endregion
     }

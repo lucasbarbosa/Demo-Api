@@ -18,13 +18,13 @@ namespace Demo.Api.Configuration
         {
             #region Applications
 
-            services.AddScoped<IUserAppService, UserAppService>();
+            services.AddScoped<IProductAppService, ProductAppService>();
 
             #endregion
 
             #region Repositories
 
-            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
 
             #endregion
 

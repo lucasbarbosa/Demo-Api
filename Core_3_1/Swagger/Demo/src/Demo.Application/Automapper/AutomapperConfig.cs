@@ -10,7 +10,7 @@ namespace Demo.Application.Automapper
 
         public AutomapperConfig()
         {
-            CreateMap<User, UserViewModel>().ReverseMap();
+            CreateMap<Product, ProductViewModel>().ReverseMap();
         }
 
         #endregion

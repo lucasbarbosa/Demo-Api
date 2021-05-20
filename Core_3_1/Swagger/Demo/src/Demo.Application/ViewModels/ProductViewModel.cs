@@ -2,7 +2,7 @@
 
 namespace Demo.Application.ViewModels
 {
-    public class UserViewModel : BaseViewModel
+    public class ProductViewModel : BaseViewModel
     {
         #region Properties
 
@@ -13,10 +13,8 @@ namespace Demo.Application.ViewModels
         [Required(ErrorMessage = "Campo Name é obrigatório")]
         public string Name { get; set; }
 
-        [Required(ErrorMessage = "Campo E-mail é obrigatório")]
-        [DataType(DataType.EmailAddress)]
-        [EmailAddress(ErrorMessage = "E-mail inválido")]
-        public string Email { get; set; }
+        [Range(1, double.MaxValue, ErrorMessage = "Weight deve ser maior que 0")]
+        public double Weight { get; set; }
 
         #endregion
     }

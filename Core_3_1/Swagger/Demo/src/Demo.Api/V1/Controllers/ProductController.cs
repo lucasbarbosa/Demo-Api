@@ -9,19 +9,19 @@ namespace Demo.Api.V1.Controllers
 {
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
-    public class UserController : MainApiController
+    public class ProductController : MainApiController
     {
         #region Properties
 
-        private readonly IUserAppService _userApplication;
+        private readonly IProductAppService _ProductApplication;
 
         #endregion
 
         #region Constructors
 
-        public UserController(INotificatorHandler notificator, IUserAppService userApplication) : base(notificator)
+        public ProductController(INotificatorHandler notificator, IProductAppService ProductApplication) : base(notificator)
         {
-            _userApplication = userApplication;
+            _ProductApplication = ProductApplication;
         }
 
         #endregion
@@ -29,37 +29,37 @@ namespace Demo.Api.V1.Controllers
         #region Public Methods
 
         [HttpGet("GetAll")]
-        public ActionResult<IList<UserViewModel>> GetAll()
+        public ActionResult<IList<ProductViewModel>> GetAll()
         {
-            var response = _userApplication.GetAll();
+            var response = _ProductApplication.GetAll();
 
             return CustomResponse(response);
         }
 
         [HttpGet("GetById/{Id}")]
-        public ActionResult<UserViewModel> GetById(uint Id)
+        public ActionResult<ProductViewModel> GetById(uint Id)
         {
-            var response = _userApplication.GetById(Id);
+            var response = _ProductApplication.GetById(Id);
 
             return CustomResponse(response);
         }
 
         [HttpPost("Create")]
-        public ActionResult<UserViewModel> Create(UserViewModel user)
+        public ActionResult<ProductViewModel> Create(ProductViewModel Product)
         {
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
-            var response = _userApplication.Create(user);
+            var response = _ProductApplication.Create(Product);
 
             return CustomResponse(response);
         }
 
         [HttpPut("Update")]
-        public ActionResult<UserViewModel> Update(UserViewModel user)
+        public ActionResult<ProductViewModel> Update(ProductViewModel Product)
         {
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
-            var response = _userApplication.Update(user);
+            var response = _ProductApplication.Update(Product);
 
             return CustomResponse(response);
         }
@@ -67,7 +67,7 @@ namespace Demo.Api.V1.Controllers
         [HttpDelete("DeleteById/{Id}")]
         public ActionResult<bool> DeleteById(uint Id)
         {
-            var response = _userApplication.DeleteById(Id);
+            var response = _ProductApplication.DeleteById(Id);
 
             return CustomResponse(response);
         }
