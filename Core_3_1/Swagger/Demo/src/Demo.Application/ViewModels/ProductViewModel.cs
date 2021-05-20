@@ -13,7 +13,7 @@ namespace Demo.Application.ViewModels
         [Required(ErrorMessage = "Campo Name é obrigatório")]
         public string Name { get; set; }
 
-        [Range(1, double.MaxValue, ErrorMessage = "Weight deve ser maior que 0")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Weight deve ser maior que 0")]
         public double Weight { get; set; }
 
         #endregion

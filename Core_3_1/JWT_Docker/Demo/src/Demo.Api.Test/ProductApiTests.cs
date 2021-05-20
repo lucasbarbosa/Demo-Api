@@ -161,7 +161,7 @@ namespace Demo.Api.Test
 
             // Assert
             Assert.False(responseObject.Success);
-            Assert.Contains(responseObject.Errors, x => x.Contains("Campo Weight é obrigatório"));
+            Assert.Contains(responseObject.Errors, x => x.Contains("Weight deve ser maior que 0"));
         }
 
         #endregion
