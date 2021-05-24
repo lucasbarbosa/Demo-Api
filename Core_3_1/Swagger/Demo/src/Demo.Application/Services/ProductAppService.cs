@@ -43,7 +43,7 @@ namespace Demo.Application.Services
             var response = _mapper.Map<ProductViewModel>(_ProductRepository.GetById(id));
 
             if (response == null)
-                _notificator.AddError("Usuário não encontrado");
+                _notificator.AddError("Produto não encontrado");
 
             return response;
         }
@@ -54,14 +54,14 @@ namespace Demo.Application.Services
 
             if (response != null)
             {
-                _notificator.AddError($"Usuário (Id: {Product.Id}) já cadastrado.");
+                _notificator.AddError($"Produto (Id: {Product.Id}) já cadastrado.");
             }
             else
             {
                 response = _mapper.Map<ProductViewModel>(_ProductRepository.Create(_mapper.Map<Product>(Product)));
 
                 if (response == null)
-                    _notificator.AddError("Usuário não cadastrado");
+                    _notificator.AddError("Produto não cadastrado");
             }
 
             return response;
@@ -72,7 +72,7 @@ namespace Demo.Application.Services
             var response = _mapper.Map<ProductViewModel>(_ProductRepository.Update(_mapper.Map<Product>(Product)));
 
             if (response == null)
-                _notificator.AddError("Usuário não encontrado");
+                _notificator.AddError("Produto não encontrado");
 
             return response;
         }
@@ -82,7 +82,7 @@ namespace Demo.Application.Services
             var response = _ProductRepository.DeleteById(id);
 
             if (!response)
-                _notificator.AddError("Usuário não encontrado");
+                _notificator.AddError("Produto não encontrado");
 
             return response;
         }
