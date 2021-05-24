@@ -1,9 +1,7 @@
-using Demo.Api.Extensions;
 using Demo.Api.Test.Configuration;
 using Demo.Application.ViewModels;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -20,22 +18,19 @@ namespace Demo.Api.Test
 
         private readonly TestServer _server;
         private readonly HttpClient _client;
-        //private readonly AuthorizationSettings _authorizationSettings;
-        //private readonly string _token;
+        private readonly string _secretKey = "2d3844a6-f348-4c0e-b2e1-ad9c3181488f";
 
         #endregion
 
         #region Constructors
 
-        public ProductApiTests(
-            //IOptions<AuthorizationSettings> authorizationSettings
-            )
+        public ProductApiTests()
         {
-            _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
+            var builder = new WebHostBuilder().UseStartup<StartupTest>();
+
+            _server = new TestServer(builder);
 
             _client = _server.CreateClient();
-
-            //_authorizationSettings = authorizationSettings.Value;
         }
 
         #endregion
@@ -51,7 +46,7 @@ namespace Demo.Api.Test
             var ProductContent = new StringContent(ProductJson, UnicodeEncoding.UTF8, "application/json");
 
             // Act
-            //RequestToken();
+            await RequestSetToken();
             var response = await _client.PostAsync("/api/v1/Product/Create", ProductContent);
 
             // Assert
@@ -68,6 +63,7 @@ namespace Demo.Api.Test
             var ProductContent = new StringContent(ProductJson, UnicodeEncoding.UTF8, "application/json");
 
             // Act
+            await RequestSetToken();
             var response = await _client.PutAsync("/api/v1/Product/Update", ProductContent);
 
             // Assert
@@ -78,6 +74,7 @@ namespace Demo.Api.Test
         public async Task Product_GetAll_Ok()
         {
             // Act
+            await RequestSetToken();
             var response = await _client.GetAsync("/api/v1/Product/GetAll");
 
             // Assert
@@ -91,6 +88,7 @@ namespace Demo.Api.Test
             var ProductFake = NewProduct();
 
             // Act
+            await RequestSetToken();
             var response = await _client.GetAsync($"/api/v1/Product/GetById/{ProductFake.Id}");
 
             // Assert
@@ -104,6 +102,7 @@ namespace Demo.Api.Test
             var ProductFake = NewProduct();
 
             // Act
+            await RequestSetToken();
             var response = await _client.DeleteAsync($"/api/v1/Product/DeleteById/{ProductFake.Id}");
 
             // Assert
@@ -119,6 +118,7 @@ namespace Demo.Api.Test
             var ProductContent = new StringContent(ProductJson, UnicodeEncoding.UTF8, "application/json");
 
             // Act
+            await RequestSetToken();
             var response = await _client.PostAsync("/api/v1/Product/Create", ProductContent);
             var responseString = await response.Content.ReadAsStringAsync();
             var responseObject = JsonConvert.DeserializeObject<ResponseViewModel>(responseString);
@@ -137,6 +137,7 @@ namespace Demo.Api.Test
             var ProductContent = new StringContent(ProductJson, UnicodeEncoding.UTF8, "application/json");
 
             // Act
+            await RequestSetToken();
             var response = await _client.PostAsync("/api/v1/Product/Create", ProductContent);
             var responseString = await response.Content.ReadAsStringAsync();
             var responseObject = JsonConvert.DeserializeObject<ResponseViewModel>(responseString);
@@ -155,6 +156,7 @@ namespace Demo.Api.Test
             var ProductContent = new StringContent(ProductJson, UnicodeEncoding.UTF8, "application/json");
 
             // Act
+            await RequestSetToken();
             var response = await _client.PostAsync("/api/v1/Product/Create", ProductContent);
             var responseString = await response.Content.ReadAsStringAsync();
             var responseObject = JsonConvert.DeserializeObject<ResponseViewModel>(responseString);
@@ -168,18 +170,25 @@ namespace Demo.Api.Test
 
         #region Private Methods
 
-        //private async void RequestToken()
-        //{
-        //    if (string.IsNullOrEmpty(_token))
-        //    {
-        //        _client.DefaultRequestHeaders.Add("SecurityKey", _authorizationSettings.SecurityKey);
-        //        var result = await _client.GetAsync("/api/v1/Token/RequestToken");
-        //        //_token = "";
-        //    }
+        private async Task RequestSetToken()
+        {
+            if (_client.DefaultRequestHeaders.Authorization == null)
+            {
+                _client.DefaultRequestHeaders.Add("SecurityKey", _secretKey);
+                var result = await _client.GetAsync("/api/v1/Token/RequestToken");
 
-        //    _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
-        //}
-            
+                var resultContent = await result.Content.ReadAsStringAsync();
+                var response = JsonConvert.DeserializeObject<ResponseViewModel>(resultContent);
+
+                if (response.Success)
+                {
+                    var responseData = JsonConvert.DeserializeObject<TokenViewModel>(response.Data.ToString());
+
+                    _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", responseData.AccessToken);
+                }
+            }
+        }
+
         private ProductViewModel NewProduct()
         {
             return new ProductViewModel
