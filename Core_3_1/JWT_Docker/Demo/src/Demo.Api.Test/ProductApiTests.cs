@@ -26,7 +26,7 @@ namespace Demo.Api.Test
 
         public ProductApiTests()
         {
-            var builder = new WebHostBuilder().UseStartup<StartupTest>();
+            var builder = new WebHostBuilder().UseEnvironment("Development").UseStartup<StartupTest>();
 
             _server = new TestServer(builder);
 
