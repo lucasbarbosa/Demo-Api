@@ -1,4 +1,6 @@
-﻿namespace DemoApi.Api.Configuration
+﻿using Microsoft.OpenApi.Models;
+
+namespace DemoApi.Api.Configuration
 {
     public static class SwaggerConfig
     {
@@ -6,7 +8,14 @@
 
         public static IServiceCollection AddSwaggerConfig(this IServiceCollection services)
         {
-            services.AddSwaggerGen();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { 
+                    Title = "Demo API", 
+                    Version = "v1",
+                    Description = "Example of an API with versioning."
+                });
+            });
 
             return services;
         }
@@ -15,7 +24,10 @@
         {
             app.UseSwagger();
 
-            app.UseSwaggerUI();
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "V1");
+            });
 
             return app;
         }
