@@ -2,9 +2,12 @@ using DemoApi.Api.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddDependencyInjectionConfig();
+
 builder.Services.AddApiConfig();
 
 builder.Services.AddSwaggerConfig();
+
 
 var app = builder.Build();
 

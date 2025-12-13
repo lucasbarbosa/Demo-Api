@@ -13,8 +13,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-    <Folder Include="V1\Controllers\" />
+	  <Folder Include="V1\Controllers\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DemoApi.Domain\DemoApi.Domain.csproj" />
   </ItemGroup>
 
 </Project>

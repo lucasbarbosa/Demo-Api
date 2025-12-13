@@ -23,6 +23,12 @@ namespace DemoApi.Api.Configuration
                 options.SubstituteApiVersionInUrl = true;
             });
 
+            //Custom ModelState Messages
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
+
             services.AddEndpointsApiExplorer();
 
             return services;
