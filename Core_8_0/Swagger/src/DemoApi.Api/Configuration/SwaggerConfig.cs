@@ -10,10 +10,11 @@ namespace DemoApi.Api.Configuration
         {
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { 
-                    Title = "Demo API", 
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Demo API",
                     Version = "v1",
-                    Description = "Example of an API with versioning."
+                    Description = "Sample of API with versioning."
                 });
             });
 
@@ -26,7 +27,7 @@ namespace DemoApi.Api.Configuration
 
             app.UseSwaggerUI(options =>
             {
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "V1");
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
             });
 
             return app;

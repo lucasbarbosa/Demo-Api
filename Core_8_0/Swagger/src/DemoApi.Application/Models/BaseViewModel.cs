@@ -1,4 +1,4 @@
-﻿namespace DemoApi.Api.Models
+﻿namespace DemoApi.Application.Models
 {
     public abstract class BaseViewModel
     {
