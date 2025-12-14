@@ -1,6 +1,9 @@
 using DemoApi.Api.Configuration;
+using DemoApi.Application.Automapper;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddAutoMapper(typeof(AutomapperConfig));
 
 builder.Services.AddDependencyInjectionConfig();
 
