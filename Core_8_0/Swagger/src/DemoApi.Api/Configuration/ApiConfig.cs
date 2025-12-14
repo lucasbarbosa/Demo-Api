@@ -19,7 +19,7 @@ namespace DemoApi.Api.Configuration
 
             services.AddVersionedApiExplorer(options =>
             {
-                options.GroupNameFormat = "'v'VVV";
+                options.GroupNameFormat = "'v'V";
                 options.SubstituteApiVersionInUrl = true;
             });
 

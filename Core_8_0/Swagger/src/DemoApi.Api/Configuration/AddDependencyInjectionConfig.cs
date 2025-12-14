@@ -1,5 +1,9 @@
-﻿using DemoApi.Domain.Handlers;
+﻿using DemoApi.Application.Interfaces;
+using DemoApi.Application.Services;
+using DemoApi.Domain.Handlers;
 using DemoApi.Domain.Interfaces;
+using DemoApi.Infra.Data.Interfaces;
+using DemoApi.Infra.Data.Repositories;
 
 namespace DemoApi.Api.Configuration
 {
@@ -9,6 +13,18 @@ namespace DemoApi.Api.Configuration
 
         public static IServiceCollection AddDependencyInjectionConfig(this IServiceCollection services)
         {
+            #region Applications
+
+            services.AddScoped<IProductAppService, ProductAppService>();
+
+            #endregion
+
+            #region Repositories
+
+            services.AddScoped<IProductRepository, ProductRepository>();
+
+            #endregion
+
             #region Others
 
             services.AddScoped<INotificatorHandler, NotificatorHandler>();
