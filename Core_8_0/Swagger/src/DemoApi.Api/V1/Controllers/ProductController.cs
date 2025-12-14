@@ -1,8 +1,8 @@
-﻿using DemoApi.Api.Controllers;
+using DemoApi.Api.Controllers;
+using DemoApi.Application.Interfaces;
 using DemoApi.Application.Models;
 using DemoApi.Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 
 namespace DemoApi.Api.V1.Controllers
@@ -12,10 +12,17 @@ namespace DemoApi.Api.V1.Controllers
     [Produces("application/json")]
     public class ProductController : MainApiController
     {
+        #region Properties
+
+        private readonly IProductAppService _productApplication;
+
+        #endregion
+
         #region Constructors
 
-        public ProductController(INotificatorHandler notificator) : base(notificator)
+        public ProductController(INotificatorHandler notificator, IProductAppService productApplication) : base(notificator)
         {
+            _productApplication = productApplication;
         }
 
         #endregion
@@ -23,47 +30,60 @@ namespace DemoApi.Api.V1.Controllers
         #region Public Methods
 
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(ResponseViewModel), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ResponseViewModel), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProductViewModel), StatusCodes.Status200OK)]
         public IActionResult GetById(uint id)
         {
-            var product = new ProductViewModel { Id = id, Name = "Product " + id, Weight = 1.5 };
+            var product = _productApplication.GetById(id);
 
             return CustomResponse(product);
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(ResponseViewModel), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(List<ProductViewModel>), StatusCodes.Status200OK)]
         public IActionResult GetAll()
         {
-            var products = new List<ProductViewModel>
-            {
-                new ProductViewModel { Id = 1, Name = "Product 1", Weight = 1.5 },
-                new ProductViewModel { Id = 2, Name = "Product 2", Weight = 2.0 }
-            };
+            var products = _productApplication.GetAll();
 
             return CustomResponse(products);
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(ResponseViewModel), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ResponseViewModel), StatusCodes.Status400BadRequest)]
         public IActionResult Create([FromBody] ProductViewModel product)
         {
-            if (!ModelState.IsValid)
-                return CustomResponse(ModelState);
+            if (!ModelState.IsValid) return CustomResponse(ModelState);
 
-            return CustomResponseCreate(product);
+            var response = _productApplication.Create(product);
+
+            return CustomResponseCreate(response);
         }
 
         [HttpPut]
+        [ProducesResponseType(typeof(ResponseViewModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseViewModel), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ResponseViewModel), StatusCodes.Status404NotFound)]
         public IActionResult Update([FromBody] ProductViewModel product)
         {
-            if (!ModelState.IsValid)
-                return CustomResponse(ModelState);
+            if (!ModelState.IsValid) return CustomResponse(ModelState);
 
-            return CustomResponse(HttpStatusCode.OK, product);
+            return _productApplication.Update(product)
+                ? CustomResponse(HttpStatusCode.NoContent)
+                : CustomResponse();
         }
 
         [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(ResponseViewModel), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ResponseViewModel), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ResponseViewModel), StatusCodes.Status404NotFound)]
         public IActionResult Delete(uint id)
         {
-            return CustomResponse(HttpStatusCode.NoContent, true);
+            return _productApplication.DeleteById(id)
+                ? CustomResponse(HttpStatusCode.NoContent)
+                : CustomResponse();
         }
 
         #endregion
