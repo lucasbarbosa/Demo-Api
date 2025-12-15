@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DemoApi.Api.Extensions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DemoApi.Api.Configuration
 {
@@ -31,14 +32,25 @@ namespace DemoApi.Api.Configuration
 
             services.AddEndpointsApiExplorer();
 
+            services.AddSwaggerConfig();
+
             return services;
         }
 
         public static IApplicationBuilder UseApiConfig(this IApplicationBuilder app, IWebHostEnvironment env)
         {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+
+            app.UseMiddleware<ExceptionMiddleware>();
+
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
+
+            app.UseSwaggerConfig();
 
             return app;
         }

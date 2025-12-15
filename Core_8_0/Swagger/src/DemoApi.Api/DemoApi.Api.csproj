@@ -7,14 +7,23 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
+		<PackageReference Include="NLog.Web.AspNetCore" Version="6.1.0" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\DemoApi.Application\DemoApi.Application.csproj" />
 		<ProjectReference Include="..\DemoApi.Domain\DemoApi.Domain.csproj" />
+		<ProjectReference Include="..\DemoApi.Infra.CrossCutting\DemoApi.Infra.CrossCutting.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="..\DemoApi.Infra.CrossCutting\nlog.config">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 
 </Project>

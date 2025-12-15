@@ -3,21 +3,31 @@ using DemoApi.Application.Automapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAutoMapper(typeof(AutomapperConfig));
+var logger = builder.AddNLogConfig();
 
-builder.Services.AddDependencyInjectionConfig();
+try
+{
+    builder.Services.AddAutoMapper(typeof(AutomapperConfig));
 
-builder.Services.AddApiConfig();
+    builder.Services.AddDependencyInjectionConfig();
 
-builder.Services.AddSwaggerConfig();
+    builder.Services.AddApiConfig();
 
 
-var app = builder.Build();
+    var app = builder.Build();
 
-app.UseApiConfig(app.Environment);
+    app.UseApiConfig(app.Environment);
 
-app.UseSwaggerConfig();
+    app.MapControllers();
 
-app.MapControllers();
-
-app.Run();
+    app.Run();
+}
+catch (Exception ex)
+{
+    logger.Error(ex, "Stopped program because of exception");
+    throw;
+}
+finally
+{
+    NLogConfig.Shutdown();
+}
