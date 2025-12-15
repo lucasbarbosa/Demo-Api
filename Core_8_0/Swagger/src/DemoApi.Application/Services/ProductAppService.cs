@@ -38,31 +38,33 @@ namespace DemoApi.Application.Services
             return response;
         }
 
-        public async Task<ProductViewModel> GetById(uint id)
+        public async Task<ProductViewModel?> GetById(uint id)
         {
             var response = _mapper.Map<ProductViewModel>(await _productRepository.GetById(id));
 
             if (response == null)
-                _notificator.AddError("Product was not found");
-
-            return response!;
-        }
-
-        public async Task<ProductViewModel> Create(ProductViewModel product)
-        {
-            var response = _mapper.Map<ProductViewModel>(await _productRepository.GetByName(product.Name));
-
-            if (response != null)
-                _notificator.AddError($"Product ({product.Name}) is already registered");
-            else
             {
-                response = _mapper.Map<ProductViewModel>(await _productRepository.Create(_mapper.Map<Product>(product)));
-
-                if (response == null)
-                    _notificator.AddError("Product could not be created");
+                _notificator.AddError("Product was not found");
+                return null;
             }
 
-            return response!;
+            return response;
+        }
+
+        public async Task<ProductViewModel?> Create(ProductViewModel product)
+        {
+            if (await _productRepository.GetByName(product.Name) is not null)
+            {
+                _notificator.AddError($"Product ({product.Name}) is already registered");
+                return null;
+            }
+
+            var response = _mapper.Map<ProductViewModel>(await _productRepository.Create(_mapper.Map<Product>(product)));
+
+            if (response == null)
+                _notificator.AddError("Product could not be created");
+            
+            return response;
         }
 
         public async Task<bool> Update(ProductViewModel product)

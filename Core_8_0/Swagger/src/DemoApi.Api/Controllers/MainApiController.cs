@@ -10,10 +10,10 @@ namespace DemoApi.Api.Controllers
     public class MainApiController : Controller
     {
         #region Properties
-
+        
         private readonly INotificatorHandler _notificator;
-        private readonly IConfiguration _configuration;
-
+        private readonly IConfiguration? _configuration;
+        
         #endregion
 
         #region Constructors

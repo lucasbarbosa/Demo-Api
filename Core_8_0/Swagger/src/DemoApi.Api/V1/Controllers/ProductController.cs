@@ -10,23 +10,14 @@ namespace DemoApi.Api.V1.Controllers
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/products")]
     [Produces("application/json")]
-    public class ProductController : MainApiController
+    public class ProductController(INotificatorHandler notificator, IProductAppService productApplication) : MainApiController(notificator)
     {
         #region Properties
 
-        private readonly IProductAppService _productApplication;
+        private readonly IProductAppService _productApplication = productApplication;
 
         #endregion
-
-        #region Constructors
-
-        public ProductController(INotificatorHandler notificator, IProductAppService productApplication) : base(notificator)
-        {
-            _productApplication = productApplication;
-        }
-
-        #endregion
-
+        
         #region Public Methods
 
         [HttpGet("{id}")]
