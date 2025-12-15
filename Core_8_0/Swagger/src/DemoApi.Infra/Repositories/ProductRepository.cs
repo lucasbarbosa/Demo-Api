@@ -13,45 +13,45 @@ namespace DemoApi.Infra.Data.Repositories
 
         #region Pubic Methods
 
-        public IList<Product> GetAll()
+        public async Task<IList<Product>> GetAll()
         {
-            return _memoryProducts;
+            return await Task.FromResult(_memoryProducts);
         }
 
-        public Product? GetById(uint id)
+        public async Task<Product?> GetById(uint id)
         {
-            return _memoryProducts.FirstOrDefault(p => p.Id == id);
+            return await Task.FromResult(_memoryProducts.FirstOrDefault(p => p.Id == id));
         }
 
-        public Product? GetByName(string name)
+        public async Task<Product?> GetByName(string name)
         {
-            return _memoryProducts
-                .FirstOrDefault(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            return await Task.FromResult(_memoryProducts
+                .FirstOrDefault(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase)));
         }
 
-        public Product Create(Product product)
+        public async Task<Product> Create(Product product)
         {
             product.Id = NewId();
             _memoryProducts.Add(product);
 
-            return product;
+            return await Task.FromResult(product);
         }
 
-        public bool Update(Product product)
+        public async Task<bool> Update(Product product)
         {
             var index = _memoryProducts.FindIndex(p => p.Id == product.Id);
 
             if (index < 0)
-                return false;
+                return await Task.FromResult(false);
 
             _memoryProducts[index] = product;
-            return true;
+            return await Task.FromResult(true);
         }
 
-        public bool DeleteById(uint id)
+        public async Task<bool> DeleteById(uint id)
         {
             var removedCount = _memoryProducts.RemoveAll(p => p.Id == id);
-            return removedCount > 0;
+            return await Task.FromResult(removedCount > 0);
         }
 
         #endregion

@@ -4,14 +4,14 @@ namespace DemoApi.Application.Interfaces
 {
     public interface IProductAppService
     {
-        IList<ProductViewModel> GetAll();
+        Task<IList<ProductViewModel>> GetAll();
 
-        ProductViewModel GetById(uint id);
+        Task<ProductViewModel> GetById(uint id);
 
-        ProductViewModel Create(ProductViewModel product);
+        Task<ProductViewModel> Create(ProductViewModel product);
 
-        bool Update(ProductViewModel product);
+        Task<bool> Update(ProductViewModel product);
 
-        bool DeleteById(uint id);
+        Task<bool> DeleteById(uint id);
     }
 }

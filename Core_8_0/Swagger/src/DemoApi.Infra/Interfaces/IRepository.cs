@@ -1,13 +1,14 @@
 ﻿using DemoApi.Domain.Entities;
+using System.Threading.Tasks;
 
 namespace DemoApi.Infra.Data.Interfaces
 {
     public interface IRepository<TEntity> where TEntity : Entity
     {
-        IList<TEntity> GetAll() => new List<TEntity>();
+        Task<IList<TEntity>> GetAll() => Task.FromResult<IList<TEntity>>(new List<TEntity>());
 
-        TEntity Create(TEntity entity) => default;
+        Task<TEntity> Create(TEntity entity) => Task.FromResult(default(TEntity));
 
-        bool Update(TEntity entity) => default;
+        Task<bool> Update(TEntity entity) => Task.FromResult(false);
     }
 }
