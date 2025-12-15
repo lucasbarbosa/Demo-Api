@@ -19,7 +19,8 @@ namespace DemoApi.Application.Services
 
         #region Constructors
 
-        public ProductAppService(IMapper mapper, INotificatorHandler notificator, IProductRepository productRepository)
+        public ProductAppService(
+            IMapper mapper, INotificatorHandler notificator, IProductRepository productRepository)
         {
             _mapper = mapper;
             _notificator = notificator;
@@ -44,7 +45,7 @@ namespace DemoApi.Application.Services
             if (response == null)
                 _notificator.AddError("Product was not found");
 
-            return response;
+            return response!;
         }
 
         public async Task<ProductViewModel> Create(ProductViewModel product)
@@ -61,7 +62,7 @@ namespace DemoApi.Application.Services
                     _notificator.AddError("Product could not be created");
             }
 
-            return response;
+            return response!;
         }
 
         public async Task<bool> Update(ProductViewModel product)
