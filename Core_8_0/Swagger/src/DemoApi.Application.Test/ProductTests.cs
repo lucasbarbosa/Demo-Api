@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Bogus;
 using DemoApi.Application.Automapper;
 using DemoApi.Application.Models;
 using DemoApi.Application.Services;
@@ -106,11 +107,12 @@ namespace DemoApi.Application.Test
 
         private static Product NewProduct()
         {
-            return new Product
-            {
-                Name = "Product Test",
-                Weight = 2.3
-            };
+            var faker = new Faker<Product>()
+                .RuleFor(p => p.Id, f => 0u)
+                .RuleFor(p => p.Name, f => f.Commerce.ProductName())
+                .RuleFor(p => p.Weight, f => Math.Round(f.Random.Double(0.1, 10.0), 2));
+
+            return faker.Generate();
         }
 
         #endregion
