@@ -46,7 +46,7 @@ namespace DemoApi.Api.V1.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromBody] ProductViewModel product)
         {
-            if (!ModelState.IsValid) return CustomResponse(ModelState);
+            if (ModelState.IsValid is false) return CustomResponse(ModelState);
 
             var response = await _productApplication.Create(product);
 
@@ -59,7 +59,7 @@ namespace DemoApi.Api.V1.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Update([FromBody] ProductViewModel product)
         {
-            if (!ModelState.IsValid) return CustomResponse(ModelState);
+            if (ModelState.IsValid is false) return CustomResponse(ModelState);
 
             return await _productApplication.Update(product)
                 ? CustomResponse(HttpStatusCode.NoContent, true)

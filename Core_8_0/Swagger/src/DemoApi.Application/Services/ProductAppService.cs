@@ -42,7 +42,7 @@ namespace DemoApi.Application.Services
         {
             var response = _mapper.Map<ProductViewModel>(await _productRepository.GetById(id));
 
-            if (response == null)
+            if (response is null)
             {
                 _notificator.AddError("Product was not found");
                 return null;
@@ -53,15 +53,29 @@ namespace DemoApi.Application.Services
 
         public async Task<ProductViewModel?> Create(ProductViewModel product)
         {
+            ProductViewModel? response = null;
+
+            if (product is null)
+            {
+                _notificator.AddError("Product could not be created");
+                return response;
+            }
+
+            if (String.IsNullOrEmpty(product.Name))
+            {
+                _notificator.AddError("Product name is required");
+                return response;
+            }
+
             if (await _productRepository.GetByName(product.Name) is not null)
             {
                 _notificator.AddError($"Product ({product.Name}) is already registered");
-                return null;
+                return response;
             }
 
-            var response = _mapper.Map<ProductViewModel>(await _productRepository.Create(_mapper.Map<Product>(product)));
+            response = _mapper.Map<ProductViewModel>(await _productRepository.Create(_mapper.Map<Product>(product)));
 
-            if (response == null)
+            if (response is null)
                 _notificator.AddError("Product could not be created");
             
             return response;
@@ -69,15 +83,29 @@ namespace DemoApi.Application.Services
 
         public async Task<bool> Update(ProductViewModel product)
         {
+            bool response = false;
+
+            if (product is null)
+            {
+                _notificator.AddError("Product could not be updated");
+                return response;
+            }
+
+            if (String.IsNullOrEmpty(product.Name))
+            {
+                _notificator.AddError("Product name is required");
+                return response;
+            }
+
             if (await _productRepository.GetById(product.Id) is null)
             {
                 _notificator.AddError("Product was not found");
                 return false;
             }
 
-            var response = await _productRepository.Update(_mapper.Map<Product>(product));
+            response = await _productRepository.Update(_mapper.Map<Product>(product));
 
-            if (!response)
+            if (response is false)
                 _notificator.AddError("Product could not be updated");
 
             return response;
@@ -95,7 +123,7 @@ namespace DemoApi.Application.Services
 
             response = await _productRepository.DeleteById(id);
 
-            if (!response)
+            if (response is false)
                 _notificator.AddError("Product could not be deleted");
 
             return response;

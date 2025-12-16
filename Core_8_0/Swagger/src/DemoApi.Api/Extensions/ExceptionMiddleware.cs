@@ -2,7 +2,6 @@
 using DemoApi.Domain.Interfaces;
 using Newtonsoft.Json;
 using System.Net;
-using System.Net.Http.Headers;
 using System.Text;
 using ILogger = DemoApi.Infra.CrossCutting.Interfaces.ILogger;
 
@@ -57,7 +56,7 @@ namespace DemoApi.Api.Extensions
 
             var responseJson = JsonConvert.SerializeObject(responseBody);
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            context.Response.ContentType = new MediaTypeHeaderValue("application/json").ToString();
+            context.Response.ContentType = "application/json";
             await context.Response.WriteAsync(responseJson, Encoding.UTF8);
         }
 

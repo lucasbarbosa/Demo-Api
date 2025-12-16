@@ -11,7 +11,7 @@ namespace DemoApi.Infra.Data.Repositories
 
         #endregion
 
-        #region Pubic Methods
+        #region Public Methods
 
         public async Task<IList<Product>> GetAll()
         {

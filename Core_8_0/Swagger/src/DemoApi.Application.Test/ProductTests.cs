@@ -29,23 +29,19 @@ namespace DemoApi.Application.Test
 
             config.AssertConfigurationIsValid();
             _mapper = config.CreateMapper();
+            
+            Randomizer.Seed = new Random(1234);
         }
 
         #endregion
 
-        #region Pubic Methods
+        #region Public Methods
 
         [Fact]
         public async Task GetAll_ShouldReturnAllProducts_WhenRepositoryHasProducts()
         {
             // Arrange
-            var notificator = new Mock<INotificatorHandler>();
-            var productRepository = new Mock<IProductRepository>();
-            var productApplication = new ProductAppService(
-                _mapper,
-                notificator.Object,
-                productRepository.Object
-            );
+            var (notificator, productRepository, productApplication) = SetProductAppService();
 
             var productsFake = new List<Product>
             {
@@ -76,13 +72,7 @@ namespace DemoApi.Application.Test
         public async Task GetAll_ShouldReturnEmptyList_WhenRepositoryHasNoProducts()
         {
             // Arrange
-            var notificator = new Mock<INotificatorHandler>();
-            var productRepository = new Mock<IProductRepository>();
-            var productApplication = new ProductAppService(
-                _mapper,
-                notificator.Object,
-                productRepository.Object
-            );
+            var (notificator, productRepository, productApplication) = SetProductAppService();
 
             var productsFake = new List<Product>();
 
@@ -107,13 +97,7 @@ namespace DemoApi.Application.Test
         public async Task GetById_ShouldReturnProduct_WhenProductExists()
         {
             // Arrange
-            var notificator = new Mock<INotificatorHandler>();
-            var productRepository = new Mock<IProductRepository>();
-            var productApplication = new ProductAppService(
-                _mapper,
-                notificator.Object,
-                productRepository.Object
-            );
+            var (notificator, productRepository, productApplication) = SetProductAppService();
 
             var productFake = NewProduct();
             uint productId = 1;
@@ -145,13 +129,7 @@ namespace DemoApi.Application.Test
         public async Task GetById_ShouldReturnNull_WhenProductDoesNotExist()
         {
             // Arrange
-            var notificator = new Mock<INotificatorHandler>();
-            var productRepository = new Mock<IProductRepository>();
-            var productApplication = new ProductAppService(
-                _mapper,
-                notificator.Object,
-                productRepository.Object
-            );
+            var (notificator, productRepository, productApplication) = SetProductAppService();
 
             uint productId = 99999;
 
@@ -180,13 +158,7 @@ namespace DemoApi.Application.Test
         public async Task Create_ShouldReturnProduct_WhenRepositoryCreatesSuccessfully()
         {
             // Arrange
-            var notificator = new Mock<INotificatorHandler>();
-            var productRepository = new Mock<IProductRepository>();
-            var productApplication = new ProductAppService(
-                _mapper,
-                notificator.Object,
-                productRepository.Object
-            );
+            var (notificator, productRepository, productApplication) = SetProductAppService();
 
             var productFake = NewProduct();
             var productViewModel = _mapper.Map<ProductViewModel>(productFake);
@@ -227,13 +199,7 @@ namespace DemoApi.Application.Test
         public async Task Create_ShouldReturnNull_WhenProductAlreadyExists()
         {
             // Arrange
-            var notificator = new Mock<INotificatorHandler>();
-            var productRepository = new Mock<IProductRepository>();
-            var productApplication = new ProductAppService(
-                _mapper,
-                notificator.Object,
-                productRepository.Object
-            );
+            var (notificator, productRepository, productApplication) = SetProductAppService();
 
             var productFake = NewProduct();
             var productViewModel = _mapper.Map<ProductViewModel>(productFake);
@@ -268,13 +234,7 @@ namespace DemoApi.Application.Test
         public async Task Create_ShouldReturnNull_WhenRepositoryReturnsNull()
         {
             // Arrange
-            var notificator = new Mock<INotificatorHandler>();
-            var productRepository = new Mock<IProductRepository>();
-            var productApplication = new ProductAppService(
-                _mapper,
-                notificator.Object,
-                productRepository.Object
-            );
+            var (notificator, productRepository, productApplication) = SetProductAppService();
 
             var productFake = NewProduct();
             var productViewModel = _mapper.Map<ProductViewModel>(productFake);
@@ -283,7 +243,7 @@ namespace DemoApi.Application.Test
                 .Setup(x => x.GetByName(productViewModel.Name))
                 .ReturnsAsync((Product?)null);
 
-            productRepository.Setup(x => x.Create(It.IsAny<Product>())).ReturnsAsync((Product)null!);
+            productRepository.Setup(x => x.Create(It.IsAny<Product>())).ReturnsAsync(default(Product)!);
 
             // Act
             var result = await productApplication.Create(productViewModel);
@@ -308,16 +268,108 @@ namespace DemoApi.Application.Test
         }
 
         [Fact]
+        public async Task Create_ShouldReturnNull_WhenProductNameIsEmpty()
+        {
+            // Arrange
+            var (notificator, productRepository, productApplication) = SetProductAppService();
+
+            var productViewModelWithoutName = new ProductViewModel
+            {
+                Name = string.Empty,
+                Weight = 2.5
+            };
+
+            // Act
+            var result = await productApplication.Create(productViewModelWithoutName);
+
+            // Assert
+            Assert.Null(result);
+
+            productRepository.Verify(
+                x => x.GetByName(It.IsAny<string>()),
+                Times.Never
+            );
+
+            productRepository.Verify(
+                x => x.Create(It.IsAny<Product>()),
+                Times.Never
+            );
+
+            notificator.Verify(
+                x => x.AddError("Product name is required"),
+                Times.Once
+            );
+        }
+
+        [Fact]
+        public async Task Create_ShouldReturnNull_WhenProductNameIsNull()
+        {
+            // Arrange
+            var (notificator, productRepository, productApplication) = SetProductAppService();
+
+            var productViewModelWithNullName = new ProductViewModel
+            {
+                Name = null!,
+                Weight = 2.5
+            };
+
+            // Act
+            var result = await productApplication.Create(productViewModelWithNullName);
+
+            // Assert
+            Assert.Null(result);
+
+            productRepository.Verify(
+                x => x.GetByName(It.IsAny<string>()),
+                Times.Never
+            );
+
+            productRepository.Verify(
+                x => x.Create(It.IsAny<Product>()),
+                Times.Never
+            );
+
+            notificator.Verify(
+                x => x.AddError("Product name is required"),
+                Times.Once
+            );
+        }
+
+        [Fact]
+        public async Task Create_ShouldReturnNull_WhenProductIsNull()
+        {
+            // Arrange
+            var (notificator, productRepository, productApplication) = SetProductAppService();
+
+            ProductViewModel? nullProduct = null;
+
+            // Act
+            var result = await productApplication.Create(nullProduct!);
+
+            // Assert
+            Assert.Null(result);
+
+            productRepository.Verify(
+                x => x.GetByName(It.IsAny<string>()),
+                Times.Never
+            );
+
+            productRepository.Verify(
+                x => x.Create(It.IsAny<Product>()),
+                Times.Never
+            );
+
+            notificator.Verify(
+                x => x.AddError("Product could not be created"),
+                Times.Once
+            );
+        }
+
+        [Fact]
         public async Task Update_ShouldReturnTrue_WhenRepositoryUpdatesSuccessfully()
         {
             // Arrange
-            var notificator = new Mock<INotificatorHandler>();
-            var productRepository = new Mock<IProductRepository>();
-            var productApplication = new ProductAppService(
-                _mapper,
-                notificator.Object,
-                productRepository.Object
-            );
+            var (notificator, productRepository, productApplication) = SetProductAppService();
 
             var productFake = NewProduct();
             var productViewModel = _mapper.Map<ProductViewModel>(productFake);
@@ -356,13 +408,7 @@ namespace DemoApi.Application.Test
         public async Task Update_ShouldReturnFalse_WhenProductDoesNotExist()
         {
             // Arrange
-            var notificator = new Mock<INotificatorHandler>();
-            var productRepository = new Mock<IProductRepository>();
-            var productApplication = new ProductAppService(
-                _mapper,
-                notificator.Object,
-                productRepository.Object
-            );
+            var (notificator, productRepository, productApplication) = SetProductAppService();
 
             var productViewModel = _mapper.Map<ProductViewModel>(NewProduct());
 
@@ -393,16 +439,108 @@ namespace DemoApi.Application.Test
         }
 
         [Fact]
+        public async Task Update_ShouldReturnFalse_WhenProductIsNull()
+        {
+            // Arrange
+            var (notificator, productRepository, productApplication) = SetProductAppService();
+
+            ProductViewModel? nullProduct = null;
+
+            // Act
+            var result = await productApplication.Update(nullProduct!);
+
+            // Assert
+            Assert.False(result);
+
+            productRepository.Verify(
+                x => x.GetById(It.IsAny<uint>()),
+                Times.Never
+            );
+
+            productRepository.Verify(
+                x => x.Update(It.IsAny<Product>()),
+                Times.Never
+            );
+
+            notificator.Verify(
+                x => x.AddError("Product could not be updated"),
+                Times.Once
+            );
+        }
+
+        [Fact]
+        public async Task Update_ShouldReturnFalse_WhenProductNameIsEmpty()
+        {
+            // Arrange
+            var (notificator, productRepository, productApplication) = SetProductAppService();
+
+            var productViewModelWithoutName = new ProductViewModel
+            {
+                Name = string.Empty,
+                Weight = 2.5
+            };
+
+            // Act
+            var result = await productApplication.Update(productViewModelWithoutName);
+
+            // Assert
+            Assert.False(result);
+
+            productRepository.Verify(
+                x => x.GetByName(It.IsAny<string>()),
+                Times.Never
+            );
+
+            productRepository.Verify(
+                x => x.Create(It.IsAny<Product>()),
+                Times.Never
+            );
+
+            notificator.Verify(
+                x => x.AddError("Product name is required"),
+                Times.Once
+            );
+        }
+
+        [Fact]
+        public async Task Update_ShouldReturnFalse_WhenProductNameIsNull()
+        {
+            // Arrange
+            var (notificator, productRepository, productApplication) = SetProductAppService();
+
+            var productViewModelWithNullName = new ProductViewModel
+            {
+                Name = null!,
+                Weight = 2.5
+            };
+
+            // Act
+            var result = await productApplication.Update(productViewModelWithNullName);
+
+            // Assert
+            Assert.False(result);
+
+            productRepository.Verify(
+                x => x.GetById(It.IsAny<uint>()),
+                Times.Never
+            );
+
+            productRepository.Verify(
+                x => x.Update(It.IsAny<Product>()),
+                Times.Never
+            );
+
+            notificator.Verify(
+                x => x.AddError("Product name is required"),
+                Times.Once
+            );
+        }
+
+        [Fact]
         public async Task Update_ShouldReturnFalse_WhenRepositoryUpdateFails()
         {
             // Arrange
-            var notificator = new Mock<INotificatorHandler>();
-            var productRepository = new Mock<IProductRepository>();
-            var productApplication = new ProductAppService(
-                _mapper,
-                notificator.Object,
-                productRepository.Object
-            );
+            var (notificator, productRepository, productApplication) = SetProductAppService();
 
             var productFake = NewProduct();
             var productViewModel = _mapper.Map<ProductViewModel>(productFake);
@@ -441,13 +579,7 @@ namespace DemoApi.Application.Test
         public async Task DeleteById_ShouldReturnTrue_WhenRepositoryDeletesSuccessfully()
         {
             // Arrange
-            var notificator = new Mock<INotificatorHandler>();
-            var productRepository = new Mock<IProductRepository>();
-            var productApplication = new ProductAppService(
-                _mapper,
-                notificator.Object,
-                productRepository.Object
-            );
+            var (notificator, productRepository, productApplication) = SetProductAppService();
 
             uint productId = 1;
             var productFake = NewProduct();
@@ -486,15 +618,9 @@ namespace DemoApi.Application.Test
         public async Task DeleteById_ShouldReturnFalse_WhenProductDoesNotExist()
         {
             // Arrange
-            var notificator = new Mock<INotificatorHandler>();
-            var productRepository = new Mock<IProductRepository>();
-            var productApplication = new ProductAppService(
-                _mapper,
-                notificator.Object,
-                productRepository.Object
-            );
+            var (notificator, productRepository, productApplication) = SetProductAppService();
 
-            uint productId = 999;
+            uint productId = 999999;
 
             productRepository
                 .Setup(x => x.GetById(productId))
@@ -526,13 +652,7 @@ namespace DemoApi.Application.Test
         public async Task DeleteById_ShouldReturnFalse_WhenRepositoryDeleteFails()
         {
             // Arrange
-            var notificator = new Mock<INotificatorHandler>();
-            var productRepository = new Mock<IProductRepository>();
-            var productApplication = new ProductAppService(
-                _mapper,
-                notificator.Object,
-                productRepository.Object
-            );
+            var (notificator, productRepository, productApplication) = SetProductAppService();
 
             uint productId = 1;
             var productFake = NewProduct();
@@ -570,6 +690,19 @@ namespace DemoApi.Application.Test
         #endregion
 
         #region Private Methods
+
+        private (Mock<INotificatorHandler>, Mock<IProductRepository>, ProductAppService) SetProductAppService()
+        {
+            var notificator = new Mock<INotificatorHandler>();
+            var productRepository = new Mock<IProductRepository>();
+            var productApplication = new ProductAppService(
+                _mapper,
+                notificator.Object,
+                productRepository.Object
+            );
+
+            return (notificator, productRepository, productApplication);
+        }
 
         private static Product NewProduct()
         {

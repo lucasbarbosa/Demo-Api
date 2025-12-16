@@ -44,7 +44,7 @@ namespace DemoApi.Api.Controllers
                 });
             }
 
-            if (!ValidOperation())
+            if (ValidOperation() is false)
             {
                 return BadRequest(new ResponseViewModel
                 {
@@ -62,7 +62,7 @@ namespace DemoApi.Api.Controllers
 
         protected ActionResult CustomResponse(HttpStatusCode statusCode, object? result)
         {
-            if (!ValidOperation())
+            if (ValidOperation() is false)
             {
                 if (statusCode == HttpStatusCode.NoContent)
                     statusCode = HttpStatusCode.BadRequest;
@@ -85,7 +85,7 @@ namespace DemoApi.Api.Controllers
 
         protected ActionResult CustomResponse(ModelStateDictionary modelState)
         {
-            if (!modelState.IsValid)
+            if (ModelState.IsValid is false)
             {
                 ErrorModelState(modelState);
                 return CustomResponse(HttpStatusCode.PreconditionFailed);
@@ -96,7 +96,7 @@ namespace DemoApi.Api.Controllers
 
         protected ActionResult CustomResponseCreate(object? result)
         {
-            if (!ValidOperation())
+            if (ValidOperation() is false)
             {
                 return BadRequest(new ResponseViewModel
                 {
