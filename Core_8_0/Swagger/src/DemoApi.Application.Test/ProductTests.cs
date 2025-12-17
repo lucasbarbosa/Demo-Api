@@ -6,6 +6,7 @@ using DemoApi.Application.Services;
 using DemoApi.Domain.Entities;
 using DemoApi.Domain.Interfaces;
 using DemoApi.Infra.Data.Interfaces;
+using FluentAssertions;
 using Moq;
 
 namespace DemoApi.Application.Test
@@ -58,9 +59,9 @@ namespace DemoApi.Application.Test
             var result = await productApplication.GetAll();
 
             // Assert
-            Assert.NotNull(result);
-            Assert.Equal(3, result.Count);
-            Assert.All(result, item => Assert.IsType<ProductViewModel>(item));
+            result.Should().NotBeNull();
+            result.Should().HaveCount(3);
+            result.Should().AllBeOfType<ProductViewModel>();
 
             productRepository.Verify(
                 x => x.GetAll(),
@@ -84,8 +85,8 @@ namespace DemoApi.Application.Test
             var result = await productApplication.GetAll();
 
             // Assert
-            Assert.NotNull(result);
-            Assert.Empty(result);
+            result.Should().NotBeNull()
+                .And.BeEmpty();
 
             productRepository.Verify(
                 x => x.GetAll(),
@@ -100,22 +101,21 @@ namespace DemoApi.Application.Test
             var (notificator, productRepository, productApplication) = SetProductAppService();
 
             var productFake = NewProduct();
-            uint productId = 1;
 
             productRepository
-                .Setup(x => x.GetById(productId))
+                .Setup(x => x.GetById(productFake.Id))
                 .ReturnsAsync(productFake);
 
             // Act
-            var result = await productApplication.GetById(productId);
+            var result = await productApplication.GetById(productFake.Id);
 
             // Assert
-            Assert.NotNull(result);
-            Assert.Equal(productFake.Name, result.Name);
-            Assert.Equal(productFake.Weight, result.Weight);
+            result.Should().NotBeNull();
+            result.Name.Should().Be(productFake.Name);
+            result.Weight.Should().Be(productFake.Weight);
 
             productRepository.Verify(
-                x => x.GetById(productId),
+                x => x.GetById(productFake.Id),
                 Times.Once
             );
 
@@ -141,7 +141,7 @@ namespace DemoApi.Application.Test
             var result = await productApplication.GetById(productId);
 
             // Assert
-            Assert.Null(result);
+            result.Should().BeNull();
 
             productRepository.Verify(
                 x => x.GetById(productId),
@@ -175,9 +175,9 @@ namespace DemoApi.Application.Test
             var result = await productApplication.Create(productViewModel);
 
             // Assert
-            Assert.NotNull(result);
-            Assert.Equal(productFake.Name, result.Name);
-            Assert.Equal(productFake.Weight, result.Weight);
+            result.Should().NotBeNull();
+            result.Name.Should().Be(productFake.Name);
+            result.Weight.Should().Be(productFake.Weight);
 
             productRepository.Verify(
                 x => x.GetByName(productViewModel.Name),
@@ -212,7 +212,7 @@ namespace DemoApi.Application.Test
             var result = await productApplication.Create(productViewModel);
 
             // Assert
-            Assert.Null(result);
+            result.Should().BeNull();
 
             productRepository.Verify(
                 x => x.GetByName(productViewModel.Name),
@@ -249,7 +249,7 @@ namespace DemoApi.Application.Test
             var result = await productApplication.Create(productViewModel);
 
             // Assert
-            Assert.Null(result);
+            result.Should().BeNull();
 
             productRepository.Verify(
                 x => x.GetByName(productViewModel.Name),
@@ -273,17 +273,13 @@ namespace DemoApi.Application.Test
             // Arrange
             var (notificator, productRepository, productApplication) = SetProductAppService();
 
-            var productViewModelWithoutName = new ProductViewModel
-            {
-                Name = string.Empty,
-                Weight = 2.5
-            };
+            var productViewModelWithoutName = ProductWithoutName();
 
             // Act
             var result = await productApplication.Create(productViewModelWithoutName);
 
             // Assert
-            Assert.Null(result);
+            result.Should().BeNull();
 
             productRepository.Verify(
                 x => x.GetByName(It.IsAny<string>()),
@@ -307,17 +303,13 @@ namespace DemoApi.Application.Test
             // Arrange
             var (notificator, productRepository, productApplication) = SetProductAppService();
 
-            var productViewModelWithNullName = new ProductViewModel
-            {
-                Name = null!,
-                Weight = 2.5
-            };
+            var productViewModelWithNullName = ProductWithNullName();
 
             // Act
             var result = await productApplication.Create(productViewModelWithNullName);
 
             // Assert
-            Assert.Null(result);
+            result.Should().BeNull();
 
             productRepository.Verify(
                 x => x.GetByName(It.IsAny<string>()),
@@ -347,7 +339,7 @@ namespace DemoApi.Application.Test
             var result = await productApplication.Create(nullProduct!);
 
             // Assert
-            Assert.Null(result);
+            result.Should().BeNull();
 
             productRepository.Verify(
                 x => x.GetByName(It.IsAny<string>()),
@@ -386,7 +378,7 @@ namespace DemoApi.Application.Test
             var result = await productApplication.Update(productViewModel);
 
             // Assert
-            Assert.True(result);
+            result.Should().BeTrue();
 
             productRepository.Verify(
                 x => x.GetById(productViewModel.Id),
@@ -420,7 +412,7 @@ namespace DemoApi.Application.Test
             var result = await productApplication.Update(productViewModel);
 
             // Assert
-            Assert.False(result);
+            result.Should().BeFalse();
 
             productRepository.Verify(
                 x => x.GetById(productViewModel.Id),
@@ -450,7 +442,7 @@ namespace DemoApi.Application.Test
             var result = await productApplication.Update(nullProduct!);
 
             // Assert
-            Assert.False(result);
+            result.Should().BeFalse();
 
             productRepository.Verify(
                 x => x.GetById(It.IsAny<uint>()),
@@ -484,7 +476,7 @@ namespace DemoApi.Application.Test
             var result = await productApplication.Update(productViewModelWithoutName);
 
             // Assert
-            Assert.False(result);
+            result.Should().BeFalse();
 
             productRepository.Verify(
                 x => x.GetByName(It.IsAny<string>()),
@@ -508,17 +500,13 @@ namespace DemoApi.Application.Test
             // Arrange
             var (notificator, productRepository, productApplication) = SetProductAppService();
 
-            var productViewModelWithNullName = new ProductViewModel
-            {
-                Name = null!,
-                Weight = 2.5
-            };
+            var productViewModelWithNullName = ProductWithNullName();
 
             // Act
             var result = await productApplication.Update(productViewModelWithNullName);
 
             // Assert
-            Assert.False(result);
+            result.Should().BeFalse();
 
             productRepository.Verify(
                 x => x.GetById(It.IsAny<uint>()),
@@ -557,7 +545,7 @@ namespace DemoApi.Application.Test
             var result = await productApplication.Update(productViewModel);
 
             // Assert
-            Assert.False(result);
+            result.Should().BeFalse();
 
             productRepository.Verify(
                 x => x.GetById(productViewModel.Id),
@@ -581,30 +569,29 @@ namespace DemoApi.Application.Test
             // Arrange
             var (notificator, productRepository, productApplication) = SetProductAppService();
 
-            uint productId = 1;
             var productFake = NewProduct();
 
             productRepository
-                .Setup(x => x.GetById(productId))
+                .Setup(x => x.GetById(productFake.Id))
                 .ReturnsAsync(productFake);
 
             productRepository
-                .Setup(x => x.DeleteById(productId))
+                .Setup(x => x.DeleteById(productFake.Id))
                 .ReturnsAsync(true);
 
             // Act
-            var result = await productApplication.DeleteById(productId);
+            var result = await productApplication.DeleteById(productFake.Id);
 
             // Assert
-            Assert.True(result);
+            result.Should().BeTrue();
 
             productRepository.Verify(
-                x => x.GetById(productId),
+                x => x.GetById(productFake.Id),
                 Times.Once
             );
 
             productRepository.Verify(
-                x => x.DeleteById(productId),
+                x => x.DeleteById(productFake.Id),
                 Times.Once
             );
 
@@ -630,7 +617,7 @@ namespace DemoApi.Application.Test
             var result = await productApplication.DeleteById(productId);
 
             // Assert
-            Assert.False(result);
+            result.Should().BeFalse();
 
             productRepository.Verify(
                 x => x.GetById(productId),
@@ -654,30 +641,29 @@ namespace DemoApi.Application.Test
             // Arrange
             var (notificator, productRepository, productApplication) = SetProductAppService();
 
-            uint productId = 1;
             var productFake = NewProduct();
 
             productRepository
-                .Setup(x => x.GetById(productId))
+                .Setup(x => x.GetById(productFake.Id))
                 .ReturnsAsync(productFake);
 
             productRepository
-                .Setup(x => x.DeleteById(productId))
+                .Setup(x => x.DeleteById(productFake.Id))
                 .ReturnsAsync(false);
 
             // Act
-            var result = await productApplication.DeleteById(productId);
+            var result = await productApplication.DeleteById(productFake.Id);
 
             // Assert
-            Assert.False(result);
+            result.Should().BeFalse();
 
             productRepository.Verify(
-                x => x.GetById(productId),
+                x => x.GetById(productFake.Id),
                 Times.Once
             );
 
             productRepository.Verify(
-                x => x.DeleteById(productId),
+                x => x.DeleteById(productFake.Id),
                 Times.Once
             );
 
@@ -712,6 +698,24 @@ namespace DemoApi.Application.Test
                 .RuleFor(p => p.Weight, f => Math.Round(f.Random.Double(0.1, 10.0), 2));
 
             return faker.Generate();
+        }
+
+        private static ProductViewModel ProductWithNullName()
+        {
+            return new ProductViewModel
+            {
+                Name = null!,
+                Weight = 2.5
+            };
+        }
+
+        private static ProductViewModel ProductWithoutName()
+        {
+            return new ProductViewModel
+            {
+                Name = string.Empty,
+                Weight = 2.5
+            };
         }
 
         #endregion
