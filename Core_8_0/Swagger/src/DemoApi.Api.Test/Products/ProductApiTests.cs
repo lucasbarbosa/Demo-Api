@@ -1,4 +1,5 @@
-﻿using DemoApi.Api.Test.Configuration;
+﻿using Bogus;
+using DemoApi.Api.Test.Configuration;
 using DemoApi.Api.Test.Factories;
 using DemoApi.Api.Test.Helpers;
 using DemoApi.Application.Models;
@@ -8,6 +9,7 @@ using System.Net.Http.Json;
 
 namespace DemoApi.Api.Test.Products
 {
+    [TestCaseOrderer("DemoApi.Api.Test.Configuration.PriorityOrderer", "DemoApi.Api.Test")]
     public class ProductApiTests(CustomWebApplicationFactory factory) : IClassFixture<CustomWebApplicationFactory>
     {
         #region Properties
@@ -19,7 +21,7 @@ namespace DemoApi.Api.Test.Products
         #region Public Methods
 
         [Fact, TestPriority(1)]
-        public async Task Create_ShouldReturnProduct_WhenRepositoryCreatesSuccessfully()
+        public async Task Create_ShouldReturnCreated_WhenProductIsValid()
         {
             // Arrange
             var url = "/api/v1/products";
@@ -37,7 +39,7 @@ namespace DemoApi.Api.Test.Products
         }
 
         [Fact, TestPriority(2)]
-        public async Task GetProducts_WhenRequestIsValid_ShouldReturnProductList()
+        public async Task GetAll_ShouldReturnOk_WhenProductsExist()
         {
             // Arrange
             var url = "/api/v1/products";
@@ -53,17 +55,130 @@ namespace DemoApi.Api.Test.Products
             response?.Data.Should().NotBeNull();
         }
 
+        [Fact, TestPriority(3)]
+        public async Task GetById_ShouldReturnOk_WhenProductExists()
+        {
+            // Arrange
+            var url = "/api/v1/products/1";
+
+            // Act
+            var result = await HttpClientHelper.GetAndEnsureSuccessAsync(_client, url);
+            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+
+            // Assert
+            result.StatusCode.Should().Be(HttpStatusCode.OK);
+            response?.Should().NotBeNull();
+            response?.Success.Should().BeTrue();
+            response?.Data.Should().NotBeNull();
+        }
+
+        [Fact, TestPriority(4)]
+        public async Task GetById_ShouldReturnNotFound_WhenProductDoesNotExist()
+        {
+            // Arrange
+            var url = "/api/v1/products/999999";
+
+            // Act
+            var result = await _client.GetAsync(url);
+            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+
+            // Assert
+            result.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            response?.Should().NotBeNull();
+            response?.Success.Should().BeFalse();
+        }
+
+        [Fact, TestPriority(5)]
+        public async Task Update_ShouldReturnNoContent_WhenProductIsValid()
+        {
+            // Arrange
+            var url = "/api/v1/products";
+            var productFake = UpdateProduct();
+
+            // Act
+            var result = await _client.PutAsJsonAsync(url, productFake);
+
+            // Assert
+            result.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        }
+
+        [Fact, TestPriority(6)]
+        public async Task Update_ShouldReturnNotFound_WhenProductDoesNotExist()
+        {
+            // Arrange
+            var url = "/api/v1/products";
+            var productFake = NonExistentProduct();
+
+            // Act
+            var result = await _client.PutAsJsonAsync(url, productFake);
+            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+
+            // Assert
+            result.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            response?.Should().NotBeNull();
+            response?.Success.Should().BeFalse();
+        }
+
+        [Fact, TestPriority(7)]
+        public async Task Delete_ShouldReturnNoContent_WhenProductExists()
+        {
+            // Arrange
+            var url = "/api/v1/products/1";
+
+            // Act
+            var result = await _client.DeleteAsync(url);
+
+            // Assert
+            result.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        }
+
+        [Fact, TestPriority(8)]
+        public async Task Delete_ShouldReturnNotFound_WhenProductDoesNotExist()
+        {
+            // Arrange
+            var url = "/api/v1/products/999999";
+
+            // Act
+            var result = await _client.DeleteAsync(url);
+            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+
+            // Assert
+            result.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            response?.Should().NotBeNull();
+            response?.Success.Should().BeFalse();
+        }
+
         #endregion
 
         #region Private Methods
 
         private static ProductViewModel NewProduct()
         {
+            var faker = new Faker<ProductViewModel>()
+                .RuleFor(p => p.Id, f => 0u)
+                .RuleFor(p => p.Name, f => f.Commerce.ProductName())
+                .RuleFor(p => p.Weight, f => Math.Round(f.Random.Double(0.1, 10.0), 2));
+
+            return faker.Generate();
+        }
+
+        private static ProductViewModel UpdateProduct()
+        {
+            var faker = new Faker<ProductViewModel>()
+                .RuleFor(p => p.Id, f => 1u)
+                .RuleFor(p => p.Name, f => f.Commerce.ProductName())
+                .RuleFor(p => p.Weight, f => Math.Round(f.Random.Double(0.1, 10.0), 2));
+
+            return faker.Generate();
+        }
+        
+        private static ProductViewModel NonExistentProduct()
+        {
             return new ProductViewModel
             {
-                Id = 0,
-                Name = "Product Name 1",
-                Weight = 3.12
+                Id = 999999,
+                Name = "Non Existent Product",
+                Weight = 1.0
             };
         }
 
