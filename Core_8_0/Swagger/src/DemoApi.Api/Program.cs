@@ -31,3 +31,5 @@ finally
 {
     NLogConfig.Shutdown();
 }
+
+public partial class Program { }
