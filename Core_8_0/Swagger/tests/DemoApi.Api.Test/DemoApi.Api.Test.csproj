@@ -23,8 +23,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\DemoApi.Api\DemoApi.Api.csproj" />
-		<ProjectReference Include="..\DemoApi.Application\DemoApi.Application.csproj" />
+		<ProjectReference Include="..\..\src\DemoApi.Api\DemoApi.Api.csproj" />
+		<ProjectReference Include="..\..\src\DemoApi.Application\DemoApi.Application.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

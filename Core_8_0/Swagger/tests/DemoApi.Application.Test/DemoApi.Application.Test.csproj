@@ -20,8 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DemoApi.Application\DemoApi.Application.csproj" />
-    <ProjectReference Include="..\DemoApi.Domain\DemoApi.Domain.csproj" />
+    <ProjectReference Include="..\..\src\DemoApi.Application\DemoApi.Application.csproj" />
+    <ProjectReference Include="..\..\src\DemoApi.Domain\DemoApi.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

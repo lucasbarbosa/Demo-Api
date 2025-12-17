@@ -23,9 +23,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoApi.Infra.Data", "src\D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoApi.Infra.CrossCutting", "src\DemoApi.Infra.CrossCutting\DemoApi.Infra.CrossCutting.csproj", "{47EB8641-95FC-4243-831B-6AA10FC39E9C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoApi.Application.Test", "src\DemoApi.Application.Test\DemoApi.Application.Test.csproj", "{A9E46F25-6665-41A6-A02C-14B8FA51B4A5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoApi.Application.Test", "tests\DemoApi.Application.Test\DemoApi.Application.Test.csproj", "{A9E46F25-6665-41A6-A02C-14B8FA51B4A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoApi.Api.Test", "src\DemoApi.Api.Test\DemoApi.Api.Test.csproj", "{8350FA9D-B2C3-4E06-AD0C-FB926988AAC9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoApi.Api.Test", "tests\DemoApi.Api.Test\DemoApi.Api.Test.csproj", "{8350FA9D-B2C3-4E06-AD0C-FB926988AAC9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
