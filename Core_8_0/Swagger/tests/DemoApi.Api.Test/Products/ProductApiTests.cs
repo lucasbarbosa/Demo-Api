@@ -75,6 +75,42 @@ namespace DemoApi.Api.Test.Products
         }
 
         [Fact, TestPriority(4)]
+        public async Task Create_ShouldReturnPreconditionFailed_WhenProductWeightIsZero()
+        {
+            // Arrange
+            var url = "/api/v1/products";
+            var productFake = ProductWithZeroWeight();
+
+            // Act
+            var result = await _client.PostAsJsonAsync(url, productFake);
+            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+
+            // Assert
+            result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
+            response!.Should().NotBeNull();
+            response!.Success.Should().BeFalse();
+            response!.Errors.Should().Contain("Weight must be greater than 0");
+        }
+
+        [Fact, TestPriority(5)]
+        public async Task Create_ShouldReturnPreconditionFailed_WhenProductWeightIsNegative()
+        {
+            // Arrange
+            var url = "/api/v1/products";
+            var productFake = ProductWithNegativeWeight();
+
+            // Act
+            var result = await _client.PostAsJsonAsync(url, productFake);
+            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+
+            // Assert
+            result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
+            response!.Should().NotBeNull();
+            response!.Success.Should().BeFalse();
+            response!.Errors.Should().Contain("Weight must be greater than 0");
+        }
+
+        [Fact, TestPriority(6)]
         public async Task GetAll_ShouldReturnOk_WhenProductsExist()
         {
             // Arrange
@@ -91,7 +127,7 @@ namespace DemoApi.Api.Test.Products
             response?.Data.Should().NotBeNull();
         }
 
-        [Fact, TestPriority(5)]
+        [Fact, TestPriority(7)]
         public async Task GetById_ShouldReturnOk_WhenProductExists()
         {
             // Arrange
@@ -108,7 +144,7 @@ namespace DemoApi.Api.Test.Products
             response?.Data.Should().NotBeNull();
         }
 
-        [Fact, TestPriority(6)]
+        [Fact, TestPriority(8)]
         public async Task GetById_ShouldReturnNotFound_WhenProductDoesNotExist()
         {
             // Arrange
@@ -124,7 +160,7 @@ namespace DemoApi.Api.Test.Products
             response?.Success.Should().BeFalse();
         }
 
-        [Fact, TestPriority(7)]
+        [Fact, TestPriority(9)]
         public async Task Update_ShouldReturnNoContent_WhenProductIsValid()
         {
             // Arrange
@@ -138,7 +174,7 @@ namespace DemoApi.Api.Test.Products
             result.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
 
-        [Fact, TestPriority(8)]
+        [Fact, TestPriority(10)]
         public async Task Update_ShouldReturnPreconditionFailed_WhenProductNameIsEmpty()
         {
             // Arrange
@@ -156,7 +192,7 @@ namespace DemoApi.Api.Test.Products
             response!.Errors.Should().Contain("Name is required");
         }
 
-        [Fact, TestPriority(9)]
+        [Fact, TestPriority(11)]
         public async Task Update_ShouldReturnPreconditionFailed_WhenProductNameIsNull()
         {
             // Arrange
@@ -174,7 +210,43 @@ namespace DemoApi.Api.Test.Products
             response!.Errors.Should().Contain("Name is required");
         }
 
-        [Fact, TestPriority(10)]
+        [Fact, TestPriority(12)]
+        public async Task Update_ShouldReturnPreconditionFailed_WhenProductWeightIsZero()
+        {
+            // Arrange
+            var url = "/api/v1/products";
+            var productFake = ProductWithZeroWeight();
+
+            // Act
+            var result = await _client.PutAsJsonAsync(url, productFake);
+            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+
+            // Assert
+            result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
+            response!.Should().NotBeNull();
+            response!.Success.Should().BeFalse();
+            response!.Errors.Should().Contain("Weight must be greater than 0");
+        }
+
+        [Fact, TestPriority(13)]
+        public async Task Update_ShouldReturnPreconditionFailed_WhenProductWeightIsNegative()
+        {
+            // Arrange
+            var url = "/api/v1/products";
+            var productFake = ProductWithNegativeWeight();
+
+            // Act
+            var result = await _client.PutAsJsonAsync(url, productFake);
+            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+
+            // Assert
+            result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
+            response!.Should().NotBeNull();
+            response!.Success.Should().BeFalse();
+            response!.Errors.Should().Contain("Weight must be greater than 0");
+        }
+
+        [Fact, TestPriority(14)]
         public async Task Update_ShouldReturnNotFound_WhenProductDoesNotExist()
         {
             // Arrange
@@ -191,7 +263,7 @@ namespace DemoApi.Api.Test.Products
             response?.Success.Should().BeFalse();
         }
 
-        [Fact, TestPriority(11)]
+        [Fact, TestPriority(15)]
         public async Task Delete_ShouldReturnNoContent_WhenProductExists()
         {
             // Arrange
@@ -204,7 +276,7 @@ namespace DemoApi.Api.Test.Products
             result.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
 
-        [Fact, TestPriority(12)]
+        [Fact, TestPriority(16)]
         public async Task Delete_ShouldReturnNotFound_WhenProductDoesNotExist()
         {
             // Arrange
@@ -271,6 +343,26 @@ namespace DemoApi.Api.Test.Products
                 Id = 0,
                 Name = null!,
                 Weight = 2.5
+            };
+        }
+
+        private static ProductViewModel ProductWithZeroWeight()
+        {
+            return new ProductViewModel
+            {
+                Id = 0,
+                Name = "Test Product",
+                Weight = 0
+            };
+        }
+
+        private static ProductViewModel ProductWithNegativeWeight()
+        {
+            return new ProductViewModel
+            {
+                Id = 0,
+                Name = "Test Product",
+                Weight = -1.5
             };
         }
 
