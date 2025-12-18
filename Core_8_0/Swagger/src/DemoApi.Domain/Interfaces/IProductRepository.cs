@@ -1,6 +1,6 @@
 using DemoApi.Domain.Entities;
 
-namespace DemoApi.Infra.Data.Interfaces
+namespace DemoApi.Domain.Interfaces
 {
     public interface IProductRepository
     {

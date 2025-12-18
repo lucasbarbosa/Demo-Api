@@ -19,6 +19,7 @@
 		<ProjectReference Include="..\DemoApi.Application\DemoApi.Application.csproj" />
 		<ProjectReference Include="..\DemoApi.Domain\DemoApi.Domain.csproj" />
 		<ProjectReference Include="..\DemoApi.Infra.CrossCutting\DemoApi.Infra.CrossCutting.csproj" />
+		<ProjectReference Include="..\DemoApi.Infra\DemoApi.Infra.Data.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

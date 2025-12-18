@@ -1,7 +1,6 @@
-﻿using DemoApi.Domain.Entities;
-using System.Threading.Tasks;
+using DemoApi.Domain.Entities;
 
-namespace DemoApi.Infra.Data.Interfaces
+namespace DemoApi.Domain.Interfaces
 {
     public interface IRepository<TEntity> where TEntity : Entity
     {

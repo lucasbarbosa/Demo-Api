@@ -1,5 +1,5 @@
 ﻿using DemoApi.Domain.Entities;
-using DemoApi.Infra.Data.Interfaces;
+using DemoApi.Domain.Interfaces;
 
 namespace DemoApi.Infra.Data.Repositories
 {

@@ -3,7 +3,6 @@ using DemoApi.Application.Services;
 using DemoApi.Domain.Handlers;
 using DemoApi.Domain.Interfaces;
 using DemoApi.Infra.CrossCutting.Logging;
-using DemoApi.Infra.Data.Interfaces;
 using DemoApi.Infra.Data.Repositories;
 using ILogger = DemoApi.Infra.CrossCutting.Interfaces.ILogger;
 

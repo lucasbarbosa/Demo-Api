@@ -5,7 +5,6 @@ using DemoApi.Application.Models;
 using DemoApi.Application.Services;
 using DemoApi.Domain.Entities;
 using DemoApi.Domain.Interfaces;
-using DemoApi.Infra.Data.Interfaces;
 using FluentAssertions;
 using Moq;
 

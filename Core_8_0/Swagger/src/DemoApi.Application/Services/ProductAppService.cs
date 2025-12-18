@@ -3,32 +3,20 @@ using DemoApi.Application.Interfaces;
 using DemoApi.Application.Models;
 using DemoApi.Domain.Entities;
 using DemoApi.Domain.Interfaces;
-using DemoApi.Infra.Data.Interfaces;
 
 namespace DemoApi.Application.Services
 {
-    public class ProductAppService : BaseServices, IProductAppService
+    public class ProductAppService(
+        IMapper mapper, INotificatorHandler notificator, IProductRepository productRepository) : BaseServices, IProductAppService
     {
         #region Properties
 
-        private readonly IMapper _mapper;
-        private readonly INotificatorHandler _notificator;
-        private readonly IProductRepository _productRepository;
+        private readonly IMapper _mapper = mapper;
+        private readonly INotificatorHandler _notificator = notificator;
+        private readonly IProductRepository _productRepository = productRepository;
 
         #endregion
-
-        #region Constructors
-
-        public ProductAppService(
-            IMapper mapper, INotificatorHandler notificator, IProductRepository productRepository)
-        {
-            _mapper = mapper;
-            _notificator = notificator;
-            _productRepository = productRepository;
-        }
-
-        #endregion
-
+        
         #region Public Methods
 
         public async Task<IList<ProductViewModel>> GetAll()

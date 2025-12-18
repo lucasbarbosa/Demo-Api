@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DemoApi.Domain\DemoApi.Domain.csproj" />
-    <ProjectReference Include="..\DemoApi.Infra\DemoApi.Infra.Data.csproj" />
   </ItemGroup>
 
 </Project>
