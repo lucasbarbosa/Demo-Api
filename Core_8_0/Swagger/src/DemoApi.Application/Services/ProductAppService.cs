@@ -61,12 +61,6 @@ namespace DemoApi.Application.Services
                 return response;
             }
 
-            if (String.IsNullOrEmpty(product.Name))
-            {
-                _notificator.AddError("Product name is required");
-                return response;
-            }
-
             if (await _productRepository.GetByName(product.Name) is not null)
             {
                 _notificator.AddError($"Product ({product.Name}) is already registered");
@@ -88,12 +82,6 @@ namespace DemoApi.Application.Services
             if (product is null)
             {
                 _notificator.AddError("Product could not be updated");
-                return response;
-            }
-
-            if (String.IsNullOrEmpty(product.Name))
-            {
-                _notificator.AddError("Product name is required");
                 return response;
             }
 

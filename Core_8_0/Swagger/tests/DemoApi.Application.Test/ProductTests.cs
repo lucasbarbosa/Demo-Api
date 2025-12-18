@@ -268,66 +268,6 @@ namespace DemoApi.Application.Test
         }
 
         [Fact]
-        public async Task Create_ShouldReturnNull_WhenProductNameIsEmpty()
-        {
-            // Arrange
-            var (notificator, productRepository, productApplication) = SetProductAppService();
-
-            var productViewModelWithoutName = ProductWithoutName();
-
-            // Act
-            var result = await productApplication.Create(productViewModelWithoutName);
-
-            // Assert
-            result.Should().BeNull();
-
-            productRepository.Verify(
-                x => x.GetByName(It.IsAny<string>()),
-                Times.Never
-            );
-
-            productRepository.Verify(
-                x => x.Create(It.IsAny<Product>()),
-                Times.Never
-            );
-
-            notificator.Verify(
-                x => x.AddError("Product name is required"),
-                Times.Once
-            );
-        }
-
-        [Fact]
-        public async Task Create_ShouldReturnNull_WhenProductNameIsNull()
-        {
-            // Arrange
-            var (notificator, productRepository, productApplication) = SetProductAppService();
-
-            var productViewModelWithNullName = ProductWithNullName();
-
-            // Act
-            var result = await productApplication.Create(productViewModelWithNullName);
-
-            // Assert
-            result.Should().BeNull();
-
-            productRepository.Verify(
-                x => x.GetByName(It.IsAny<string>()),
-                Times.Never
-            );
-
-            productRepository.Verify(
-                x => x.Create(It.IsAny<Product>()),
-                Times.Never
-            );
-
-            notificator.Verify(
-                x => x.AddError("Product name is required"),
-                Times.Once
-            );
-        }
-
-        [Fact]
         public async Task Create_ShouldReturnNull_WhenProductIsNull()
         {
             // Arrange
@@ -456,70 +396,6 @@ namespace DemoApi.Application.Test
 
             notificator.Verify(
                 x => x.AddError("Product could not be updated"),
-                Times.Once
-            );
-        }
-
-        [Fact]
-        public async Task Update_ShouldReturnFalse_WhenProductNameIsEmpty()
-        {
-            // Arrange
-            var (notificator, productRepository, productApplication) = SetProductAppService();
-
-            var productViewModelWithoutName = new ProductViewModel
-            {
-                Name = string.Empty,
-                Weight = 2.5
-            };
-
-            // Act
-            var result = await productApplication.Update(productViewModelWithoutName);
-
-            // Assert
-            result.Should().BeFalse();
-
-            productRepository.Verify(
-                x => x.GetByName(It.IsAny<string>()),
-                Times.Never
-            );
-
-            productRepository.Verify(
-                x => x.Create(It.IsAny<Product>()),
-                Times.Never
-            );
-
-            notificator.Verify(
-                x => x.AddError("Product name is required"),
-                Times.Once
-            );
-        }
-
-        [Fact]
-        public async Task Update_ShouldReturnFalse_WhenProductNameIsNull()
-        {
-            // Arrange
-            var (notificator, productRepository, productApplication) = SetProductAppService();
-
-            var productViewModelWithNullName = ProductWithNullName();
-
-            // Act
-            var result = await productApplication.Update(productViewModelWithNullName);
-
-            // Assert
-            result.Should().BeFalse();
-
-            productRepository.Verify(
-                x => x.GetById(It.IsAny<uint>()),
-                Times.Never
-            );
-
-            productRepository.Verify(
-                x => x.Update(It.IsAny<Product>()),
-                Times.Never
-            );
-
-            notificator.Verify(
-                x => x.AddError("Product name is required"),
                 Times.Once
             );
         }
@@ -698,24 +574,6 @@ namespace DemoApi.Application.Test
                 .RuleFor(p => p.Weight, f => Math.Round(f.Random.Double(0.1, 10.0), 2));
 
             return faker.Generate();
-        }
-
-        private static ProductViewModel ProductWithNullName()
-        {
-            return new ProductViewModel
-            {
-                Name = null!,
-                Weight = 2.5
-            };
-        }
-
-        private static ProductViewModel ProductWithoutName()
-        {
-            return new ProductViewModel
-            {
-                Name = string.Empty,
-                Weight = 2.5
-            };
         }
 
         #endregion

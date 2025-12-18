@@ -88,7 +88,11 @@ namespace DemoApi.Api.Controllers
             if (ModelState.IsValid is false)
             {
                 ErrorModelState(modelState);
-                return CustomResponse(HttpStatusCode.PreconditionFailed);
+                return CustomResponse(HttpStatusCode.PreconditionFailed, new ResponseViewModel
+                {
+                    Success = false,
+                    Errors = GetErrors()
+                });
             }
             else
                 return CustomResponse();

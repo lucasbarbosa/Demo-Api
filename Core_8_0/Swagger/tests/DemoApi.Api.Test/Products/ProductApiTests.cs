@@ -33,12 +33,48 @@ namespace DemoApi.Api.Test.Products
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.Created);
-            response.Should().NotBeNull();
-            response.Success.Should().BeTrue();
-            response.Data.Should().NotBeNull();
+            response!.Should().NotBeNull();
+            response!.Success.Should().BeTrue();
+            response!.Data.Should().NotBeNull();
         }
 
         [Fact, TestPriority(2)]
+        public async Task Create_ShouldReturnPreconditionFailed_WhenProductNameIsEmpty()
+        {
+            // Arrange
+            var url = "/api/v1/products";
+            var productFake = ProductWithEmptyName();
+
+            // Act
+            var result = await _client.PostAsJsonAsync(url, productFake);
+            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+
+            // Assert
+            result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
+            response!.Should().NotBeNull();
+            response!.Success.Should().BeFalse();
+            response!.Errors.Should().Contain("Name is required");
+        }
+
+        [Fact, TestPriority(3)]
+        public async Task Create_ShouldReturnPreconditionFailed_WhenProductNameIsNull()
+        {
+            // Arrange
+            var url = "/api/v1/products";
+            var productFake = ProductWithNullName();
+
+            // Act
+            var result = await _client.PostAsJsonAsync(url, productFake);
+            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+
+            // Assert
+            result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
+            response!.Should().NotBeNull();
+            response!.Success.Should().BeFalse();
+            response!.Errors.Should().Contain("Name is required");
+        }
+
+        [Fact, TestPriority(4)]
         public async Task GetAll_ShouldReturnOk_WhenProductsExist()
         {
             // Arrange
@@ -55,7 +91,7 @@ namespace DemoApi.Api.Test.Products
             response?.Data.Should().NotBeNull();
         }
 
-        [Fact, TestPriority(3)]
+        [Fact, TestPriority(5)]
         public async Task GetById_ShouldReturnOk_WhenProductExists()
         {
             // Arrange
@@ -72,7 +108,7 @@ namespace DemoApi.Api.Test.Products
             response?.Data.Should().NotBeNull();
         }
 
-        [Fact, TestPriority(4)]
+        [Fact, TestPriority(6)]
         public async Task GetById_ShouldReturnNotFound_WhenProductDoesNotExist()
         {
             // Arrange
@@ -88,7 +124,7 @@ namespace DemoApi.Api.Test.Products
             response?.Success.Should().BeFalse();
         }
 
-        [Fact, TestPriority(5)]
+        [Fact, TestPriority(7)]
         public async Task Update_ShouldReturnNoContent_WhenProductIsValid()
         {
             // Arrange
@@ -102,7 +138,43 @@ namespace DemoApi.Api.Test.Products
             result.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
 
-        [Fact, TestPriority(6)]
+        [Fact, TestPriority(8)]
+        public async Task Update_ShouldReturnPreconditionFailed_WhenProductNameIsEmpty()
+        {
+            // Arrange
+            var url = "/api/v1/products";
+            var productFake = ProductWithEmptyName();
+            
+            // Act
+            var result = await _client.PutAsJsonAsync(url, productFake);
+            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+
+            // Assert
+            result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
+            response!.Should().NotBeNull();
+            response!.Success.Should().BeFalse();
+            response!.Errors.Should().Contain("Name is required");
+        }
+
+        [Fact, TestPriority(9)]
+        public async Task Update_ShouldReturnPreconditionFailed_WhenProductNameIsNull()
+        {
+            // Arrange
+            var url = "/api/v1/products";
+            var productFake = ProductWithNullName();
+
+            // Act
+            var result = await _client.PutAsJsonAsync(url, productFake);
+            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+
+            // Assert
+            result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
+            response!.Should().NotBeNull();
+            response!.Success.Should().BeFalse();
+            response!.Errors.Should().Contain("Name is required");
+        }
+
+        [Fact, TestPriority(10)]
         public async Task Update_ShouldReturnNotFound_WhenProductDoesNotExist()
         {
             // Arrange
@@ -119,7 +191,7 @@ namespace DemoApi.Api.Test.Products
             response?.Success.Should().BeFalse();
         }
 
-        [Fact, TestPriority(7)]
+        [Fact, TestPriority(11)]
         public async Task Delete_ShouldReturnNoContent_WhenProductExists()
         {
             // Arrange
@@ -132,7 +204,7 @@ namespace DemoApi.Api.Test.Products
             result.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
 
-        [Fact, TestPriority(8)]
+        [Fact, TestPriority(12)]
         public async Task Delete_ShouldReturnNotFound_WhenProductDoesNotExist()
         {
             // Arrange
@@ -179,6 +251,26 @@ namespace DemoApi.Api.Test.Products
                 Id = 999999,
                 Name = "Non Existent Product",
                 Weight = 1.0
+            };
+        }
+
+        private static ProductViewModel ProductWithEmptyName()
+        {
+            return new ProductViewModel
+            {
+                Id = 0,
+                Name = string.Empty,
+                Weight = 2.5
+            };
+        }
+
+        private static ProductViewModel ProductWithNullName()
+        {
+            return new ProductViewModel
+            {
+                Id = 0,
+                Name = null!,
+                Weight = 2.5
             };
         }
 
