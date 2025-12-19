@@ -15,10 +15,11 @@ A demonstration RESTful API built with **.NET 8** showcasing enterprise-grade so
 - [Project Structure](#project-structure)
 - [Design Patterns & Principles](#design-patterns--principles)
 - [Layer Responsibilities](#layer-responsibilities)
+- [API Design](#api-design)
 - [Testing Strategy](#testing-strategy)
 - [Technologies & Libraries](#technologies--libraries)
 - [Getting Started](#getting-started)
-- [API Documentation](#api-documentation)
+- [API Endpoints](#api-endpoints)
 
 ---
 
@@ -68,45 +69,6 @@ graph TD
 
 ---
 
-## 🎨 Design Patterns & Principles
-
-### SOLID Principles
-The project strictly adheres to SOLID principles, ensuring code is easy to maintain and extend.
-- **SRP**: Classes have a single responsibility (e.g., `ProductAppService` orchestrates, `ProductRepository` persists).
-- **OCP**: The system is open for extension (e.g., adding new repositories) but closed for modification.
-- **DIP**: High-level modules (Application) do not depend on low-level modules (Infrastructure); both depend on abstractions (Domain Interfaces).
-
-### Key Patterns Implemented
-
-#### 1. **Repository Pattern**
-Abstacts the data access logic. The domain defines `IProductRepository`, and the infrastructure implements it.
-*Current implementation uses an In-Memory storage for demonstration purposes, but can be easily swapped for Entity Framework Core or Dapper without changing a single line of business logic.*
-
-#### 2. **Notification Pattern (Domain Notifications)**
-Instead of throwing exceptions for business validation errors (which is costly and breaks control flow), the project uses a `NotificatorHandler`.
-- Errors are accumulated during the request.
-- The controller checks for notifications before returning a response.
-- Result: Consistent HTTP 400/422 responses with a standard error format.
-
-#### 3. **Service Layer**
-The `ProductAppService` acts as a facade for the domain. It orchestrates the flow:
-1. Receives DTOs.
-2. Maps to Domain Entities.
-3. Validates business rules.
-4. Calls Repositories.
-5. Returns DTOs.
-
-#### 4. **DTOs (Data Transfer Objects)**
-`ProductViewModel` is used to decouple the internal Domain Entities from the external API contract. This allows the domain model to evolve independently of the API.
-
-#### 5. **Custom Response Strategy**
-The `MainApiController` implements a standardized response strategy to ensure consistency across all endpoints.
-- **`CustomResponse(result)`**: Automatically wraps the result in the `ResponseViewModel` envelope.
-- **Validation Handling**: Checks for domain notifications (`_notificator.HasErrors()`) before returning success. If errors exist, it returns `400 Bad Request` or `412 Precondition Failed` with the error list.
-- **ModelState Integration**: The `CustomResponse(ModelState)` overload automatically extracts validation errors from ASP.NET Core's binding and adds them to the notification handler.
-
----
-
 ## 📁 Project Structure
 
 ```text
@@ -142,34 +104,301 @@ tests/
 
 ---
 
+## 🎨 Design Patterns & Principles
+
+### SOLID Principles
+
+| Principle | Implementation |
+|-----------|----------------|
+| **Single Responsibility (SRP)** | Each class has one reason to change. Controllers handle HTTP, Services handle business logic, Repositories handle data access. |
+| **Open/Closed (OCP)** | Classes are open for extension but closed for modification through abstractions and interfaces. |
+| **Liskov Substitution (LSP)** | Derived classes can substitute base classes. `ProductRepository` implements `IProductRepository`. |
+| **Interface Segregation (ISP)** | Clients depend only on interfaces they use. `IProductRepository` is specific to Product operations. |
+| **Dependency Inversion (DIP)** | High-level modules depend on abstractions. Controllers depend on `IProductAppService`, not concrete implementations. |
+
+### Key Patterns Implemented
+
+#### 1. **Repository Pattern**
+Abstracts the data access logic. The domain defines `IProductRepository`, and the infrastructure implements it.
+*Current implementation uses an In-Memory storage for demonstration purposes, but can be easily swapped for Entity Framework Core or Dapper without changing a single line of business logic.*
+
+```csharp
+public interface IProductRepository
+{
+    Task<IList<Product>> GetAll();
+    Task<Product?> GetById(uint id);
+    Task<Product> Create(Product product);
+    // ...
+}
+```
+
+#### 2. **Notification Pattern (Domain Notifications)**
+Instead of throwing exceptions for business validation errors (which is costly and breaks control flow), the project uses a `NotificatorHandler`.
+- Errors are accumulated during the request.
+- The controller checks for notifications before returning a response.
+- Result: Consistent HTTP 400/422 responses with a standard error format.
+
+```csharp
+public class NotificatorHandler : INotificatorHandler
+{
+    private readonly List<Notification> _errors;
+    // ...
+    public void AddError(string error)
+    {
+        _errors.Add(new Notification(error));
+    }
+}
+```
+
+#### 3. **Service Layer**
+The `ProductAppService` acts as a facade for the domain. It orchestrates the flow:
+1. Receives DTOs.
+2. Maps to Domain Entities.
+3. Validates business rules.
+4. Calls Repositories.
+5. Returns DTOs.
+
+```csharp
+public class ProductAppService : BaseServices, IProductAppService
+{
+    // ...
+    public async Task<ProductViewModel?> Create(ProductViewModel product)
+    {
+        // Validation and Orchestration Logic
+    }
+}
+```
+
+#### 4. **DTOs (Data Transfer Objects)**
+`ProductViewModel` is used to decouple the internal Domain Entities from the external API contract. This allows the domain model to evolve independently of the API.
+
+```csharp
+public class ProductViewModel : BaseViewModel
+{
+    [Required(ErrorMessage = "Name is required")]
+    public required string Name { get; set; }
+    // ...
+}
+```
+
+#### 5. **Dependency Injection**
+All dependencies are registered in the IoC container and injected via constructors.
+
+```csharp
+public static IServiceCollection AddDependencyInjectionConfig(this IServiceCollection services)
+{
+    services.AddScoped<IProductAppService, ProductAppService>();
+    services.AddScoped<IProductRepository, ProductRepository>();
+    // ...
+}
+```
+
+#### 6. **Factory Pattern (Testing)**
+`CustomWebApplicationFactory` creates test server instances for integration testing.
+
+```csharp
+public class CustomWebApplicationFactory : WebApplicationFactory<Program>
+{
+}
+```
+
+---
+
+## 📚 Layer Responsibilities
+
+### Presentation Layer (`DemoApi.Api`)
+
+**Responsibility:** Handle HTTP requests/responses and delegate to application services.
+
+| Component | Purpose |
+|-----------|---------|
+| `MainApiController` | Base controller with standardized response handling |
+| `ProductController` | RESTful endpoints for Product operations |
+| `ExceptionMiddleware` | Global exception handling and logging |
+| `ApiConfig` | API versioning and behavior configuration |
+| `SwaggerConfig` | OpenAPI documentation setup |
+| `DependencyInjectionConfig` | IoC container registration |
+
+**Key Features:**
+- **Global Exception Handling**: The `ExceptionMiddleware` intercepts unhandled exceptions, logs them using `NLog`, and returns a standardized `500 Internal Server Error` response in JSON format. This prevents sensitive stack traces from leaking to the client.
+- **Configuration Extension Methods**: `Program.cs` is kept clean and readable by moving configuration logic into extension methods (e.g., `AddApiConfig`, `AddDependencyInjectionConfig`). This follows the "Convention over Configuration" approach and separates startup concerns.
+
+### Application Layer (`DemoApi.Application`)
+
+**Responsibility:** Orchestrate use cases, map between domain and presentation models.
+
+| Component | Purpose |
+|-----------|---------|
+| `ProductAppService` | Product CRUD operations orchestration |
+| `ProductViewModel` | API contract for Product data |
+| `ResponseViewModel` | Standardized API response wrapper |
+| `AutomapperConfig` | Entity-ViewModel mappings |
+
+### Domain Layer (`DemoApi.Domain`)
+
+**Responsibility:** Define core business entities, rules, and contracts.
+
+| Component | Purpose |
+|-----------|---------|
+| `Entity` | Base class for domain entities |
+| `Product` | Product aggregate root |
+| `Notification` | Domain notification model |
+| `NotificatorHandler` | Notification accumulator |
+| `INotificatorHandler` | Notification contract |
+
+### Infrastructure Layer (`DemoApi.Infra.*`)
+
+**Responsibility:** Implement technical capabilities (data access, logging, external services).
+
+| Component | Purpose |
+|-----------|---------|
+| `IProductRepository` | Product-specific repository contract (Implementation) |
+| `ProductRepository` | In-memory product storage implementation |
+| `NLogLogger` | NLog implementation |
+
+---
+
+## 🌐 API Design
+
+### Response Envelope Pattern
+
+All API responses follow a consistent structure (Envelope Pattern), making it easier for clients to handle success and error states uniformly.
+
+```json
+{
+    "success": true,
+    "data": { ... },
+    "errors": []
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `success` | `boolean` | Indicates if the operation was successful. |
+| `data` | `object` | The payload of the response (null if error). |
+| `errors` | `string[]` | List of error messages (business validations or exceptions). |
+
+### HTTP Status Codes
+
+| Status Code | Usage |
+|-------------|-------|
+| `200 OK` | Successful GET requests. |
+| `201 Created` | Successful POST (create) requests. |
+| `204 No Content` | Successful PUT/DELETE requests. |
+| `400 Bad Request` | Business rule violations or invalid syntax. |
+| `404 Not Found` | Resource not found. |
+| `412 Precondition Failed` | Model validation errors (e.g., missing required fields). |
+| `500 Internal Server Error` | Unexpected server errors. |
+
+### API Versioning Strategy
+
+The API implements **URL Path Versioning** to ensure backward compatibility and smooth evolution of endpoints.
+
+- **Format**: `/api/v{version}/{resource}`
+- **Current Version**: `v1`
+- **Default Behavior**: If no version is specified, the API assumes the default version (v1).
+
+---
+
 ## 🧪 Testing Strategy
 
 The project employs a comprehensive testing strategy ensuring reliability at all levels.
 
+### Test Pyramid
+
+```mermaid
+graph TD
+    subgraph Pyramid
+        E2E[E2E Tests - Future]
+        Integration[Integration Tests - DemoApi.Api.Test]
+        Unit[Unit Tests - DemoApi.Application.Test]
+    end
+    E2E --> Integration
+    Integration --> Unit
+```
+
 ### 1. Unit Tests (`DemoApi.Application.Test`)
 Focus on the **Application Layer** and **Business Rules**.
 - **Tools**: xUnit, Moq, FluentAssertions, Bogus.
-- **Strategy**: All external dependencies (Repositories, Notificator) are mocked. We test the logic in isolation (e.g., "Should return error if product name is empty").
+- **Strategy**: All external dependencies (Repositories, Notificator) are mocked. We test the logic in isolation.
+
+**Example (AAA Pattern):**
+```csharp
+[Fact]
+public async Task Create_ShouldReturnProduct_WhenRepositoryCreatesSuccessfully()
+{
+    // Arrange
+    var (notificator, productRepository, productApplication) = SetProductAppService();
+    var productFake = NewProduct();
+    // ... Setup Mocks ...
+
+    // Act
+    var result = await productApplication.Create(productViewModel);
+
+    // Assert
+    result.Should().NotBeNull();
+    result.Name.Should().Be(productFake.Name);
+}
+```
 
 ### 2. Integration Tests (`DemoApi.Api.Test`)
 Focus on the **API Endpoints** and the full request lifecycle.
 - **Tools**: Microsoft.AspNetCore.Mvc.Testing (`WebApplicationFactory`).
 - **Strategy**: Spins up an in-memory test server. Real HTTP requests are sent to the API to verify status codes, response bodies, and correct wiring of the dependency injection container.
 
+**Example:**
+```csharp
+[Fact]
+public async Task Create_ShouldReturnCreated_WhenProductIsValid()
+{
+    // Arrange
+    var url = "/api/v1/products";
+    var productFake = NewProduct();
+
+    // Act
+    var result = await HttpClientHelper.PostAndEnsureSuccessAsync(_client, url, productFake);
+
+    // Assert
+    result.StatusCode.Should().Be(HttpStatusCode.Created);
+}
+```
+
 ---
 
 ## 🛠️ Technologies & Libraries
 
-*   **Core**: [.NET 8](https://dotnet.microsoft.com/), C# 12
-*   **Web API**: ASP.NET Core
-*   **Mapping**: [AutoMapper](https://automapper.org/)
-*   **Logging**: [NLog](https://nlog-project.org/)
-*   **Documentation**: [Swagger / OpenAPI](https://swagger.io/)
-*   **Testing**:
-    *   [xUnit](https://xunit.net/)
-    *   [Moq](https://github.com/moq/moq4)
-    *   [FluentAssertions](https://fluentassertions.com/)
-    *   [Bogus](https://github.com/bchavez/Bogus) (Fake data generation)
+### Core Framework
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| .NET | 8.0 | Runtime and SDK |
+| C# | 12.0 | Programming language |
+| ASP.NET Core | 8.0 | Web framework |
+
+### API & Documentation
+| Library | Version | Purpose |
+|---------|---------|---------|
+| Swashbuckle.AspNetCore | 6.6.2 | Swagger/OpenAPI generation |
+| Microsoft.AspNetCore.Mvc.Versioning | 5.0.0 | API versioning |
+
+### Data & Mapping
+| Library | Version | Purpose |
+|---------|---------|---------|
+| AutoMapper | 12.0.1 | Object-to-object mapping |
+| Newtonsoft.Json | 13.0.4 | JSON serialization |
+
+### Logging
+| Library | Version | Purpose |
+|---------|---------|---------|
+| NLog.Web.AspNetCore | 6.1.0 | Structured logging |
+
+### Testing
+| Library | Version | Purpose |
+|---------|---------|---------|
+| xUnit | 2.5.3 | Test framework |
+| Moq | (Latest) | Mocking framework |
+| FluentAssertions | 8.8.0 | Assertion library |
+| Bogus | 34.0.2 | Fake data generation |
+| Microsoft.AspNetCore.Mvc.Testing | 8.0.22 | Integration test host |
 
 ---
 
@@ -204,54 +433,17 @@ Focus on the **API Endpoints** and the full request lifecycle.
 
 ---
 
-## 📖 API Documentation
+## 📡 API Endpoints
 
-The API is fully documented using Swagger/OpenAPI.
+### Products API (`/api/v1/products`)
 
-1. Run the application.
-2. Navigate to: **`https://localhost:7167/swagger`** (port may vary).
-
-### API Versioning Strategy
-
-The API implements **URL Path Versioning** to ensure backward compatibility and smooth evolution of endpoints.
-
-- **Format**: `/api/v{version}/{resource}`
-- **Current Version**: `v1`
-- **Default Behavior**: If no version is specified, the API assumes the default version (v1).
-
-**Configuration Details:**
-- `ReportApiVersions = true`: The API returns the supported versions in the response headers (`api-supported-versions`).
-- `SubstituteApiVersionInUrl = true`: Swagger UI automatically handles the version parameter in the URL.
-
-### Response Envelope Pattern
-
-All API responses follow a consistent structure (Envelope Pattern), making it easier for clients to handle success and error states uniformly.
-
-```json
-{
-    "success": true,
-    "data": { ... },
-    "errors": []
-}
-```
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `success` | `boolean` | Indicates if the operation was successful. |
-| `data` | `object` | The payload of the response (null if error). |
-| `errors` | `string[]` | List of error messages (business validations or exceptions). |
-
-### HTTP Status Codes
-
-| Status Code | Usage |
-|-------------|-------|
-| `200 OK` | Successful GET requests. |
-| `201 Created` | Successful POST (create) requests. |
-| `204 No Content` | Successful PUT/DELETE requests. |
-| `400 Bad Request` | Business rule violations or invalid syntax. |
-| `404 Not Found` | Resource not found. |
-| `412 Precondition Failed` | Model validation errors (e.g., missing required fields). |
-| `500 Internal Server Error` | Unexpected server errors. |
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/v1/products` | Get all products |
+| `GET` | `/api/v1/products/{id}` | Get product by ID |
+| `POST` | `/api/v1/products` | Create new product |
+| `PUT` | `/api/v1/products` | Update product |
+| `DELETE` | `/api/v1/products/{id}` | Delete product |
 
 ### Example Request (Create Product)
 
@@ -276,29 +468,3 @@ All API responses follow a consistent structure (Envelope Pattern), making it ea
   },
   "errors": []
 }
-```
-
----
-
-## Layer Responsibilities
-
-### Presentation Layer (`DemoApi.Api`)
-
-**Responsibility:** Handle HTTP requests/responses and delegate to application services.
-
-| Component | Purpose |
-|-----------|---------|
-| `MainApiController` | Base controller with standardized response handling |
-| `ProductController` | RESTful endpoints for Product operations |
-| `ExceptionMiddleware` | Global exception handling and logging |
-| `ApiConfig` | API versioning and behavior configuration |
-| `SwaggerConfig` | OpenAPI documentation setup |
-| `DependencyInjectionConfig` | IoC container registration |
-
-**Key Features:**
-- **Global Exception Handling**: The `ExceptionMiddleware` intercepts unhandled exceptions, logs them using `NLog`, and returns a standardized `500 Internal Server Error` response in JSON format. This prevents sensitive stack traces from leaking to the client.
-- **Configuration Extension Methods**: `Program.cs` is kept clean and readable by moving configuration logic into extension methods (e.g., `AddApiConfig`, `AddDependencyInjectionConfig`). This follows the "Convention over Configuration" approach and separates startup concerns.
-- **API Versioning**: (`/api/v{version}/products`)
-- **Standardized response envelope**: (`ResponseViewModel`)
-- **Model validation**: with Data Annotations
-- **Swagger/OpenAPI documentation**
