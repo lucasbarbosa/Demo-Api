@@ -1,4 +1,5 @@
 ﻿using DemoApi.Api.Extensions;
+using DemoApi.Api.Filters;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DemoApi.Api.Configuration
@@ -9,7 +10,10 @@ namespace DemoApi.Api.Configuration
 
         public static IServiceCollection AddApiConfig(this IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers(options =>
+            {
+                options.Filters.Add<ModelValidationFilter>();
+            });
 
             services.AddApiVersioning(options =>
             {

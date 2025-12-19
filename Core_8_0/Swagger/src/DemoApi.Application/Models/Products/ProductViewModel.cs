@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace DemoApi.Application.Models
+namespace DemoApi.Application.Models.Products
 {
     public class ProductViewModel : BaseViewModel
     {

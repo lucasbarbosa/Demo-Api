@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using DemoApi.Application.Interfaces;
-using DemoApi.Application.Models;
+using DemoApi.Application.Models.Products;
 using DemoApi.Domain.Entities;
 using DemoApi.Domain.Interfaces;
 
