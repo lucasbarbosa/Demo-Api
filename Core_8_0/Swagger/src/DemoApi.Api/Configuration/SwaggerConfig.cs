@@ -14,7 +14,17 @@ namespace DemoApi.Api.Configuration
                 {
                     Title = "Demo API",
                     Version = "v1",
-                    Description = "Sample of API with versioning."
+                    Description = "RESTful API built with .NET 8 demonstrating Clean Architecture, SOLID principles, and enterprise-grade design patterns. Features comprehensive testing, type-safe responses, and production-ready error handling.",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Lucas Barbosa",
+                        Url = new Uri("https://github.com/lucasbarbosa/Demo-Api")
+                    },
+                    License = new OpenApiLicense
+                    {
+                        Name = "MIT License",
+                        Url = new Uri("https://opensource.org/licenses/MIT")
+                    }
                 });
             });
 
@@ -28,6 +38,9 @@ namespace DemoApi.Api.Configuration
             app.UseSwaggerUI(options =>
             {
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+                options.DocumentTitle = "Demo API - Documentation";
+                options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.List);
+                options.DefaultModelsExpandDepth(-1);
             });
 
             return app;
