@@ -1,4 +1,4 @@
-using DemoApi.Application.Models;
+using DemoApi.Application.Models.Products;
 using DemoApi.Domain.Entities;
 using FluentAssertions;
 using Moq;

@@ -7,7 +7,7 @@ namespace DemoApi.Infra.Data.Repositories
     {
         #region Properties
 
-        private static readonly List<Product> _memoryProducts = new List<Product>();
+        private static readonly List<Product> _memoryProducts = [];
 
         #endregion
 
@@ -56,16 +56,15 @@ namespace DemoApi.Infra.Data.Repositories
 
         #endregion
 
-        #region Private Methods
+        #region Protected Methods
 
-        private uint NewId()
+        protected static uint NewId()
         {
-            var id = _memoryProducts.Max(u => u?.Id) + 1;
+            if (_memoryProducts.Count == 0)
+                return 1;
 
-            if (id == null)
-                id = 1;
-
-            return (uint)id;
+            var maxId = _memoryProducts.Max(u => u.Id);
+            return maxId + 1;
         }
 
         #endregion
