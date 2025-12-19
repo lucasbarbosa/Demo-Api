@@ -278,6 +278,48 @@ All API responses follow a consistent structure (Envelope Pattern), making it ea
 | `data` | `object` | The payload of the response (null if error). |
 | `errors` | `string[]` | List of error messages (business validations or exceptions). |
 
+### Strongly-Typed Response Models
+
+To improve API documentation and type safety, the project uses strongly-typed response models that extend `ResponseViewModel`:
+
+| Response Model | Usage | Data Type |
+|----------------|-------|-----------|
+| `ProductResponse` | Single product operations (GetById, Create) | `ProductViewModel` |
+| `ProductListResponse` | List operations (GetAll) | `IList<ProductViewModel>` |
+| `ResponseViewModel` | Error responses | Generic error messages |
+
+**Example - ProductResponse:**
+```csharp
+public class ProductResponse : ResponseViewModel
+{
+    public new ProductViewModel? Data { get; set; }
+}
+```
+
+This approach provides:
+- **Better Swagger documentation**: Each endpoint shows the exact return type
+- **Type safety**: Clients can deserialize directly to the correct type
+- **IntelliSense support**: IDEs provide accurate auto-completion
+
+### Model Validation
+
+The API implements a custom `ModelValidationFilter` that handles validation errors consistently:
+
+- **Model Binding Errors** (e.g., invalid types like `"ABC"` for `uint`): Returns `400 Bad Request`
+- **Data Annotation Errors** (e.g., required fields, range validation): Returns `412 Precondition Failed`
+
+**Example validation error response:**
+```json
+{
+  "success": false,
+  "data": null,
+  "errors": [
+    "Name is required",
+    "Weight must be greater than 0"
+  ]
+}
+```
+
 ### HTTP Status Codes
 
 | Status Code | Usage |
@@ -437,13 +479,25 @@ public async Task Create_ShouldReturnCreated_WhenProductIsValid()
 
 ### Products API (`/api/v1/products`)
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/v1/products` | Get all products |
-| `GET` | `/api/v1/products/{id}` | Get product by ID |
-| `POST` | `/api/v1/products` | Create new product |
-| `PUT` | `/api/v1/products` | Update product |
-| `DELETE` | `/api/v1/products/{id}` | Delete product |
+| Method | Endpoint | Description | Success Response | Error Responses |
+|--------|----------|-------------|------------------|-----------------|
+| `GET` | `/api/v1/products` | Get all products | `200 OK` - `ProductListResponse` | `400 Bad Request` |
+| `GET` | `/api/v1/products/{id}` | Get product by ID | `200 OK` - `ProductResponse` | `400 Bad Request`, `404 Not Found` |
+| `POST` | `/api/v1/products` | Create new product | `201 Created` - `ProductResponse` | `400 Bad Request`, `412 Precondition Failed` |
+| `PUT` | `/api/v1/products` | Update product | `204 No Content` | `400 Bad Request`, `404 Not Found`, `412 Precondition Failed` |
+| `DELETE` | `/api/v1/products/{id}` | Delete product | `204 No Content` | `400 Bad Request`, `404 Not Found` |
+
+### Response Type Documentation
+
+All endpoints are fully documented with `ProducesResponseType` attributes, ensuring accurate Swagger/OpenAPI documentation:
+
+```csharp
+[HttpGet("{id}")]
+[ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
+[ProducesResponseType(typeof(ResponseViewModel), StatusCodes.Status400BadRequest)]
+[ProducesResponseType(typeof(ResponseViewModel), StatusCodes.Status404NotFound)]
+public async Task<IActionResult> GetById(uint id)
+```
 
 ### Example Request (Create Product)
 
