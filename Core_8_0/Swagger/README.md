@@ -99,6 +99,12 @@ The `ProductAppService` acts as a facade for the domain. It orchestrates the flo
 #### 4. **DTOs (Data Transfer Objects)**
 `ProductViewModel` is used to decouple the internal Domain Entities from the external API contract. This allows the domain model to evolve independently of the API.
 
+#### 5. **Custom Response Strategy**
+The `MainApiController` implements a standardized response strategy to ensure consistency across all endpoints.
+- **`CustomResponse(result)`**: Automatically wraps the result in the `ResponseViewModel` envelope.
+- **Validation Handling**: Checks for domain notifications (`_notificator.HasErrors()`) before returning success. If errors exist, it returns `400 Bad Request` or `412 Precondition Failed` with the error list.
+- **ModelState Integration**: The `CustomResponse(ModelState)` overload automatically extracts validation errors from ASP.NET Core's binding and adds them to the notification handler.
+
 ---
 
 ## 📁 Project Structure
@@ -205,6 +211,48 @@ The API is fully documented using Swagger/OpenAPI.
 1. Run the application.
 2. Navigate to: **`https://localhost:7167/swagger`** (port may vary).
 
+### API Versioning Strategy
+
+The API implements **URL Path Versioning** to ensure backward compatibility and smooth evolution of endpoints.
+
+- **Format**: `/api/v{version}/{resource}`
+- **Current Version**: `v1`
+- **Default Behavior**: If no version is specified, the API assumes the default version (v1).
+
+**Configuration Details:**
+- `ReportApiVersions = true`: The API returns the supported versions in the response headers (`api-supported-versions`).
+- `SubstituteApiVersionInUrl = true`: Swagger UI automatically handles the version parameter in the URL.
+
+### Response Envelope Pattern
+
+All API responses follow a consistent structure (Envelope Pattern), making it easier for clients to handle success and error states uniformly.
+
+```json
+{
+    "success": true,
+    "data": { ... },
+    "errors": []
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `success` | `boolean` | Indicates if the operation was successful. |
+| `data` | `object` | The payload of the response (null if error). |
+| `errors` | `string[]` | List of error messages (business validations or exceptions). |
+
+### HTTP Status Codes
+
+| Status Code | Usage |
+|-------------|-------|
+| `200 OK` | Successful GET requests. |
+| `201 Created` | Successful POST (create) requests. |
+| `204 No Content` | Successful PUT/DELETE requests. |
+| `400 Bad Request` | Business rule violations or invalid syntax. |
+| `404 Not Found` | Resource not found. |
+| `412 Precondition Failed` | Model validation errors (e.g., missing required fields). |
+| `500 Internal Server Error` | Unexpected server errors. |
+
 ### Example Request (Create Product)
 
 **POST** `/api/v1/products`
@@ -229,3 +277,28 @@ The API is fully documented using Swagger/OpenAPI.
   "errors": []
 }
 ```
+
+---
+
+## Layer Responsibilities
+
+### Presentation Layer (`DemoApi.Api`)
+
+**Responsibility:** Handle HTTP requests/responses and delegate to application services.
+
+| Component | Purpose |
+|-----------|---------|
+| `MainApiController` | Base controller with standardized response handling |
+| `ProductController` | RESTful endpoints for Product operations |
+| `ExceptionMiddleware` | Global exception handling and logging |
+| `ApiConfig` | API versioning and behavior configuration |
+| `SwaggerConfig` | OpenAPI documentation setup |
+| `DependencyInjectionConfig` | IoC container registration |
+
+**Key Features:**
+- **Global Exception Handling**: The `ExceptionMiddleware` intercepts unhandled exceptions, logs them using `NLog`, and returns a standardized `500 Internal Server Error` response in JSON format. This prevents sensitive stack traces from leaking to the client.
+- **Configuration Extension Methods**: `Program.cs` is kept clean and readable by moving configuration logic into extension methods (e.g., `AddApiConfig`, `AddDependencyInjectionConfig`). This follows the "Convention over Configuration" approach and separates startup concerns.
+- **API Versioning**: (`/api/v{version}/products`)
+- **Standardized response envelope**: (`ResponseViewModel`)
+- **Model validation**: with Data Annotations
+- **Swagger/OpenAPI documentation**
