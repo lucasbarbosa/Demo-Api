@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Net;
 
-namespace DemoApi.Api.Filters
+namespace DemoApi.Api.Extensions
 {
     public class ModelValidationFilter(INotificatorHandler notificator) : IActionFilter
     {

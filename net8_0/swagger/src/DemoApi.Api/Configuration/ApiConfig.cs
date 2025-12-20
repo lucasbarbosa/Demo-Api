@@ -1,5 +1,4 @@
 ﻿using DemoApi.Api.Extensions;
-using DemoApi.Api.Filters;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DemoApi.Api.Configuration
