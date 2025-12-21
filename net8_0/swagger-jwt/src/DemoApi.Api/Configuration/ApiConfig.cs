@@ -51,7 +51,7 @@ namespace DemoApi.Api.Configuration
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+            app.UseJwtConfig();
 
             app.UseSwaggerConfig();
 

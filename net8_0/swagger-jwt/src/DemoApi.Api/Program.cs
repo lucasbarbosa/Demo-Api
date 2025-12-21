@@ -11,6 +11,8 @@ try
 
     builder.Services.AddDependencyInjectionConfig();
 
+    builder.Services.AddJwtConfig(builder.Configuration);
+
     builder.Services.AddApiConfig();
 
 
