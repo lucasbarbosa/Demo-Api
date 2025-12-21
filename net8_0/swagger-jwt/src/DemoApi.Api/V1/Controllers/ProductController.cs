@@ -3,6 +3,8 @@ using DemoApi.Application.Interfaces;
 using DemoApi.Application.Models;
 using DemoApi.Application.Models.Products;
 using DemoApi.Domain.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -10,6 +12,7 @@ namespace DemoApi.Api.V1.Controllers
 {
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/products")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Produces("application/json")]
     public class ProductController(INotificatorHandler notificator, IProductAppService productApplication) : MainApiController(notificator)
     {
@@ -25,6 +28,7 @@ namespace DemoApi.Api.V1.Controllers
         [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseViewModel), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ResponseViewModel), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ResponseViewModel), StatusCodes.Status412PreconditionFailed)]
         public async Task<IActionResult> GetById(uint id)
         {
             var product = await _productApplication.GetById(id);
@@ -73,6 +77,7 @@ namespace DemoApi.Api.V1.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ResponseViewModel), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ResponseViewModel), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ResponseViewModel), StatusCodes.Status412PreconditionFailed)]
         public async Task<IActionResult> Delete(uint id)
         {
             return await _productApplication.DeleteById(id)
