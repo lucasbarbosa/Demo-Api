@@ -12,12 +12,6 @@ namespace DemoApi.Api.Test.Auth
     [TestCaseOrderer("DemoApi.Api.Test.Configuration.PriorityOrderer", "DemoApi.Api.Test")]
     public class AuthenticatedEndpointTests(CustomWebApplicationFactory factory) : AuthTests(factory)
     {
-        #region Properties
-
-        private readonly CustomWebApplicationFactory _factory = factory;
-
-        #endregion
-        
         #region Public Methods
 
         [Fact, TestPriority(600)]

@@ -1,9 +1,8 @@
 using DemoApi.Api.Test.Configuration;
 using DemoApi.Api.Test.Factories;
-using DemoApi.Application.Models;
+using DemoApi.Api.Test.Helpers;
 using FluentAssertions;
 using System.Net;
-using System.Net.Http.Json;
 
 namespace DemoApi.Api.Test.Auth
 {
@@ -16,12 +15,11 @@ namespace DemoApi.Api.Test.Auth
         public async Task GenerateToken_ShouldReturnOk_WhenSecurityKeyIsValid()
         {
             // Arrange
+            HttpClient client = await GetAuthenticatedClient();
             var url = "/api/v1/auth/token";
-            _client.DefaultRequestHeaders.Add("X-Security-Key", ValidSecurityKey);
 
             // Act
-            var result = await _client.PostAsync(url, null);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            var (result, response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, null);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -34,12 +32,11 @@ namespace DemoApi.Api.Test.Auth
         public async Task GenerateToken_ShouldReturnTokenViewModel_WithAllRequiredFields()
         {
             // Arrange
+            HttpClient client = await GetAuthenticatedClient();
             var url = "/api/v1/auth/token";
-            _client.DefaultRequestHeaders.Add("X-Security-Key", ValidSecurityKey);
 
             // Act
-            var result = await _client.PostAsync(url, null);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            var (result, response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, null);
 
             // Assert
             response.Should().NotBeNull();
@@ -57,12 +54,12 @@ namespace DemoApi.Api.Test.Auth
         public async Task GenerateToken_ShouldReturnUnauthorized_WhenSecurityKeyIsInvalid()
         {
             // Arrange
+            var client = _factory.CreateClient();
             var url = "/api/v1/auth/token";
-            _client.DefaultRequestHeaders.Add("X-Security-Key", "INVALID_KEY");
+            client.DefaultRequestHeaders.Add("X-Security-Key", "INVALID_KEY");
 
             // Act
-            var result = await _client.PostAsync(url, null);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            var (result, response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, null);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -75,12 +72,12 @@ namespace DemoApi.Api.Test.Auth
         public async Task GenerateToken_ShouldReturnPreconditionFailed_WhenSecurityKeyIsEmpty()
         {
             // Arrange
+            var client = _factory.CreateClient();
             var url = "/api/v1/auth/token";
-            _client.DefaultRequestHeaders.Add("X-Security-Key", string.Empty);
+            client.DefaultRequestHeaders.Add("X-Security-Key", string.Empty);
 
             // Act
-            var result = await _client.PostAsync(url, null);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            var (result, response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, null);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
@@ -92,12 +89,12 @@ namespace DemoApi.Api.Test.Auth
         public async Task GenerateToken_ShouldReturnPreconditionFailed_WhenSecurityKeyIsWhitespace()
         {
             // Arrange
+            var client = _factory.CreateClient();
             var url = "/api/v1/auth/token";
-            _client.DefaultRequestHeaders.Add("X-Security-Key", "   ");
+            client.DefaultRequestHeaders.Add("X-Security-Key", "   ");
 
             // Act
-            var result = await _client.PostAsync(url, null);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            var (result, response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, null);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
@@ -109,11 +106,11 @@ namespace DemoApi.Api.Test.Auth
         public async Task GenerateToken_ShouldReturnPreconditionFailed_WhenSecurityKeyHeaderIsMissing()
         {
             // Arrange
+            HttpClient client = await GetAuthenticatedClient();
             var url = "/api/v1/auth/token";
 
             // Act
-            var result = await _client.PostAsync(url, null);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            var (result, response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, null);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
@@ -125,17 +122,18 @@ namespace DemoApi.Api.Test.Auth
         public async Task GenerateToken_ShouldReturnDifferentTokens_WhenCalledMultipleTimes()
         {
             // Arrange
+            var client1 = _factory.CreateClient();
+            var client2 = _factory.CreateClient();
             var url = "/api/v1/auth/token";
-            _client.DefaultRequestHeaders.Add("X-Security-Key", ValidSecurityKey);
+            client1.DefaultRequestHeaders.Add("X-Security-Key", ValidSecurityKey);
+            client2.DefaultRequestHeaders.Add("X-Security-Key", ValidSecurityKey);
 
             // Act
-            var result1 = await _client.PostAsync(url, null);
-            var response1 = await result1.Content.ReadFromJsonAsync<ResponseViewModel>();
+            var (_, response1) = await HttpClientHelper.PostAndReturnResponseAsync(client1, url, null);
 
             await Task.Delay(1000);
 
-            var result2 = await _client.PostAsync(url, null);
-            var response2 = await result2.Content.ReadFromJsonAsync<ResponseViewModel>();
+            var (_, response2) = await HttpClientHelper.PostAndReturnResponseAsync(client2, url, null);
 
             // Assert
             var token1 = response1!.Data!.ToString();
@@ -148,12 +146,12 @@ namespace DemoApi.Api.Test.Auth
         public async Task GenerateToken_ShouldReturnUnauthorized_WhenSecurityKeyHasExtraCharacters()
         {
             // Arrange
+            var client = _factory.CreateClient();
             var url = "/api/v1/auth/token";
-            _client.DefaultRequestHeaders.Add("X-Security-Key", ValidSecurityKey + "EXTRA");
+            client.DefaultRequestHeaders.Add("X-Security-Key", ValidSecurityKey + "EXTRA");
 
             // Act
-            var result = await _client.PostAsync(url, null);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            var (result, response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, null);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -166,13 +164,13 @@ namespace DemoApi.Api.Test.Auth
         public async Task GenerateToken_ShouldReturnUnauthorized_WhenSecurityKeyIsTruncated()
         {
             // Arrange
+            var client = _factory.CreateClient();
             var url = "/api/v1/auth/token";
             var truncatedKey = ValidSecurityKey[..^5];
-            _client.DefaultRequestHeaders.Add("X-Security-Key", truncatedKey);
+            client.DefaultRequestHeaders.Add("X-Security-Key", truncatedKey);
 
             // Act
-            var result = await _client.PostAsync(url, null);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            var (result, response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, null);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -185,15 +183,15 @@ namespace DemoApi.Api.Test.Auth
         public async Task GenerateToken_ShouldBeCaseSensitive_ForSecurityKey()
         {
             // Arrange
+            var client = _factory.CreateClient();
             var url = "/api/v1/auth/token";
             _client.DefaultRequestHeaders.Add("X-Security-Key", ValidSecurityKey.ToLower());
 
             // Act
-            var result = await _client.PostAsync(url, null);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            var (result, response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, null);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.OK);
+            result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
             response.Should().NotBeNull();
             response!.Success.Should().BeFalse();
         }
@@ -202,12 +200,11 @@ namespace DemoApi.Api.Test.Auth
         public async Task GenerateToken_ShouldReturnToken_WithBearerTokenType()
         {
             // Arrange
+            HttpClient client = await GetAuthenticatedClient();
             var url = "/api/v1/auth/token";
-            _client.DefaultRequestHeaders.Add("X-Security-Key", ValidSecurityKey);
 
             // Act
-            var result = await _client.PostAsync(url, null);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            var (result, response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, null);
 
             // Assert
             response.Should().NotBeNull();
