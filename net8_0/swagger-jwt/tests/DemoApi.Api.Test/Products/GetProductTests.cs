@@ -1,15 +1,13 @@
 using DemoApi.Api.Test.Configuration;
 using DemoApi.Api.Test.Factories;
 using DemoApi.Api.Test.Helpers;
-using DemoApi.Application.Models;
 using FluentAssertions;
 using System.Net;
-using System.Net.Http.Json;
 
 namespace DemoApi.Api.Test.Products
 {
     [TestCaseOrderer("DemoApi.Api.Test.Configuration.PriorityOrderer", "DemoApi.Api.Test")]
-    public class GetProductTests(CustomWebApplicationFactory factory) : ProductTests(factory)
+    public class GetProductTests(CustomWebApplicationFactory factory) : ProductApiTests(factory)
     {
         #region Public Methods
 
@@ -17,11 +15,11 @@ namespace DemoApi.Api.Test.Products
         public async Task GetAll_ShouldReturnOk_WhenProductsExist()
         {
             // Arrange
+            HttpClient client = await GetAuthenticatedClient();
             var url = "/api/v1/products";
 
             // Act
-            var result = await HttpClientHelper.GetAndEnsureSuccessAsync(_client, url);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            var (result, response) = await HttpClientHelper.GetAndReturnResponseAsync(client, url);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -34,11 +32,12 @@ namespace DemoApi.Api.Test.Products
         public async Task GetById_ShouldReturnOk_WhenProductExists()
         {
             // Arrange
-            var url = "/api/v1/products/1";
+            HttpClient client = await GetAuthenticatedClient();
+            var createdProduct = await GetLastCreatedProduct();
+            var url = $"/api/v1/products/{createdProduct.Id}";
 
             // Act
-            var result = await HttpClientHelper.GetAndEnsureSuccessAsync(_client, url);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            var (result, response) = await HttpClientHelper.GetAndReturnResponseAsync(client, url);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -51,11 +50,11 @@ namespace DemoApi.Api.Test.Products
         public async Task GetById_ShouldReturnNotFound_WhenProductDoesNotExist()
         {
             // Arrange
+            HttpClient client = await GetAuthenticatedClient();
             var url = "/api/v1/products/999999";
 
             // Act
-            var result = await _client.GetAsync(url);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            var (result, response) = await HttpClientHelper.GetAndReturnResponseAsync(client, url);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -67,11 +66,11 @@ namespace DemoApi.Api.Test.Products
         public async Task GetById_ShouldReturnBadRequest_WhenIdIsNotNumeric()
         {
             // Arrange
+            HttpClient client = await GetAuthenticatedClient();
             var url = "/api/v1/products/ABC";
 
             // Act
-            var result = await _client.GetAsync(url);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            var (result, response) = await HttpClientHelper.GetAndReturnResponseAsync(client, url);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -85,11 +84,11 @@ namespace DemoApi.Api.Test.Products
         public async Task GetById_ShouldReturnBadRequest_WhenIdIsNegative()
         {
             // Arrange
+            HttpClient client = await GetAuthenticatedClient();
             var url = "/api/v1/products/-1";
 
             // Act
-            var result = await _client.GetAsync(url);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            var (result, response) = await HttpClientHelper.GetAndReturnResponseAsync(client, url);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -102,11 +101,11 @@ namespace DemoApi.Api.Test.Products
         public async Task GetById_ShouldReturnBadRequest_WhenIdIsDecimal()
         {
             // Arrange
+            HttpClient client = await GetAuthenticatedClient();
             var url = "/api/v1/products/1.5";
 
             // Act
-            var result = await _client.GetAsync(url);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            var (result, response) = await HttpClientHelper.GetAndReturnResponseAsync(client, url);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -119,11 +118,11 @@ namespace DemoApi.Api.Test.Products
         public async Task GetById_ShouldReturnBadRequest_WhenIdContainsSpecialCharacters()
         {
             // Arrange
+            HttpClient client = await GetAuthenticatedClient();
             var url = "/api/v1/products/@#$";
 
             // Act
-            var result = await _client.GetAsync(url);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            var (result, response) = await HttpClientHelper.GetAndReturnResponseAsync(client, url);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);

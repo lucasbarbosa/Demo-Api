@@ -1,57 +1,49 @@
 using DemoApi.Api.Test.Configuration;
 using DemoApi.Api.Test.Factories;
 using DemoApi.Api.Test.Helpers;
-using DemoApi.Application.Models;
-using DemoApi.Application.Models.Products;
 using FluentAssertions;
 using System.Net;
-using System.Net.Http.Json;
 
 namespace DemoApi.Api.Test.Products
 {
     [TestCaseOrderer("DemoApi.Api.Test.Configuration.PriorityOrderer", "DemoApi.Api.Test")]
-    public class UpdateProductTests(CustomWebApplicationFactory factory) : ProductTests(factory)
+    public class UpdateProductTests(CustomWebApplicationFactory factory) : ProductApiTests(factory)
     {
         #region Public Methods
 
         [Fact, TestPriority(300)]
         public async Task Update_ShouldReturnNoContent_WhenProductIsValid()
         {
-            // Arrange - First create a product to update
+            // Arrange
+            HttpClient client = await GetAuthenticatedClient();
             var url = "/api/v1/products";
-            var newProduct = NewProduct();
-            var createResult = await HttpClientHelper.PostAndEnsureSuccessAsync(_client, url, newProduct);
-            var createResponse = await createResult.Content.ReadFromJsonAsync<ResponseViewModel>();
-
-            createResponse.Should().NotBeNull();
-            createResponse!.Data.Should().NotBeNull();
-
-            var createdProduct = System.Text.Json.JsonSerializer.Deserialize<ProductViewModel>(
-                createResponse.Data.ToString()!,
-                new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-            createdProduct.Should().NotBeNull();
-
-            // Update the created product
+            var createdProduct = await GetLastCreatedProduct();
+            
+            createdProduct.Should().NotBeNull("Product creation should succeed");
+            createdProduct.Id.Should().BeGreaterThan(0u, "Created product should have a valid ID");
+            createdProduct.Name.Should().NotBeNullOrEmpty("Created product should have a name");
+            
             var productToUpdate = ProductToUpdate(createdProduct);
+            productToUpdate.Id.Should().Be(createdProduct.Id, "Update product ID should match created product ID");
 
             // Act
-            var result = await _client.PutAsJsonAsync(url, productToUpdate);
+            var (result, _) = await HttpClientHelper.PutAndReturnResponseAsync(client, url, productToUpdate);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            result.StatusCode.Should().Be(HttpStatusCode.NoContent, 
+                $"Update should succeed for product with ID {productToUpdate.Id}");
         }
 
         [Fact, TestPriority(301)]
         public async Task Update_ShouldReturnPreconditionFailed_WhenProductNameIsEmpty()
         {
             // Arrange
+            HttpClient client = await GetAuthenticatedClient();
             var url = "/api/v1/products";
             var productFake = ProductWithEmptyName();
 
             // Act
-            var result = await _client.PutAsJsonAsync(url, productFake);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            var (result, response) = await HttpClientHelper.PutAndReturnResponseAsync(client, url, productFake);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
@@ -64,12 +56,12 @@ namespace DemoApi.Api.Test.Products
         public async Task Update_ShouldReturnPreconditionFailed_WhenProductNameIsNull()
         {
             // Arrange
+            HttpClient client = await GetAuthenticatedClient();
             var url = "/api/v1/products";
             var productFake = ProductWithNullName();
 
             // Act
-            var result = await _client.PutAsJsonAsync(url, productFake);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            var (result, response) = await HttpClientHelper.PutAndReturnResponseAsync(client, url, productFake);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
@@ -82,12 +74,12 @@ namespace DemoApi.Api.Test.Products
         public async Task Update_ShouldReturnPreconditionFailed_WhenProductWeightIsZero()
         {
             // Arrange
+            HttpClient client = await GetAuthenticatedClient();
             var url = "/api/v1/products";
             var productFake = ProductWithZeroWeight();
 
             // Act
-            var result = await _client.PutAsJsonAsync(url, productFake);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            var (result, response) = await HttpClientHelper.PutAndReturnResponseAsync(client, url, productFake);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
@@ -100,12 +92,12 @@ namespace DemoApi.Api.Test.Products
         public async Task Update_ShouldReturnPreconditionFailed_WhenProductWeightIsNegative()
         {
             // Arrange
+            HttpClient client = await GetAuthenticatedClient();
             var url = "/api/v1/products";
             var productFake = ProductWithNegativeWeight();
 
             // Act
-            var result = await _client.PutAsJsonAsync(url, productFake);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            var (result, response) = await HttpClientHelper.PutAndReturnResponseAsync(client, url, productFake);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
@@ -118,12 +110,12 @@ namespace DemoApi.Api.Test.Products
         public async Task Update_ShouldReturnNotFound_WhenProductDoesNotExist()
         {
             // Arrange
+            HttpClient client = await GetAuthenticatedClient();
             var url = "/api/v1/products";
             var productFake = NonExistentProduct();
 
             // Act
-            var result = await _client.PutAsJsonAsync(url, productFake);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            var (result, response) = await HttpClientHelper.PutAndReturnResponseAsync(client, url, productFake);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.NotFound);
