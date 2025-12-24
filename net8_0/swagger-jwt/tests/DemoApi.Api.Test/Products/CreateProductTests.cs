@@ -1,29 +1,28 @@
 using DemoApi.Api.Test.Configuration;
 using DemoApi.Api.Test.Factories;
 using DemoApi.Api.Test.Helpers;
+using DemoApi.Application.Models;
+using DemoApi.Application.Models.Products;
 using FluentAssertions;
 using System.Net;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace DemoApi.Api.Test.Products
 {
     [TestCaseOrderer("DemoApi.Api.Test.Configuration.PriorityOrderer", "DemoApi.Api.Test")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class CreateProductTests(CustomWebApplicationFactory factory) : ProductApiTests(factory)
     {
         #region Public Methods
 
         [Fact, TestPriority(100)]
-        public async Task Create_ShouldReturnCreated_WithValidResponseObject_WhenProductIsValid()
+        public async Task Create_ShouldReturnCreated_WhenProductIsValid()
         {
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
-            var url = "/api/v1/products";
-            var productFake = NewProductWithRandomId();
+            string url = "/api/v1/products";
+            ProductViewModel productFake = NewProductWithRandomId();
 
             // Act
-            var (result, response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -33,55 +32,55 @@ namespace DemoApi.Api.Test.Products
         }
 
         [Fact, TestPriority(101)]
-        public async Task Create_ShouldReturnPreconditionFailed_WithValidErrorResponse_WhenProductNameIsEmpty()
+        public async Task Create_ShouldReturnPreconditionFailed_WhenProductNameIsEmpty()
         {
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
-            var url = "/api/v1/products";
-            var productFake = ProductWithEmptyName();
+            string url = "/api/v1/products";
+            ProductViewModel productFake = ProductWithEmptyName();
 
             // Act
-            var (result, response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
-            response.Should().NotBeNull();
+            response!.Should().NotBeNull();
             response!.Success.Should().BeFalse();
             response!.Errors.Should().Contain("Name is required");
         }
 
         [Fact, TestPriority(102)]
-        public async Task Create_ShouldReturnPreconditionFailed_WithValidErrorResponse_WhenProductNameIsNull()
+        public async Task Create_ShouldReturnPreconditionFailed_WhenProductNameIsNull()
         {
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
-            var url = "/api/v1/products";
-            var productFake = ProductWithNullName();
+            string url = "/api/v1/products";
+            ProductViewModel productFake = ProductWithNullName();
 
             // Act
-            var (result, response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
-            response.Should().NotBeNull();
+            response!.Should().NotBeNull();
             response!.Success.Should().BeFalse();
             response!.Errors.Should().Contain("Name is required");
         }
 
         [Fact, TestPriority(103)]
-        public async Task Create_ShouldReturnPreconditionFailed_WithValidErrorResponse_WhenProductWeightIsZero()
+        public async Task Create_ShouldReturnPreconditionFailed_WhenProductWeightIsZero()
         {
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
-            var url = "/api/v1/products";
-            var productFake = ProductWithZeroWeight();
+            string url = "/api/v1/products";
+            ProductViewModel productFake = ProductWithZeroWeight();
 
             // Act
-            var (result, response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
-            response.Should().NotBeNull();
+            response!.Should().NotBeNull();
             response!.Success.Should().BeFalse();
             response!.Errors.Should().Contain("Weight must be greater than 0");
         }
@@ -91,11 +90,11 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
-            var url = "/api/v1/products";
-            var productFake = ProductWithNegativeWeight();
+            string url = "/api/v1/products";
+            ProductViewModel productFake = ProductWithNegativeWeight();
 
             // Act
-            var (result, response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);

@@ -18,10 +18,10 @@ namespace DemoApi.Api.Test.Auth
         public async Task GetProducts_ShouldReturnUnauthorized_WhenNoTokenProvided()
         {
             // Arrange
-            var url = "/api/v1/products";
+            string url = "/api/v1/products";
 
             // Act
-            var result = await _client.GetAsync(url);
+            HttpResponseMessage result = await _client.GetAsync(url);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -31,13 +31,13 @@ namespace DemoApi.Api.Test.Auth
         public async Task GetProducts_ShouldReturnOk_WhenValidTokenProvided()
         {
             // Arrange
-            var token = await GetValidToken();
+            string token = await GetValidToken();
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var url = "/api/v1/products";
+            string url = "/api/v1/products";
 
             // Act
-            var result = await _client.GetAsync(url);
+            HttpResponseMessage result = await _client.GetAsync(url);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -49,10 +49,10 @@ namespace DemoApi.Api.Test.Auth
             // Arrange
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "INVALID_TOKEN");
 
-            var url = "/api/v1/products";
+            string url = "/api/v1/products";
 
             // Act
-            var result = await _client.GetAsync(url);
+            HttpResponseMessage result = await _client.GetAsync(url);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -64,10 +64,10 @@ namespace DemoApi.Api.Test.Auth
             // Arrange
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.invalid.signature");
 
-            var url = "/api/v1/products";
+            string url = "/api/v1/products";
 
             // Act
-            var result = await _client.GetAsync(url);
+            HttpResponseMessage result = await _client.GetAsync(url);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -77,13 +77,13 @@ namespace DemoApi.Api.Test.Auth
         public async Task GetProducts_ShouldReturnUnauthorized_WhenTokenHasWrongScheme()
         {
             // Arrange
-            var token = await GetValidToken();
+            string token = await GetValidToken();
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", token);
 
-            var url = "/api/v1/products";
+            string url = "/api/v1/products";
 
             // Act
-            var result = await _client.GetAsync(url);
+            HttpResponseMessage result = await _client.GetAsync(url);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -93,10 +93,10 @@ namespace DemoApi.Api.Test.Auth
         public async Task GetProducts_ShouldReturnUnauthorized_WhenAuthorizationHeaderIsMissing()
         {
             // Arrange
-            var url = "/api/v1/products";
+            string url = "/api/v1/products";
 
             // Act
-            var result = await _client.GetAsync(url);
+            HttpResponseMessage result = await _client.GetAsync(url);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -106,11 +106,11 @@ namespace DemoApi.Api.Test.Auth
         public async Task CreateProduct_ShouldReturnUnauthorized_WhenNoTokenProvided()
         {
             // Arrange
-            var url = "/api/v1/products";
+            string url = "/api/v1/products";
             var product = new { name = "Test Product", weight = 1.5 };
 
             // Act
-            var result = await _client.PostAsJsonAsync(url, product);
+            HttpResponseMessage result = await _client.PostAsJsonAsync(url, product);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -120,11 +120,11 @@ namespace DemoApi.Api.Test.Auth
         public async Task UpdateProduct_ShouldReturnUnauthorized_WhenNoTokenProvided()
         {
             // Arrange
-            var url = "/api/v1/products";
+            string url = "/api/v1/products";
             var product = new { id = 1, name = "Updated Product", weight = 2.5 };
 
             // Act
-            var result = await _client.PutAsJsonAsync(url, product);
+            HttpResponseMessage result = await _client.PutAsJsonAsync(url, product);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -134,10 +134,10 @@ namespace DemoApi.Api.Test.Auth
         public async Task DeleteProduct_ShouldReturnUnauthorized_WhenNoTokenProvided()
         {
             // Arrange
-            var url = "/api/v1/products/1";
+            string url = "/api/v1/products/1";
 
             // Act
-            var result = await _client.DeleteAsync(url);
+            HttpResponseMessage result = await _client.DeleteAsync(url);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -147,10 +147,10 @@ namespace DemoApi.Api.Test.Auth
         public async Task GetProductById_ShouldReturnUnauthorized_WhenNoTokenProvided()
         {
             // Arrange
-            var url = "/api/v1/products/1";
+            string url = "/api/v1/products/1";
 
             // Act
-            var result = await _client.GetAsync(url);
+            HttpResponseMessage result = await _client.GetAsync(url);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -160,15 +160,15 @@ namespace DemoApi.Api.Test.Auth
         public async Task MultipleRequests_ShouldWork_WithSameToken()
         {
             // Arrange
-            var token = await GetValidToken();
+            string token = await GetValidToken();
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var url = "/api/v1/products";
+            string url = "/api/v1/products";
 
             // Act
-            var result1 = await _client.GetAsync(url);
-            var result2 = await _client.GetAsync(url);
-            var result3 = await _client.GetAsync(url);
+            HttpResponseMessage result1 = await _client.GetAsync(url);
+            HttpResponseMessage result2 = await _client.GetAsync(url);
+            HttpResponseMessage result3 = await _client.GetAsync(url);
 
             // Assert
             result1.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -182,13 +182,13 @@ namespace DemoApi.Api.Test.Auth
 
         private async Task<string> GetValidToken()
         {
-            var tokenClient = _factory.CreateClient();
+            HttpClient tokenClient = _factory.CreateClient();
             tokenClient.DefaultRequestHeaders.Add("X-Security-Key", ValidSecurityKey);
 
-            var result = await tokenClient.PostAsync("/api/v1/auth/token", null);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            HttpResponseMessage result = await tokenClient.PostAsync("/api/v1/auth/token", null);
+            ResponseViewModel? response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
 
-            var tokenJson = JsonSerializer.Deserialize<JsonElement>(
+            JsonElement tokenJson = JsonSerializer.Deserialize<JsonElement>(
                 response!.Data!.ToString()!);
 
             return tokenJson.GetProperty("accessToken").GetString()!;

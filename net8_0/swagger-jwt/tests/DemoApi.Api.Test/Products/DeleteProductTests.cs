@@ -1,8 +1,9 @@
 using DemoApi.Api.Test.Configuration;
 using DemoApi.Api.Test.Factories;
-using DemoApi.Api.Test.Helpers;
+using DemoApi.Application.Models;
 using FluentAssertions;
 using System.Net;
+using System.Net.Http.Json;
 
 namespace DemoApi.Api.Test.Products
 {
@@ -16,10 +17,11 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
-            var url = "/api/v1/products/999999";
+            string url = "/api/v1/products/999999";
 
             // Act
-            var (result, response) = await HttpClientHelper.DeleteAndReturnResponseAsync(client, url);
+            HttpResponseMessage result = await client.DeleteAsync(url);
+            ResponseViewModel? response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -32,10 +34,11 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
-            var url = "/api/v1/products/XYZ";
+            string url = "/api/v1/products/XYZ";
 
             // Act
-            var (result, response) = await HttpClientHelper.DeleteAndReturnResponseAsync(client, url);
+            HttpResponseMessage result = await client.DeleteAsync(url);
+            ResponseViewModel? response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -49,11 +52,10 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
-            var product = await GetLastCreatedProduct();
-            var url = $"/api/v1/products/{product.Id}";
+            string url = "/api/v1/products/1";
 
             // Act
-            var (result, _) = await HttpClientHelper.DeleteAndReturnResponseAsync(client, url);
+            HttpResponseMessage result = await client.DeleteAsync(url);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.NoContent);

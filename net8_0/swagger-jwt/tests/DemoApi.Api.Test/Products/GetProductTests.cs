@@ -1,6 +1,7 @@
 using DemoApi.Api.Test.Configuration;
 using DemoApi.Api.Test.Factories;
 using DemoApi.Api.Test.Helpers;
+using DemoApi.Application.Models;
 using FluentAssertions;
 using System.Net;
 
@@ -16,10 +17,10 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
-            var url = "/api/v1/products";
+            string url = "/api/v1/products";
 
             // Act
-            var (result, response) = await HttpClientHelper.GetAndReturnResponseAsync(client, url);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.GetAndReturnResponseAsync(client, url);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -33,11 +34,10 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
-            var createdProduct = await GetLastCreatedProduct();
-            var url = $"/api/v1/products/{createdProduct.Id}";
+            string url = "/api/v1/products/1";
 
             // Act
-            var (result, response) = await HttpClientHelper.GetAndReturnResponseAsync(client, url);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.GetAndReturnResponseAsync(client, url);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -51,10 +51,10 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
-            var url = "/api/v1/products/999999";
+            string url = "/api/v1/products/999999";
 
             // Act
-            var (result, response) = await HttpClientHelper.GetAndReturnResponseAsync(client, url);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.GetAndReturnResponseAsync(client, url);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -67,10 +67,10 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
-            var url = "/api/v1/products/ABC";
+            string url = "/api/v1/products/ABC";
 
             // Act
-            var (result, response) = await HttpClientHelper.GetAndReturnResponseAsync(client, url);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.GetAndReturnResponseAsync(client, url);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -85,10 +85,10 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
-            var url = "/api/v1/products/-1";
+            string url = "/api/v1/products/-1";
 
             // Act
-            var (result, response) = await HttpClientHelper.GetAndReturnResponseAsync(client, url);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.GetAndReturnResponseAsync(client, url);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -102,10 +102,10 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
-            var url = "/api/v1/products/1.5";
+            string url = "/api/v1/products/1.5";
 
             // Act
-            var (result, response) = await HttpClientHelper.GetAndReturnResponseAsync(client, url);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.GetAndReturnResponseAsync(client, url);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -119,10 +119,10 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
-            var url = "/api/v1/products/@#$";
+            string url = "/api/v1/products/@#$";
 
             // Act
-            var (result, response) = await HttpClientHelper.GetAndReturnResponseAsync(client, url);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.GetAndReturnResponseAsync(client, url);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);

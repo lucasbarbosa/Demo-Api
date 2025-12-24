@@ -1,8 +1,12 @@
 using DemoApi.Api.Test.Configuration;
 using DemoApi.Api.Test.Factories;
 using DemoApi.Api.Test.Helpers;
+using DemoApi.Application.Models;
+using DemoApi.Application.Models.Products;
 using FluentAssertions;
 using System.Net;
+using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace DemoApi.Api.Test.Products
 {
@@ -16,22 +20,21 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
-            var url = "/api/v1/products";
-            var createdProduct = await GetLastCreatedProduct();
-            
+            string url = "/api/v1/products";
+            ProductViewModel createdProduct = await GetLastCreatedProduct();
+
             createdProduct.Should().NotBeNull("Product creation should succeed");
             createdProduct.Id.Should().BeGreaterThan(0u, "Created product should have a valid ID");
             createdProduct.Name.Should().NotBeNullOrEmpty("Created product should have a name");
-            
-            var productToUpdate = ProductToUpdate(createdProduct);
+
+            ProductViewModel productToUpdate = ProductToUpdate(createdProduct!);
             productToUpdate.Id.Should().Be(createdProduct.Id, "Update product ID should match created product ID");
 
             // Act
-            var (result, _) = await HttpClientHelper.PutAndReturnResponseAsync(client, url, productToUpdate);
+            HttpResponseMessage result = await client.PutAsJsonAsync(url, productToUpdate);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.NoContent, 
-                $"Update should succeed for product with ID {productToUpdate.Id}");
+            result.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
 
         [Fact, TestPriority(301)]
@@ -39,11 +42,11 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
-            var url = "/api/v1/products";
-            var productFake = ProductWithEmptyName();
+            string url = "/api/v1/products";
+            ProductViewModel productFake = ProductWithEmptyName();
 
             // Act
-            var (result, response) = await HttpClientHelper.PutAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PutAndReturnResponseAsync(client, url, productFake);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
@@ -57,11 +60,11 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
-            var url = "/api/v1/products";
-            var productFake = ProductWithNullName();
+            string url = "/api/v1/products";
+            ProductViewModel productFake = ProductWithNullName();
 
             // Act
-            var (result, response) = await HttpClientHelper.PutAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PutAndReturnResponseAsync(client, url, productFake);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
@@ -75,11 +78,11 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
-            var url = "/api/v1/products";
-            var productFake = ProductWithZeroWeight();
+            string url = "/api/v1/products";
+            ProductViewModel productFake = ProductWithZeroWeight();
 
             // Act
-            var (result, response) = await HttpClientHelper.PutAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PutAndReturnResponseAsync(client, url, productFake);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
@@ -93,11 +96,11 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
-            var url = "/api/v1/products";
-            var productFake = ProductWithNegativeWeight();
+            string url = "/api/v1/products";
+            ProductViewModel productFake = ProductWithNegativeWeight();
 
             // Act
-            var (result, response) = await HttpClientHelper.PutAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PutAndReturnResponseAsync(client, url, productFake);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
@@ -111,11 +114,11 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
-            var url = "/api/v1/products";
-            var productFake = NonExistentProduct();
+            string url = "/api/v1/products";
+            ProductViewModel productFake = NonExistentProduct();
 
             // Act
-            var (result, response) = await HttpClientHelper.PutAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PutAndReturnResponseAsync(client, url, productFake);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.NotFound);
