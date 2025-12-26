@@ -34,7 +34,10 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
-            string url = "/api/v1/products/1";
+
+            // Create a product first
+            var createdProduct = await GetLastCreatedProduct();
+            string url = $"/api/v1/products/{createdProduct.Id}";
 
             // Act
             (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.GetAndReturnResponseAsync(client, url);

@@ -19,7 +19,7 @@ namespace DemoApi.Api.Test.Products
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
-            ProductViewModel productFake = NewProductWithRandomId();
+            ProductViewModel productFake = NewProduct();
 
             // Act
             (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);

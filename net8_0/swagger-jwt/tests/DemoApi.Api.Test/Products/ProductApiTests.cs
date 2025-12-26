@@ -52,16 +52,6 @@ namespace DemoApi.Api.Test.Products
             return faker.Generate();
         }
 
-        protected static ProductViewModel NewProductWithRandomId()
-        {
-            Faker<ProductViewModel> faker = new Faker<ProductViewModel>()
-                .RuleFor(p => p.Id, f => f.Random.UInt(0, uint.MaxValue))
-                .RuleFor(p => p.Name, f => f.Commerce.ProductName())
-                .RuleFor(p => p.Weight, f => Math.Round(f.Random.Double(0.1, 10.0), 2));
-
-            return faker.Generate();
-        }
-
         protected static ProductViewModel UpdateProduct()
         {
             Faker<ProductViewModel> faker = new Faker<ProductViewModel>()
@@ -236,7 +226,7 @@ namespace DemoApi.Api.Test.Products
         {
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
-            ProductViewModel newProduct = NewProductWithRandomId();
+            ProductViewModel newProduct = NewProduct();
             (HttpResponseMessage _, ResponseViewModel? createResponse) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, newProduct);
 
             ProductViewModel? createdProduct = JsonConvert.DeserializeObject<ProductViewModel>(

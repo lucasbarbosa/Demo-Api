@@ -1,9 +1,9 @@
 using DemoApi.Api.Test.Configuration;
 using DemoApi.Api.Test.Factories;
+using DemoApi.Api.Test.Helpers;
 using DemoApi.Application.Models;
 using FluentAssertions;
 using System.Net;
-using System.Net.Http.Json;
 
 namespace DemoApi.Api.Test.Products
 {
@@ -20,8 +20,7 @@ namespace DemoApi.Api.Test.Products
             string url = "/api/v1/products/999999";
 
             // Act
-            HttpResponseMessage result = await client.DeleteAsync(url);
-            ResponseViewModel? response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.DeleteAndReturnResponseAsync(client, url);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -37,8 +36,7 @@ namespace DemoApi.Api.Test.Products
             string url = "/api/v1/products/XYZ";
 
             // Act
-            HttpResponseMessage result = await client.DeleteAsync(url);
-            ResponseViewModel? response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.DeleteAndReturnResponseAsync(client, url);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -52,7 +50,10 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
-            string url = "/api/v1/products/1";
+
+            // Create a product first
+            var createdProduct = await GetLastCreatedProduct();
+            string url = $"/api/v1/products/{createdProduct.Id}";
 
             // Act
             HttpResponseMessage result = await client.DeleteAsync(url);

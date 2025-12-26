@@ -30,6 +30,7 @@
 
 	<ItemGroup>
 		<None Include="..\DemoApi.Api\bin\$(Configuration)\net8.0\DemoApi.Api.deps.json" Link="DemoApi.Api.deps.json" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\DemoApi.Api\bin\$(Configuration)\net8.0\DemoApi.Api.deps.json')" />
+		<None Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
 
 	<ItemGroup>
