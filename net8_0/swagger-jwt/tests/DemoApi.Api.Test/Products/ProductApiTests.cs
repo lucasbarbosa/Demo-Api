@@ -102,6 +102,56 @@ namespace DemoApi.Api.Test.Products
             };
         }
 
+        protected static ProductViewModel ProductWithWhitespaceName()
+        {
+            return new ProductViewModel
+            {
+                Id = 0,
+                Name = "   ",
+                Weight = 1.0
+            };
+        }
+
+        protected static ProductViewModel ProductWithSpecialCharactersName()
+        {
+            return new ProductViewModel
+            {
+                Id = 0,
+                Name = "Product @#$% 123",
+                Weight = 1.0
+            };
+        }
+
+        protected static ProductViewModel ProductWithVeryLongName()
+        {
+            return new ProductViewModel
+            {
+                Id = 0,
+                Name = new string('A', 500),
+                Weight = 1.0
+            };
+        }
+
+        protected static ProductViewModel ProductWithUnicodeName()
+        {
+            return new ProductViewModel
+            {
+                Id = 0,
+                Name = "Produto ??? ?? ???????",
+                Weight = 1.0
+            };
+        }
+
+        protected static ProductViewModel ProductWithSingleCharacterName()
+        {
+            return new ProductViewModel
+            {
+                Id = 0,
+                Name = "A",
+                Weight = 1.0
+            };
+        }
+
         protected static ProductViewModel ProductWithZeroWeight()
         {
             return new ProductViewModel
@@ -119,6 +169,56 @@ namespace DemoApi.Api.Test.Products
                 Id = 0,
                 Name = "Test Product",
                 Weight = -1.5
+            };
+        }
+
+        protected static ProductViewModel ProductWithSpecificWeight(double weight)
+        {
+            return new ProductViewModel
+            {
+                Id = 0,
+                Name = $"Product Weight {weight}",
+                Weight = weight
+            };
+        }
+
+        protected static ProductViewModel ProductWithPreciseWeight()
+        {
+            return new ProductViewModel
+            {
+                Id = 0,
+                Name = "Product Precise Weight",
+                Weight = 1.123456789
+            };
+        }
+
+        protected static ProductViewModel ProductWithVerySmallPositiveWeight()
+        {
+            return new ProductViewModel
+            {
+                Id = 0,
+                Name = "Very Light Product",
+                Weight = double.Epsilon
+            };
+        }
+
+        protected static ProductViewModel ProductWithInvalidNameAndWeight()
+        {
+            return new ProductViewModel
+            {
+                Id = 0,
+                Name = string.Empty,
+                Weight = -1
+            };
+        }
+
+        protected static ProductViewModel ProductWithWhitespaceNameAndZeroWeight()
+        {
+            return new ProductViewModel
+            {
+                Id = 0,
+                Name = "   ",
+                Weight = 0
             };
         }
 
