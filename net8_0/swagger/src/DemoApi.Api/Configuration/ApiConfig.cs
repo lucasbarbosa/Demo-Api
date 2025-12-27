@@ -1,5 +1,6 @@
 ﻿using DemoApi.Api.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
 
 namespace DemoApi.Api.Configuration
 {
@@ -19,6 +20,12 @@ namespace DemoApi.Api.Configuration
                 options.AssumeDefaultVersionWhenUnspecified = true;
                 options.DefaultApiVersion = new ApiVersion(1, 0);
                 options.ReportApiVersions = true;
+
+                options.ApiVersionReader = ApiVersionReader.Combine(
+                    new UrlSegmentApiVersionReader(),
+                    new HeaderApiVersionReader("X-Api-Version"),
+                    new QueryStringApiVersionReader("api-version")
+                );
             });
 
             services.AddVersionedApiExplorer(options =>
