@@ -15,23 +15,25 @@ namespace DemoApi.Api.Test.Filters
 {
     public class ModelValidationFilterTests
     {
+        #region Public Methods
+
         [Fact]
         public void OnActionExecuting_ShouldNotModifyContext_WhenModelStateIsValid()
         {
             // Arrange
-            var notificator = new Mock<INotificatorHandler>();
-            var filter = new ModelValidationFilter(notificator.Object);
+            Mock<INotificatorHandler> notificator = new();
+            ModelValidationFilter filter = new(notificator.Object);
 
-            var actionContext = new ActionContext(
+            ActionContext actionContext = new(
                 new DefaultHttpContext(),
                 new RouteData(),
                 new ActionDescriptor(),
                 new ModelStateDictionary()
             );
 
-            var context = new ActionExecutingContext(
+            ActionExecutingContext context = new(
                 actionContext,
-                new List<IFilterMetadata>(),
+                [],
                 new Dictionary<string, object?>(),
                 new Mock<Controller>().Object
             );
@@ -48,22 +50,22 @@ namespace DemoApi.Api.Test.Filters
         public void OnActionExecuting_ShouldReturn412_WhenDataAnnotationError()
         {
             // Arrange
-            var notificator = new NotificatorHandler();
-            var filter = new ModelValidationFilter(notificator);
+            NotificatorHandler notificator = new();
+            ModelValidationFilter filter = new(notificator);
 
-            var modelState = new ModelStateDictionary();
+            ModelStateDictionary modelState = new();
             modelState.AddModelError("Name", "Name is required");
 
-            var actionContext = new ActionContext(
+            ActionContext actionContext = new(
                 new DefaultHttpContext(),
                 new RouteData(),
                 new ActionDescriptor(),
                 modelState
             );
 
-            var context = new ActionExecutingContext(
+            ActionExecutingContext context = new(
                 actionContext,
-                new List<IFilterMetadata>(),
+                [],
                 new Dictionary<string, object?>(),
                 new Mock<Controller>().Object
             );
@@ -73,10 +75,10 @@ namespace DemoApi.Api.Test.Filters
 
             // Assert
             context.Result.Should().BeOfType<ObjectResult>();
-            var objectResult = context.Result as ObjectResult;
+            ObjectResult? objectResult = context.Result as ObjectResult;
             objectResult!.StatusCode.Should().Be(412);
             
-            var response = objectResult.Value as ResponseViewModel;
+            ResponseViewModel? response = objectResult.Value as ResponseViewModel;
             response.Should().NotBeNull();
             response!.Success.Should().BeFalse();
             response.Errors.Should().Contain("Name is required");
@@ -86,22 +88,22 @@ namespace DemoApi.Api.Test.Filters
         public void OnActionExecuting_ShouldReturn400_WhenModelBindingError()
         {
             // Arrange
-            var notificator = new NotificatorHandler();
-            var filter = new ModelValidationFilter(notificator);
+            NotificatorHandler notificator = new();
+            ModelValidationFilter filter = new(notificator);
 
-            var modelState = new ModelStateDictionary();
+            ModelStateDictionary modelState = new();
             modelState.AddModelError("Id", "The value 'ABC' is not valid.");
 
-            var actionContext = new ActionContext(
+            ActionContext actionContext = new(
                 new DefaultHttpContext(),
                 new RouteData(),
                 new ActionDescriptor(),
                 modelState
             );
 
-            var context = new ActionExecutingContext(
+            ActionExecutingContext context = new(
                 actionContext,
-                new List<IFilterMetadata>(),
+                [],
                 new Dictionary<string, object?>(),
                 new Mock<Controller>().Object
             );
@@ -111,10 +113,10 @@ namespace DemoApi.Api.Test.Filters
 
             // Assert
             context.Result.Should().BeOfType<ObjectResult>();
-            var objectResult = context.Result as ObjectResult;
+            ObjectResult? objectResult = context.Result as ObjectResult;
             objectResult!.StatusCode.Should().Be(400);
             
-            var response = objectResult.Value as ResponseViewModel;
+            ResponseViewModel? response = objectResult.Value as ResponseViewModel;
             response.Should().NotBeNull();
             response!.Success.Should().BeFalse();
             response.Errors.Should().Contain("The value 'ABC' is not valid.");
@@ -124,23 +126,23 @@ namespace DemoApi.Api.Test.Filters
         public void OnActionExecuting_ShouldAddAllErrors_ToNotificator()
         {
             // Arrange
-            var notificator = new NotificatorHandler();
-            var filter = new ModelValidationFilter(notificator);
+            NotificatorHandler notificator = new();
+            ModelValidationFilter filter = new(notificator);
 
-            var modelState = new ModelStateDictionary();
+            ModelStateDictionary modelState = new();
             modelState.AddModelError("Name", "Name is required");
             modelState.AddModelError("Weight", "Weight must be greater than 0");
 
-            var actionContext = new ActionContext(
+            ActionContext actionContext = new(
                 new DefaultHttpContext(),
                 new RouteData(),
                 new ActionDescriptor(),
                 modelState
             );
 
-            var context = new ActionExecutingContext(
+            ActionExecutingContext context = new(
                 actionContext,
-                new List<IFilterMetadata>(),
+                [],
                 new Dictionary<string, object?>(),
                 new Mock<Controller>().Object
             );
@@ -150,35 +152,37 @@ namespace DemoApi.Api.Test.Filters
 
             // Assert
             notificator.GetErrors().Should().HaveCount(2);
-            notificator.GetErrors().Select(e => e.Message).Should().Contain(new[] 
-            { 
+            notificator.GetErrors().Select(static e => e.Message).Should().Contain(
+            [ 
                 "Name is required", 
                 "Weight must be greater than 0" 
-            });
+            ]);
         }
 
         [Fact]
         public void OnActionExecuted_ShouldNotThrowException()
         {
             // Arrange
-            var notificator = new Mock<INotificatorHandler>();
-            var filter = new ModelValidationFilter(notificator.Object);
+            Mock<INotificatorHandler> notificator = new();
+            ModelValidationFilter filter = new(notificator.Object);
 
-            var actionContext = new ActionContext(
+            ActionContext actionContext = new(
                 new DefaultHttpContext(),
                 new RouteData(),
                 new ActionDescriptor()
             );
 
-            var context = new ActionExecutedContext(
+            ActionExecutedContext context = new(
                 actionContext,
-                new List<IFilterMetadata>(),
+                [],
                 new Mock<Controller>().Object
             );
 
             // Act & Assert
-            var act = () => filter.OnActionExecuted(context);
-            act.Should().NotThrow();
+            void Act() => filter.OnActionExecuted(context);
+            ((Action)Act).Should().NotThrow();
         }
+
+        #endregion
     }
 }

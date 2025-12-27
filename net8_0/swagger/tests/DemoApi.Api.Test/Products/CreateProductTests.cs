@@ -2,6 +2,7 @@ using DemoApi.Api.Test.Configuration;
 using DemoApi.Api.Test.Factories;
 using DemoApi.Api.Test.Helpers;
 using DemoApi.Application.Models;
+using DemoApi.Application.Models.Products;
 using FluentAssertions;
 using System.Net;
 using System.Net.Http.Json;
@@ -17,90 +18,180 @@ namespace DemoApi.Api.Test.Products
         public async Task Create_ShouldReturnCreated_WhenProductIsValid()
         {
             // Arrange
-            var url = "/api/v1/products";
-            var productFake = NewProduct();
+            string url = "/api/v1/products";
+            ProductViewModel productFake = NewProduct();
 
             // Act
-            var result = await HttpClientHelper.PostAndEnsureSuccessAsync(_client, url, productFake);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, productFake);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.Created);
-            response!.Should().NotBeNull();
-            response!.Success.Should().BeTrue();
-            response!.Data.Should().NotBeNull();
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            viewModel!.Should().NotBeNull();
+            viewModel!.Success.Should().BeTrue();
+            viewModel!.Data.Should().NotBeNull();
         }
 
         [Fact, TestPriority(101)]
         public async Task Create_ShouldReturnPreconditionFailed_WhenProductNameIsEmpty()
         {
             // Arrange
-            var url = "/api/v1/products";
-            var productFake = ProductWithEmptyName();
+            string url = "/api/v1/products";
+            ProductViewModel productFake = ProductWithEmptyName();
 
             // Act
-            var result = await _client.PostAsJsonAsync(url, productFake);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, productFake);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
-            response!.Should().NotBeNull();
-            response!.Success.Should().BeFalse();
-            response!.Errors.Should().Contain("Name is required");
+            response.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
+            viewModel!.Should().NotBeNull();
+            viewModel!.Success.Should().BeFalse();
+            viewModel!.Errors.Should().Contain("Name is required");
         }
 
         [Fact, TestPriority(102)]
         public async Task Create_ShouldReturnPreconditionFailed_WhenProductNameIsNull()
         {
             // Arrange
-            var url = "/api/v1/products";
-            var productFake = ProductWithNullName();
+            string url = "/api/v1/products";
+            ProductViewModel productFake = ProductWithNullName();
 
             // Act
-            var result = await _client.PostAsJsonAsync(url, productFake);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, productFake);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
-            response!.Should().NotBeNull();
-            response!.Success.Should().BeFalse();
-            response!.Errors.Should().Contain("Name is required");
+            response.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
+            viewModel!.Should().NotBeNull();
+            viewModel!.Success.Should().BeFalse();
+            viewModel!.Errors.Should().Contain("Name is required");
         }
 
         [Fact, TestPriority(103)]
         public async Task Create_ShouldReturnPreconditionFailed_WhenProductWeightIsZero()
         {
             // Arrange
-            var url = "/api/v1/products";
-            var productFake = ProductWithZeroWeight();
+            string url = "/api/v1/products";
+            ProductViewModel productFake = ProductWithZeroWeight();
 
             // Act
-            var result = await _client.PostAsJsonAsync(url, productFake);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, productFake);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
-            response!.Should().NotBeNull();
-            response!.Success.Should().BeFalse();
-            response!.Errors.Should().Contain("Weight must be greater than 0");
+            response.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
+            viewModel!.Should().NotBeNull();
+            viewModel!.Success.Should().BeFalse();
+            viewModel!.Errors.Should().Contain("Weight must be greater than 0");
         }
 
         [Fact, TestPriority(104)]
         public async Task Create_ShouldReturnPreconditionFailed_WhenProductWeightIsNegative()
         {
             // Arrange
-            var url = "/api/v1/products";
-            var productFake = ProductWithNegativeWeight();
+            string url = "/api/v1/products";
+            ProductViewModel productFake = ProductWithNegativeWeight();
 
             // Act
-            var result = await _client.PostAsJsonAsync(url, productFake);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, productFake);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
-            response!.Should().NotBeNull();
-            response!.Success.Should().BeFalse();
-            response!.Errors.Should().Contain("Weight must be greater than 0");
+            response.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
+            viewModel!.Should().NotBeNull();
+            viewModel!.Success.Should().BeFalse();
+            viewModel!.Errors.Should().Contain("Weight must be greater than 0");
+        }
+
+        [Fact, TestPriority(105)]
+        public async Task Create_ShouldReturnCreated_WhenProductNameHasLongLength()
+        {
+            // Arrange
+            string url = "/api/v1/products";
+            ProductViewModel productFake = ProductWithLongName();
+
+            // Act
+            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, productFake);
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            viewModel.Should().NotBeNull();
+            viewModel!.Success.Should().BeTrue();
+        }
+
+        [Fact, TestPriority(106)]
+        public async Task Create_ShouldReturnCreated_WhenWeightIsLarge()
+        {
+            // Arrange
+            string url = "/api/v1/products";
+            ProductViewModel productFake = ProductWithLargeWeight();
+
+            // Act
+            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, productFake);
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            viewModel.Should().NotBeNull();
+            viewModel!.Success.Should().BeTrue();
+        }
+
+        [Fact, TestPriority(107)]
+        public async Task Create_ShouldReturnBadRequest_WhenDuplicateProductName()
+        {
+            // Arrange
+            string url = "/api/v1/products";
+            ProductViewModel product = ProductWithUniqueName();
+
+            await HttpClientHelper.PostAndReturnResponseAsync(_client, url, product);
+
+            ProductViewModel duplicateProduct = ProductWithUniqueName();
+
+            // Act
+            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, duplicateProduct);
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            viewModel.Should().NotBeNull();
+            viewModel!.Success.Should().BeFalse();
+            viewModel.Errors.Should().Contain(e => e.Contains("already registered"));
+        }
+
+        [Fact, TestPriority(108)]
+        public async Task Create_ShouldAccept_ProductsWithDifferentNamesButSimilarWeight()
+        {
+            // Arrange
+            string url = "/api/v1/products";
+            ProductViewModel product1 = NewProduct();
+            product1.Weight = 1.5;
+
+            ProductViewModel product2 = NewProduct();
+            product2.Weight = 1.5;
+
+            // Act
+            (HttpResponseMessage response1, ResponseViewModel? _) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, product1);
+            (HttpResponseMessage response2, ResponseViewModel? _) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, product2);
+
+            // Assert
+            response1.StatusCode.Should().Be(HttpStatusCode.Created);
+            response2.StatusCode.Should().Be(HttpStatusCode.Created);
+        }
+
+        [Fact, TestPriority(109)]
+        public async Task Create_ShouldHandleMultipleConcurrentRequests()
+        {
+            // Arrange
+            string url = "/api/v1/products";
+            List<Task<HttpResponseMessage>> tasks = new List<Task<HttpResponseMessage>>();
+
+            for (int i = 0; i < 5; i++)
+            {
+                ProductViewModel product = NewProduct();
+                product.Name = $"Concurrent Product {Guid.NewGuid()}";
+                tasks.Add(_client.PostAsJsonAsync(url, product));
+            }
+
+            // Act
+            HttpResponseMessage[] results = await Task.WhenAll(tasks);
+
+            // Assert
+            int successCount = results.Count(r => r.StatusCode == HttpStatusCode.Created);
+            successCount.Should().BeGreaterThanOrEqualTo(1, "at least one concurrent request should succeed");
         }
 
         #endregion

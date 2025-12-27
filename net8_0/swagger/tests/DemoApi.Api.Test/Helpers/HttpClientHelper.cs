@@ -1,32 +1,44 @@
-﻿using FluentAssertions;
-using Newtonsoft.Json;
-using System.Net.Http.Headers;
-using System.Text;
+﻿using DemoApi.Application.Models;
+using System.Net.Http.Json;
 
 namespace DemoApi.Api.Test.Helpers
 {
     public static class HttpClientHelper
     {
-        public static async Task<HttpResponseMessage> GetAndEnsureSuccessAsync(HttpClient client, string url)
+        #region Public Methods
+
+        public static async Task<(HttpResponseMessage response, ResponseViewModel? viewModel)> GetAndReturnResponseAsync(HttpClient client, string url)
         {
-            var response = await client.GetAsync(url);
+            HttpResponseMessage response = await client.GetAsync(url);
+            ResponseViewModel? viewModel = await response.Content.ReadFromJsonAsync<ResponseViewModel>();
 
-            response.IsSuccessStatusCode.Should().BeTrue();
-
-            return response;
+            return (response, viewModel);
         }
 
-        public static async Task<HttpResponseMessage> PostAndEnsureSuccessAsync(HttpClient client, string url, object request)
+        public static async Task<(HttpResponseMessage response, ResponseViewModel? viewModel)> PostAndReturnResponseAsync(HttpClient client, string url, object? request)
         {
-            var requestJson = JsonConvert.SerializeObject(request);
-            var requestContent = new StringContent(requestJson, UnicodeEncoding.UTF8, "application/json");
-            requestContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            HttpResponseMessage response = await client.PostAsJsonAsync(url, request);
+            ResponseViewModel? viewModel = await response.Content.ReadFromJsonAsync<ResponseViewModel>();
 
-            var response = await client.PostAsync(url, requestContent);
-
-            response.IsSuccessStatusCode.Should().BeTrue();
-
-            return response;
+            return (response, viewModel);
         }
+
+        public static async Task<(HttpResponseMessage response, ResponseViewModel? viewModel)> PutAndReturnResponseAsync(HttpClient client, string url, object? request)
+        {
+            HttpResponseMessage response = await client.PutAsJsonAsync(url, request);
+            ResponseViewModel? viewModel = (!response.IsSuccessStatusCode) ? await response.Content.ReadFromJsonAsync<ResponseViewModel>() : null;
+
+            return (response, viewModel);
+        }
+
+        public static async Task<(HttpResponseMessage response, ResponseViewModel? viewModel)> DeleteAndReturnResponseAsync(HttpClient client, string url)
+        {
+            HttpResponseMessage response = await client.DeleteAsync(url);
+            ResponseViewModel? viewModel = (!response.IsSuccessStatusCode) ? await response.Content.ReadFromJsonAsync<ResponseViewModel>() : null;
+
+            return (response, viewModel);
+        }
+
+        #endregion
     }
 }

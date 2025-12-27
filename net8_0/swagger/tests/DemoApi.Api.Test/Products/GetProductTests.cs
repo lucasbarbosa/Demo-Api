@@ -2,6 +2,7 @@ using DemoApi.Api.Test.Configuration;
 using DemoApi.Api.Test.Factories;
 using DemoApi.Api.Test.Helpers;
 using DemoApi.Application.Models;
+using DemoApi.Application.Models.Products;
 using FluentAssertions;
 using System.Net;
 using System.Net.Http.Json;
@@ -17,119 +18,184 @@ namespace DemoApi.Api.Test.Products
         public async Task GetAll_ShouldReturnOk_WhenProductsExist()
         {
             // Arrange
-            var url = "/api/v1/products";
+            string url = "/api/v1/products";
 
             // Act
-            var result = await HttpClientHelper.GetAndEnsureSuccessAsync(_client, url);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.GetAndReturnResponseAsync(_client, url);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.OK);
-            response?.Should().NotBeNull();
-            response?.Success.Should().BeTrue();
-            response?.Data.Should().NotBeNull();
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            viewModel?.Should().NotBeNull();
+            viewModel?.Success.Should().BeTrue();
+            viewModel?.Data.Should().NotBeNull();
         }
 
         [Fact, TestPriority(201)]
         public async Task GetById_ShouldReturnOk_WhenProductExists()
         {
             // Arrange
-            var url = "/api/v1/products/1";
+            ProductViewModel product = await GetLastCreatedProduct();
+            string url = $"/api/v1/products/{product.Id}";
 
             // Act
-            var result = await HttpClientHelper.GetAndEnsureSuccessAsync(_client, url);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.GetAndReturnResponseAsync(_client, url);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.OK);
-            response?.Should().NotBeNull();
-            response?.Success.Should().BeTrue();
-            response?.Data.Should().NotBeNull();
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            viewModel?.Should().NotBeNull();
+            viewModel?.Success.Should().BeTrue();
+            viewModel?.Data.Should().NotBeNull();
         }
 
         [Fact, TestPriority(202)]
         public async Task GetById_ShouldReturnNotFound_WhenProductDoesNotExist()
         {
             // Arrange
-            var url = "/api/v1/products/999999";
+            string url = "/api/v1/products/999999";
 
             // Act
-            var result = await _client.GetAsync(url);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.GetAndReturnResponseAsync(_client, url);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.NotFound);
-            response?.Should().NotBeNull();
-            response?.Success.Should().BeFalse();
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            viewModel?.Should().NotBeNull();
+            viewModel?.Success.Should().BeFalse();
         }
 
         [Fact, TestPriority(203)]
         public async Task GetById_ShouldReturnBadRequest_WhenIdIsNotNumeric()
         {
             // Arrange
-            var url = "/api/v1/products/ABC";
+            string url = "/api/v1/products/ABC";
 
             // Act
-            var result = await _client.GetAsync(url);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.GetAndReturnResponseAsync(_client, url);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-            response?.Should().NotBeNull();
-            response?.Success.Should().BeFalse();
-            response?.Errors.Should().NotBeEmpty();
-            response?.Errors.Should().Contain(e => e.Contains("The value 'ABC' is not valid"));
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            viewModel?.Should().NotBeNull();
+            viewModel?.Success.Should().BeFalse();
+            viewModel?.Errors.Should().NotBeEmpty();
+            viewModel?.Errors.Should().Contain(e => e.Contains("The value 'ABC' is not valid"));
         }
 
         [Fact, TestPriority(204)]
         public async Task GetById_ShouldReturnBadRequest_WhenIdIsNegative()
         {
             // Arrange
-            var url = "/api/v1/products/-1";
+            string url = "/api/v1/products/-1";
 
             // Act
-            var result = await _client.GetAsync(url);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.GetAndReturnResponseAsync(_client, url);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-            response?.Should().NotBeNull();
-            response?.Success.Should().BeFalse();
-            response?.Errors.Should().NotBeEmpty();
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            viewModel?.Should().NotBeNull();
+            viewModel?.Success.Should().BeFalse();
+            viewModel?.Errors.Should().NotBeEmpty();
         }
 
         [Fact, TestPriority(205)]
         public async Task GetById_ShouldReturnBadRequest_WhenIdIsDecimal()
         {
             // Arrange
-            var url = "/api/v1/products/1.5";
+            string url = "/api/v1/products/1.5";
 
             // Act
-            var result = await _client.GetAsync(url);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.GetAndReturnResponseAsync(_client, url);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-            response?.Should().NotBeNull();
-            response?.Success.Should().BeFalse();
-            response?.Errors.Should().NotBeEmpty();
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            viewModel?.Should().NotBeNull();
+            viewModel?.Success.Should().BeFalse();
+            viewModel?.Errors.Should().NotBeEmpty();
         }
 
         [Fact, TestPriority(206)]
         public async Task GetById_ShouldReturnBadRequest_WhenIdContainsSpecialCharacters()
         {
             // Arrange
-            var url = "/api/v1/products/@#$";
+            string url = "/api/v1/products/@#$";
 
             // Act
-            var result = await _client.GetAsync(url);
-            var response = await result.Content.ReadFromJsonAsync<ResponseViewModel>();
+            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.GetAndReturnResponseAsync(_client, url);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-            response?.Should().NotBeNull();
-            response?.Success.Should().BeFalse();
-            response?.Errors.Should().NotBeEmpty();
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            viewModel?.Should().NotBeNull();
+            viewModel?.Success.Should().BeFalse();
+            viewModel?.Errors.Should().NotBeEmpty();
+        }
+
+        [Fact, TestPriority(207)]
+        public async Task GetById_ShouldReturnNotFound_WhenIdIsZero()
+        {
+            // Arrange
+            string url = "/api/v1/products/0";
+
+            // Act
+            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.GetAndReturnResponseAsync(_client, url);
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            viewModel.Should().NotBeNull();
+            viewModel!.Success.Should().BeFalse();
+        }
+
+        [Fact, TestPriority(208)]
+        public async Task GetById_ShouldReturnNotFound_WhenIdIsMaxValue()
+        {
+            // Arrange
+            string url = $"/api/v1/products/{uint.MaxValue}";
+
+            // Act
+            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.GetAndReturnResponseAsync(_client, url);
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            viewModel.Should().NotBeNull();
+            viewModel!.Success.Should().BeFalse();
+        }
+
+        [Fact, TestPriority(209)]
+        public async Task GetAll_ShouldReturnOk_WithMultipleProducts()
+        {
+            // Arrange
+            string url = "/api/v1/products";
+            
+            await _client.PostAsJsonAsync(url, NewProduct());
+            await _client.PostAsJsonAsync(url, NewProduct());
+            await _client.PostAsJsonAsync(url, NewProduct());
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync(url);
+            ProductListResponse? productList = await response.Content.ReadFromJsonAsync<ProductListResponse>();
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            productList.Should().NotBeNull();
+            productList!.Success.Should().BeTrue();
+            productList.Data.Should().NotBeNull();
+            productList.Data.Should().HaveCountGreaterThanOrEqualTo(3);
+        }
+
+        [Fact, TestPriority(210)]
+        public async Task GetAll_ShouldHandleConcurrentReads()
+        {
+            // Arrange
+            string url = "/api/v1/products";
+            List<Task<HttpResponseMessage>> tasks = [];
+
+            for (int i = 0; i < 10; i++)
+            {
+                tasks.Add(_client.GetAsync(url));
+            }
+
+            // Act
+            HttpResponseMessage[] results = await Task.WhenAll(tasks);
+
+            // Assert
+            results.Should().AllSatisfy(r => r.StatusCode.Should().Be(HttpStatusCode.OK));
         }
 
         #endregion
