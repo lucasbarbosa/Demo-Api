@@ -1,0 +1,12 @@
+services:
+  demoapi:
+    image: demoapi
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    ports:
+      - "5200:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_HTTP_PORTS=8080
+    restart: on-failure
