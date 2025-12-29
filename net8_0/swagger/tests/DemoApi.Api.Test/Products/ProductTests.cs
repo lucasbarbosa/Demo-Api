@@ -19,7 +19,7 @@ namespace DemoApi.Api.Test.Products
 
         protected static ProductViewModel NewProduct()
         {
-            var faker = new Faker<ProductViewModel>()
+            Faker<ProductViewModel> faker = new Faker<ProductViewModel>()
                 .RuleFor(p => p.Id, f => 0u)
                 .RuleFor(p => p.Name, f => f.Commerce.ProductName())
                 .RuleFor(p => p.Weight, f => Math.Round(f.Random.Double(0.1, 10.0), 2));
@@ -29,7 +29,7 @@ namespace DemoApi.Api.Test.Products
 
         protected static ProductViewModel ProductWithUniqueName()
         {
-            var faker = new Faker<ProductViewModel>()
+            Faker<ProductViewModel> faker = new Faker<ProductViewModel>()
                 .RuleFor(p => p.Id, f => 0u)
                 .RuleFor(p => p.Name, "Unique Product Name Test")
                 .RuleFor(p => p.Weight, f => Math.Round(f.Random.Double(0.1, 10.0), 2));
@@ -39,7 +39,7 @@ namespace DemoApi.Api.Test.Products
 
         protected static ProductViewModel UpdateProduct()
         {
-            var faker = new Faker<ProductViewModel>()
+            Faker<ProductViewModel> faker = new Faker<ProductViewModel>()
                 .RuleFor(p => p.Id, f => 1u)
                 .RuleFor(p => p.Name, f => f.Commerce.ProductName())
                 .RuleFor(p => p.Weight, f => Math.Round(f.Random.Double(0.1, 10.0), 2));

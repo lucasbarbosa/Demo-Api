@@ -95,6 +95,46 @@ namespace DemoApi.Api.Test.Products
             secondViewModel!.Success.Should().BeFalse();
         }
 
+        [Fact, TestPriority(405)]
+        public async Task Delete_ShouldMakeProductUnavailable_WhenDeleted()
+        {
+            // Arrange
+            ProductViewModel product = await GetLastCreatedProduct();
+            string deleteUrl = $"/api/v1/products/{product.Id}";
+            string getUrl = $"/api/v1/products/{product.Id}";
+
+            // Act
+            (HttpResponseMessage deleteResponse, ResponseViewModel? _) = await HttpClientHelper.DeleteAndReturnResponseAsync(_client, deleteUrl);
+            (HttpResponseMessage getResponse, ResponseViewModel? getViewModel) = await HttpClientHelper.GetAndReturnResponseAsync(_client, getUrl);
+
+            // Assert
+            deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            getViewModel.Should().NotBeNull();
+            getViewModel!.Success.Should().BeFalse();
+        }
+
+        [Fact, TestPriority(406)]
+        public async Task Delete_ShouldPreventUpdate_AfterDeletion()
+        {
+            // Arrange
+            ProductViewModel product = await GetLastCreatedProduct();
+            string deleteUrl = $"/api/v1/products/{product.Id}";
+            string updateUrl = "/api/v1/products";
+
+            // Act
+            (HttpResponseMessage deleteResponse, ResponseViewModel? _) = await HttpClientHelper.DeleteAndReturnResponseAsync(_client, deleteUrl);
+            
+            product.Name = "Trying to update deleted product";
+            (HttpResponseMessage updateResponse, ResponseViewModel? updateViewModel) = await HttpClientHelper.PutAndReturnResponseAsync(_client, updateUrl, product);
+
+            // Assert
+            deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            updateResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            updateViewModel.Should().NotBeNull();
+            updateViewModel!.Success.Should().BeFalse();
+        }
+
         #endregion
     }
 }

@@ -6,6 +6,7 @@ using DemoApi.Application.Models.Products;
 using FluentAssertions;
 using System.Net;
 using System.Net.Http.Json;
+using System.Text;
 
 namespace DemoApi.Api.Test.Products
 {
@@ -177,7 +178,7 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             string url = "/api/v1/products";
-            List<Task<HttpResponseMessage>> tasks = new List<Task<HttpResponseMessage>>();
+            List<Task<HttpResponseMessage>> tasks = [];
 
             for (int i = 0; i < 5; i++)
             {
@@ -192,6 +193,36 @@ namespace DemoApi.Api.Test.Products
             // Assert
             int successCount = results.Count(r => r.StatusCode == HttpStatusCode.Created);
             successCount.Should().BeGreaterThanOrEqualTo(1, "at least one concurrent request should succeed");
+        }
+
+        [Fact, TestPriority(110)]
+        public async Task Create_ShouldReturnPreconditionFailed_WhenPayloadIsNull()
+        {
+            // Arrange
+            string url = "/api/v1/products";
+            ProductViewModel? productFake = null;
+
+            // Act
+            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, productFake);
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
+            viewModel.Should().NotBeNull();
+            viewModel!.Success.Should().BeFalse();
+        }
+
+        [Fact, TestPriority(111)]
+        public async Task Create_ShouldReturnUnsupportedMediaType_WhenContentTypeIsInvalid()
+        {
+            // Arrange
+            string url = "/api/v1/products";
+            StringContent content = new("invalid-json", Encoding.UTF8, "text/plain");
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync(url, content);
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.UnsupportedMediaType);
         }
 
         #endregion

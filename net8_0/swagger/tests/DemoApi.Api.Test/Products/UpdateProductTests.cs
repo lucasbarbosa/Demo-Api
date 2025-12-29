@@ -23,7 +23,7 @@ namespace DemoApi.Api.Test.Products
             ProductViewModel productToUpdate = ProductToUpdate(productFake);
 
             // Act
-            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.PutAndReturnResponseAsync(_client, url, productToUpdate);
+            (HttpResponseMessage response, _) = await HttpClientHelper.PutAndReturnResponseAsync(_client, url, productToUpdate);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -138,7 +138,7 @@ namespace DemoApi.Api.Test.Products
             ProductViewModel updatedProduct = ProductToUpdateWeightOnly(product);
 
             // Act
-            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.PutAndReturnResponseAsync(_client, url, updatedProduct);
+            (HttpResponseMessage response, _) = await HttpClientHelper.PutAndReturnResponseAsync(_client, url, updatedProduct);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -153,7 +153,7 @@ namespace DemoApi.Api.Test.Products
             ProductViewModel updatedProduct = ProductToUpdateNameOnly(product);
 
             // Act
-            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.PutAndReturnResponseAsync(_client, url, updatedProduct);
+            (HttpResponseMessage response, _) = await HttpClientHelper.PutAndReturnResponseAsync(_client, url, updatedProduct);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -180,6 +180,22 @@ namespace DemoApi.Api.Test.Products
             // Assert
             int successCount = results.Count(r => r.StatusCode == HttpStatusCode.NoContent);
             successCount.Should().BeGreaterThanOrEqualTo(1);
+        }
+
+        [Fact, TestPriority(310)]
+        public async Task Update_ShouldValidateSuccessfully_WhenChangingToNewUniqueName()
+        {
+            // Arrange
+            string url = "/api/v1/products";
+            
+            ProductViewModel product = await GetLastCreatedProduct();
+            product.Name = $"Updated Name {Guid.NewGuid()}";
+
+            // Act
+            (HttpResponseMessage response, _) = await HttpClientHelper.PutAndReturnResponseAsync(_client, url, product);
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
 
         #endregion
