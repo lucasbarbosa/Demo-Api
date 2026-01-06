@@ -92,6 +92,47 @@ namespace DemoApi.Application.Test.Validators.Products
             result.Errors.Should().NotContain(e => e.PropertyName == "Name");
         }
 
+        [Theory]
+        [InlineData("\t")]
+        [InlineData("\n")]
+        [InlineData("\r")]
+        [InlineData("\t\n\r")]
+        [InlineData("   \t   ")]
+        public void Validate_NameWithWhitespaceCharacters_ReturnsValidationError(string name)
+        {
+            // Arrange
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithName(name)
+                .Build();
+
+            // Act
+            ValidationResult result = _validator.Validate(model);
+
+            // Assert
+            result.IsValid.Should().BeFalse();
+            result.Errors.Should().Contain(e => 
+                e.PropertyName == "Name" && 
+                e.ErrorMessage == "Name is required");
+        }
+
+        [Theory]
+        [InlineData("Product Name with Trailing Spaces   ")]
+        [InlineData("   Product Name with Leading Spaces")]
+        [InlineData("  Product Name with Both  ")]
+        public void Validate_NameWithLeadingOrTrailingSpaces_ReturnsNoError(string name)
+        {
+            // Arrange
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithName(name)
+                .Build();
+
+            // Act
+            ValidationResult result = _validator.Validate(model);
+
+            // Assert
+            result.Errors.Should().NotContain(e => e.PropertyName == "Name");
+        }
+
         #endregion
 
         #region Weight Validation Tests
@@ -173,6 +214,59 @@ namespace DemoApi.Application.Test.Validators.Products
             result.Errors.Should().NotContain(e => e.PropertyName == "Weight");
         }
 
+        [Theory]
+        [InlineData(0.0001)]
+        [InlineData(0.001)]
+        [InlineData(0.01)]
+        [InlineData(0.1)]
+        public void Validate_SmallPositiveWeights_ReturnsNoWeightError(double weight)
+        {
+            // Arrange
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithWeight(weight)
+                .Build();
+
+            // Act
+            ValidationResult result = _validator.Validate(model);
+
+            // Assert
+            result.Errors.Should().NotContain(e => e.PropertyName == "Weight");
+        }
+
+        [Theory]
+        [InlineData(1000)]
+        [InlineData(10000)]
+        [InlineData(100000)]
+        [InlineData(1000000)]
+        public void Validate_LargePositiveWeights_ReturnsNoWeightError(double weight)
+        {
+            // Arrange
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithWeight(weight)
+                .Build();
+
+            // Act
+            ValidationResult result = _validator.Validate(model);
+
+            // Assert
+            result.Errors.Should().NotContain(e => e.PropertyName == "Weight");
+        }
+
+        [Fact]
+        public void Validate_WeightWithManyDecimalPlaces_ReturnsNoWeightError()
+        {
+            // Arrange
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithPreciseWeight()
+                .Build();
+
+            // Act
+            ValidationResult result = _validator.Validate(model);
+
+            // Assert
+            result.Errors.Should().NotContain(e => e.PropertyName == "Weight");
+        }
+
         #endregion
 
         #region Multiple Errors Tests
@@ -208,6 +302,30 @@ namespace DemoApi.Application.Test.Validators.Products
             // Assert
             result.IsValid.Should().BeTrue();
             result.Errors.Should().BeEmpty();
+        }
+
+        [Theory]
+        [InlineData("", 0)]
+        [InlineData("", -1)]
+        [InlineData(null, 0)]
+        [InlineData(null, -1)]
+        [InlineData("   ", 0)]
+        [InlineData("   ", -10.5)]
+        public void Validate_MultipleInvalidFieldCombinations_ReturnsMultipleErrors(string name, double weight)
+        {
+            // Arrange
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithName(name!)
+                .WithWeight(weight)
+                .Build();
+
+            // Act
+            ValidationResult result = _validator.Validate(model);
+
+            // Assert
+            result.IsValid.Should().BeFalse();
+            result.Errors.Should().HaveCount(2);
+            result.Errors.Select(e => e.PropertyName).Should().Contain(new[] { "Name", "Weight" });
         }
 
         #endregion
@@ -250,6 +368,22 @@ namespace DemoApi.Application.Test.Validators.Products
             // Arrange
             ProductViewModel model = ProductViewModelBuilder.New()
                 .WithMinimumWeight()
+                .Build();
+
+            // Act
+            ValidationResult result = _validator.Validate(model);
+
+            // Assert
+            result.IsValid.Should().BeFalse();
+            result.Errors.Should().Contain(e => e.PropertyName == "Weight");
+        }
+
+        [Fact]
+        public void Validate_NegativeZero_ReturnsValidationError()
+        {
+            // Arrange
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithWeight(-0.0)
                 .Build();
 
             // Act
@@ -340,6 +474,122 @@ namespace DemoApi.Application.Test.Validators.Products
             result.Errors.Should().NotContain(e => e.PropertyName == "Name");
         }
 
+        [Theory]
+        [InlineData("??")]
+        [InlineData("????")]
+        [InlineData("Product ??")]
+        [InlineData("Café ?")]
+        public void Validate_NameWithEmojis_ReturnsNoNameError(string name)
+        {
+            // Arrange
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithName(name)
+                .Build();
+
+            // Act
+            ValidationResult result = _validator.Validate(model);
+
+            // Assert
+            result.Errors.Should().NotContain(e => e.PropertyName == "Name");
+        }
+
+        [Theory]
+        [InlineData("Product\nWith\nNewLines")]
+        [InlineData("Product\tWith\tTabs")]
+        [InlineData("Product\rWith\rCarriageReturns")]
+        public void Validate_NameWithControlCharacters_ReturnsNoNameError(string name)
+        {
+            // Arrange
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithName(name)
+                .Build();
+
+            // Act
+            ValidationResult result = _validator.Validate(model);
+
+            // Assert
+            result.Errors.Should().NotContain(e => e.PropertyName == "Name");
+        }
+
+        [Fact]
+        public void Validate_NameWithOnlyNumbers_ReturnsNoNameError()
+        {
+            // Arrange
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithName("1234567890")
+                .Build();
+
+            // Act
+            ValidationResult result = _validator.Validate(model);
+
+            // Assert
+            result.Errors.Should().NotContain(e => e.PropertyName == "Name");
+        }
+
+        [Fact]
+        public void Validate_NameWithMixedCasing_ReturnsNoNameError()
+        {
+            // Arrange
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithName("PrOdUcT NaMe")
+                .Build();
+
+            // Act
+            ValidationResult result = _validator.Validate(model);
+
+            // Assert
+            result.Errors.Should().NotContain(e => e.PropertyName == "Name");
+        }
+
+        #endregion
+
+        #region Id Validation Tests
+
+        [Fact]
+        public void Validate_IdZero_ReturnsNoIdError()
+        {
+            // Arrange
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithIdZero()
+                .Build();
+
+            // Act
+            ValidationResult result = _validator.Validate(model);
+
+            // Assert
+            result.Errors.Should().NotContain(e => e.PropertyName == "Id");
+        }
+
+        [Fact]
+        public void Validate_IdPositive_ReturnsNoIdError()
+        {
+            // Arrange
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithId(12345)
+                .Build();
+
+            // Act
+            ValidationResult result = _validator.Validate(model);
+
+            // Assert
+            result.Errors.Should().NotContain(e => e.PropertyName == "Id");
+        }
+
+        [Fact]
+        public void Validate_IdMaxValue_ReturnsNoIdError()
+        {
+            // Arrange
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithId(uint.MaxValue)
+                .Build();
+
+            // Act
+            ValidationResult result = _validator.Validate(model);
+
+            // Assert
+            result.Errors.Should().NotContain(e => e.PropertyName == "Id");
+        }
+
         #endregion
 
         #region Validator Metadata Tests
@@ -368,6 +618,80 @@ namespace DemoApi.Application.Test.Validators.Products
 
             // Assert
             weightRules.Should().NotBeEmpty();
+        }
+
+        [Fact]
+        public void CreateDescriptor_ShouldHaveExactlyTwoPropertiesWithRules()
+        {
+            // Arrange & Act
+            FluentValidation.IValidatorDescriptor descriptor = _validator.CreateDescriptor();
+            var propertiesWithRules = descriptor.GetMembersWithValidators().Select(m => m.Key).Distinct();
+
+            // Assert
+            propertiesWithRules.Should().HaveCount(2);
+            propertiesWithRules.Should().Contain(new[] { "Name", "Weight" });
+        }
+
+        [Fact]
+        public void CreateDescriptor_IdProperty_ShouldNotHaveValidationRules()
+        {
+            // Arrange & Act
+            FluentValidation.IValidatorDescriptor descriptor = _validator.CreateDescriptor();
+            var idRules = descriptor.GetMembersWithValidators()
+                .Where(m => m.Key == "Id")
+                .SelectMany(m => m);
+
+            // Assert
+            idRules.Should().BeEmpty();
+        }
+
+        #endregion
+
+        #region Validation Result Tests
+
+        [Fact]
+        public void Validate_ValidProduct_ShouldReturnEmptyErrorCollection()
+        {
+            // Arrange
+            ProductViewModel model = ProductViewModelBuilder.New().Build();
+
+            // Act
+            ValidationResult result = _validator.Validate(model);
+
+            // Assert
+            result.Errors.Should().BeEmpty();
+            result.Errors.Should().HaveCount(0);
+        }
+
+        [Fact]
+        public void Validate_InvalidProduct_ShouldReturnCorrectErrorCount()
+        {
+            // Arrange
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithNullName()
+                .WithZeroWeight()
+                .Build();
+
+            // Act
+            ValidationResult result = _validator.Validate(model);
+
+            // Assert
+            result.Errors.Should().HaveCount(2);
+        }
+
+        [Fact]
+        public void Validate_ShouldReturnSameValidatorInstance()
+        {
+            // Arrange
+            ProductViewModel model = ProductViewModelBuilder.New().Build();
+
+            // Act
+            ValidationResult result1 = _validator.Validate(model);
+            ValidationResult result2 = _validator.Validate(model);
+
+            // Assert
+            result1.Should().NotBeSameAs(result2);
+            result1.IsValid.Should().Be(result2.IsValid);
         }
 
         #endregion
