@@ -388,7 +388,7 @@ namespace DemoApi.Application.Test.Validators.Products
         public void CreateDescriptor_NameProperty_ReturnsValidationRules()
         {
             // Arrange & Act
-            var descriptor = _validator.CreateDescriptor();
+            FluentValidation.IValidatorDescriptor descriptor = _validator.CreateDescriptor();
             var nameRules = descriptor.GetMembersWithValidators()
                 .Where(m => m.Key == "Name")
                 .SelectMany(m => m);
@@ -401,7 +401,7 @@ namespace DemoApi.Application.Test.Validators.Products
         public void CreateDescriptor_WeightProperty_ReturnsValidationRules()
         {
             // Arrange & Act
-            var descriptor = _validator.CreateDescriptor();
+            FluentValidation.IValidatorDescriptor descriptor = _validator.CreateDescriptor();
             var weightRules = descriptor.GetMembersWithValidators()
                 .Where(m => m.Key == "Weight")
                 .SelectMany(m => m);

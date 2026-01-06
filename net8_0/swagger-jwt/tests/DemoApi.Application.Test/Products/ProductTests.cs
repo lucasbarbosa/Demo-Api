@@ -1,5 +1,4 @@
 using AutoMapper;
-using Bogus;
 using DemoApi.Application.Automapper;
 using DemoApi.Application.Services;
 using DemoApi.Domain.Interfaces;
@@ -19,15 +18,13 @@ namespace DemoApi.Application.Test.Products
 
         public ProductTests()
         {
-            var config = new MapperConfiguration(cfg =>
+            MapperConfiguration config = new(cfg =>
             {
                 cfg.AddProfile(new AutomapperConfig());
             });
 
             config.AssertConfigurationIsValid();
             _mapper = config.CreateMapper();
-            
-            Randomizer.Seed = new Random(1234);
         }
 
         #endregion
@@ -36,9 +33,9 @@ namespace DemoApi.Application.Test.Products
 
         protected (Mock<INotificatorHandler>, Mock<IProductRepository>, ProductAppService) SetProductAppService()
         {
-            var notificator = new Mock<INotificatorHandler>();
-            var productRepository = new Mock<IProductRepository>();
-            var productApplication = new ProductAppService(
+            Mock<INotificatorHandler> notificator = new();
+            Mock<IProductRepository> productRepository = new();
+            ProductAppService productApplication = new(
                 _mapper,
                 notificator.Object,
                 productRepository.Object
