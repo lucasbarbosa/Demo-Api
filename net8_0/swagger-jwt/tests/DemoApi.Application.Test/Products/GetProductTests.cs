@@ -1,4 +1,5 @@
 using DemoApi.Application.Models.Products;
+using DemoApi.Application.Test.Builders.Products;
 using DemoApi.Domain.Entities;
 using FluentAssertions;
 using Moq;
@@ -15,9 +16,9 @@ namespace DemoApi.Application.Test.Products
 
             var productsFake = new List<Product>
             {
-                NewProduct(),
-                NewProduct(),
-                NewProduct()
+                ProductBuilder.New().Build(),
+                ProductBuilder.New().Build(),
+                ProductBuilder.New().Build()
             };
 
             productRepository
@@ -73,7 +74,7 @@ namespace DemoApi.Application.Test.Products
             // Arrange
             var (notificator, productRepository, productApplication) = SetProductAppService();
 
-            var productFake = NewProduct();
+            var productFake = ProductBuilder.New().Build();
 
             productRepository
                 .Setup(x => x.GetById(productFake.Id))
@@ -106,22 +107,22 @@ namespace DemoApi.Application.Test.Products
             // Arrange
             var (notificator, productRepository, productApplication) = SetProductAppService();
 
-            uint productId = 99999;
+            var nonExistentProduct = ProductBuilder.New().WithId(99999).Build();
 
             productRepository
-                .Setup(x => x.GetById(productId))
+                .Setup(x => x.GetById(nonExistentProduct.Id))
                 .ReturnsAsync((Product?)null);
 
 
             // Act
-            var result = await productApplication.GetById(productId);
+            var result = await productApplication.GetById(nonExistentProduct.Id);
 
 
             // Assert
             result.Should().BeNull();
 
             productRepository.Verify(
-                x => x.GetById(productId),
+                x => x.GetById(nonExistentProduct.Id),
                 Times.Once
             );
 

@@ -1,4 +1,5 @@
 using DemoApi.Application.Models.Products;
+using DemoApi.Application.Test.Builders.Products;
 using DemoApi.Domain.Entities;
 using FluentAssertions;
 using Moq;
@@ -13,7 +14,7 @@ namespace DemoApi.Application.Test.Products
             // Arrange
             var (notificator, productRepository, productApplication) = SetProductAppService();
 
-            var productFake = NewProduct();
+            var productFake = ProductBuilder.New().Build();
             var productViewModel = _mapper.Map<ProductViewModel>(productFake);
 
             productRepository
@@ -56,7 +57,7 @@ namespace DemoApi.Application.Test.Products
             // Arrange
             var (notificator, productRepository, productApplication) = SetProductAppService();
 
-            var productFake = NewProduct();
+            var productFake = ProductBuilder.New().Build();
             var productViewModel = _mapper.Map<ProductViewModel>(productFake);
 
             productRepository
@@ -93,7 +94,7 @@ namespace DemoApi.Application.Test.Products
             // Arrange
             var (notificator, productRepository, productApplication) = SetProductAppService();
 
-            var productFake = NewProduct();
+            var productFake = ProductBuilder.New().Build();
             var productViewModel = _mapper.Map<ProductViewModel>(productFake);
 
             productRepository
