@@ -1,5 +1,8 @@
 using DemoApi.Application.Models.Products;
+using DemoApi.Application.Services;
+using DemoApi.Application.Test.Builders.Products;
 using DemoApi.Domain.Entities;
+using DemoApi.Domain.Interfaces;
 using FluentAssertions;
 using Moq;
 
@@ -11,10 +14,10 @@ namespace DemoApi.Application.Test.Products
         public async Task Update_ShouldReturnTrue_WhenRepositoryUpdatesSuccessfully()
         {
             // Arrange
-            var (notificator, productRepository, productApplication) = SetProductAppService();
+            (Mock<INotificatorHandler> notificator, Mock<IProductRepository> productRepository, ProductAppService productApplication) = SetProductAppService();
 
-            var productFake = NewProduct();
-            var productViewModel = _mapper.Map<ProductViewModel>(productFake);
+            Product productFake = ProductBuilder.New().WithId(1).Build();
+            ProductViewModel productViewModel = _mapper.Map<ProductViewModel>(productFake);
 
             productRepository
                 .Setup(x => x.GetById(productViewModel.Id))
@@ -26,7 +29,7 @@ namespace DemoApi.Application.Test.Products
 
 
             // Act
-            var result = await productApplication.Update(productViewModel);
+            bool result = await productApplication.Update(productViewModel);
 
 
             // Assert
@@ -52,9 +55,10 @@ namespace DemoApi.Application.Test.Products
         public async Task Update_ShouldReturnFalse_WhenProductDoesNotExist()
         {
             // Arrange
-            var (notificator, productRepository, productApplication) = SetProductAppService();
+            (Mock<INotificatorHandler> notificator, Mock<IProductRepository> productRepository, ProductAppService productApplication) = SetProductAppService();
 
-            var productViewModel = _mapper.Map<ProductViewModel>(NewProduct());
+            Product productFake = ProductBuilder.New().WithId(1).Build();
+            ProductViewModel productViewModel = _mapper.Map<ProductViewModel>(productFake);
 
             productRepository
                 .Setup(x => x.GetById(productViewModel.Id))
@@ -62,7 +66,7 @@ namespace DemoApi.Application.Test.Products
 
 
             // Act
-            var result = await productApplication.Update(productViewModel);
+            bool result = await productApplication.Update(productViewModel);
 
 
             // Assert
@@ -88,13 +92,13 @@ namespace DemoApi.Application.Test.Products
         public async Task Update_ShouldReturnFalse_WhenProductIsNull()
         {
             // Arrange
-            var (notificator, productRepository, productApplication) = SetProductAppService();
+            (Mock<INotificatorHandler> notificator, Mock<IProductRepository> productRepository, ProductAppService productApplication) = SetProductAppService();
 
             ProductViewModel? nullProduct = null;
 
 
             // Act
-            var result = await productApplication.Update(nullProduct!);
+            bool result = await productApplication.Update(nullProduct!);
 
 
             // Assert
@@ -120,10 +124,10 @@ namespace DemoApi.Application.Test.Products
         public async Task Update_ShouldReturnFalse_WhenRepositoryUpdateFails()
         {
             // Arrange
-            var (notificator, productRepository, productApplication) = SetProductAppService();
+            (Mock<INotificatorHandler> notificator, Mock<IProductRepository> productRepository, ProductAppService productApplication) = SetProductAppService();
 
-            var productFake = NewProduct();
-            var productViewModel = _mapper.Map<ProductViewModel>(productFake);
+            Product productFake = ProductBuilder.New().WithId(1).Build();
+            ProductViewModel productViewModel = _mapper.Map<ProductViewModel>(productFake);
 
             productRepository
                 .Setup(x => x.GetById(productViewModel.Id))
@@ -135,7 +139,7 @@ namespace DemoApi.Application.Test.Products
 
 
             // Act
-            var result = await productApplication.Update(productViewModel);
+            bool result = await productApplication.Update(productViewModel);
 
 
             // Assert

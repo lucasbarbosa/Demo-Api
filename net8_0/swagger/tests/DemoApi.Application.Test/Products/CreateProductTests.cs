@@ -1,5 +1,8 @@
 using DemoApi.Application.Models.Products;
+using DemoApi.Application.Services;
+using DemoApi.Application.Test.Builders.Products;
 using DemoApi.Domain.Entities;
+using DemoApi.Domain.Interfaces;
 using FluentAssertions;
 using Moq;
 
@@ -11,10 +14,10 @@ namespace DemoApi.Application.Test.Products
         public async Task Create_ShouldReturnProduct_WhenRepositoryCreatesSuccessfully()
         {
             // Arrange
-            var (notificator, productRepository, productApplication) = SetProductAppService();
+            (Mock<INotificatorHandler> notificator, Mock<IProductRepository> productRepository, ProductAppService productApplication) = SetProductAppService();
 
-            var productFake = NewProduct();
-            var productViewModel = _mapper.Map<ProductViewModel>(productFake);
+            Product productFake = ProductBuilder.New().Build();
+            ProductViewModel productViewModel = _mapper.Map<ProductViewModel>(productFake);
 
             productRepository
                 .Setup(x => x.GetByName(productViewModel.Name))
@@ -26,12 +29,12 @@ namespace DemoApi.Application.Test.Products
 
 
             // Act
-            var result = await productApplication.Create(productViewModel);
+            ProductViewModel? result = await productApplication.Create(productViewModel);
 
 
             // Assert
             result.Should().NotBeNull();
-            result.Name.Should().Be(productFake.Name);
+            result!.Name.Should().Be(productFake.Name);
             result.Weight.Should().Be(productFake.Weight);
 
             productRepository.Verify(
@@ -54,10 +57,10 @@ namespace DemoApi.Application.Test.Products
         public async Task Create_ShouldReturnNull_WhenProductAlreadyExists()
         {
             // Arrange
-            var (notificator, productRepository, productApplication) = SetProductAppService();
+            (Mock<INotificatorHandler> notificator, Mock<IProductRepository> productRepository, ProductAppService productApplication) = SetProductAppService();
 
-            var productFake = NewProduct();
-            var productViewModel = _mapper.Map<ProductViewModel>(productFake);
+            Product productFake = ProductBuilder.New().Build();
+            ProductViewModel productViewModel = _mapper.Map<ProductViewModel>(productFake);
 
             productRepository
                 .Setup(x => x.GetByName(productViewModel.Name))
@@ -65,7 +68,7 @@ namespace DemoApi.Application.Test.Products
 
 
             // Act
-            var result = await productApplication.Create(productViewModel);
+            ProductViewModel? result = await productApplication.Create(productViewModel);
 
 
             // Assert
@@ -91,10 +94,10 @@ namespace DemoApi.Application.Test.Products
         public async Task Create_ShouldReturnNull_WhenRepositoryReturnsNull()
         {
             // Arrange
-            var (notificator, productRepository, productApplication) = SetProductAppService();
+            (Mock<INotificatorHandler> notificator, Mock<IProductRepository> productRepository, ProductAppService productApplication) = SetProductAppService();
 
-            var productFake = NewProduct();
-            var productViewModel = _mapper.Map<ProductViewModel>(productFake);
+            Product productFake = ProductBuilder.New().Build();
+            ProductViewModel productViewModel = _mapper.Map<ProductViewModel>(productFake);
 
             productRepository
                 .Setup(x => x.GetByName(productViewModel.Name))
@@ -104,7 +107,7 @@ namespace DemoApi.Application.Test.Products
 
 
             // Act
-            var result = await productApplication.Create(productViewModel);
+            ProductViewModel? result = await productApplication.Create(productViewModel);
 
 
             // Assert
@@ -130,13 +133,13 @@ namespace DemoApi.Application.Test.Products
         public async Task Create_ShouldReturnNull_WhenProductIsNull()
         {
             // Arrange
-            var (notificator, productRepository, productApplication) = SetProductAppService();
+            (Mock<INotificatorHandler> notificator, Mock<IProductRepository> productRepository, ProductAppService productApplication) = SetProductAppService();
 
             ProductViewModel? nullProduct = null;
 
 
             // Act
-            var result = await productApplication.Create(nullProduct!);
+            ProductViewModel? result = await productApplication.Create(nullProduct!);
 
 
             // Assert

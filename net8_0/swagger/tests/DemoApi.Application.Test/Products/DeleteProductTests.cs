@@ -1,5 +1,8 @@
 using DemoApi.Application.Models;
+using DemoApi.Application.Services;
+using DemoApi.Application.Test.Builders.Products;
 using DemoApi.Domain.Entities;
+using DemoApi.Domain.Interfaces;
 using FluentAssertions;
 using Moq;
 
@@ -11,9 +14,9 @@ namespace DemoApi.Application.Test.Products
         public async Task DeleteById_ShouldReturnTrue_WhenRepositoryDeletesSuccessfully()
         {
             // Arrange
-            var (notificator, productRepository, productApplication) = SetProductAppService();
+            (Mock<INotificatorHandler> notificator, Mock<IProductRepository> productRepository, ProductAppService productApplication) = SetProductAppService();
 
-            var productFake = NewProduct();
+            Product productFake = ProductBuilder.New().WithId(1).Build();
 
             productRepository
                 .Setup(x => x.GetById(productFake.Id))
@@ -25,7 +28,7 @@ namespace DemoApi.Application.Test.Products
 
 
             // Act
-            var result = await productApplication.DeleteById(productFake.Id);
+            bool result = await productApplication.DeleteById(productFake.Id);
 
 
             // Assert
@@ -51,7 +54,7 @@ namespace DemoApi.Application.Test.Products
         public async Task DeleteById_ShouldReturnFalse_WhenProductDoesNotExist()
         {
             // Arrange
-            var (notificator, productRepository, productApplication) = SetProductAppService();
+            (Mock<INotificatorHandler> notificator, Mock<IProductRepository> productRepository, ProductAppService productApplication) = SetProductAppService();
 
             uint productId = 999999;
 
@@ -61,7 +64,7 @@ namespace DemoApi.Application.Test.Products
 
 
             // Act
-            var result = await productApplication.DeleteById(productId);
+            bool result = await productApplication.DeleteById(productId);
 
 
             // Assert
@@ -87,9 +90,9 @@ namespace DemoApi.Application.Test.Products
         public async Task DeleteById_ShouldReturnFalse_WhenRepositoryDeleteFails()
         {
             // Arrange
-            var (notificator, productRepository, productApplication) = SetProductAppService();
+            (Mock<INotificatorHandler> notificator, Mock<IProductRepository> productRepository, ProductAppService productApplication) = SetProductAppService();
 
-            var productFake = NewProduct();
+            Product productFake = ProductBuilder.New().WithId(1).Build();
 
             productRepository
                 .Setup(x => x.GetById(productFake.Id))
@@ -101,7 +104,7 @@ namespace DemoApi.Application.Test.Products
 
 
             // Act
-            var result = await productApplication.DeleteById(productFake.Id);
+            bool result = await productApplication.DeleteById(productFake.Id);
 
 
             // Assert

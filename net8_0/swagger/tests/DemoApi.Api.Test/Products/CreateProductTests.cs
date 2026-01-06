@@ -1,3 +1,4 @@
+using DemoApi.Api.Test.Builders.Products;
 using DemoApi.Api.Test.Configuration;
 using DemoApi.Api.Test.Factories;
 using DemoApi.Api.Test.Helpers;
@@ -20,7 +21,7 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             string url = "/api/v1/products";
-            ProductViewModel productFake = NewProduct();
+            ProductViewModel productFake = ProductViewModelBuilder.New().Build();
 
             // Act
             (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, productFake);
@@ -37,7 +38,7 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             string url = "/api/v1/products";
-            ProductViewModel productFake = ProductWithEmptyName();
+            ProductViewModel productFake = ProductViewModelBuilder.New().WithEmptyName().Build();
 
             // Act
             (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, productFake);
@@ -54,7 +55,7 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             string url = "/api/v1/products";
-            ProductViewModel productFake = ProductWithNullName();
+            ProductViewModel productFake = ProductViewModelBuilder.New().WithNullName().Build();
 
             // Act
             (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, productFake);
@@ -71,7 +72,7 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             string url = "/api/v1/products";
-            ProductViewModel productFake = ProductWithZeroWeight();
+            ProductViewModel productFake = ProductViewModelBuilder.New().WithZeroWeight().Build();
 
             // Act
             (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, productFake);
@@ -88,7 +89,7 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             string url = "/api/v1/products";
-            ProductViewModel productFake = ProductWithNegativeWeight();
+            ProductViewModel productFake = ProductViewModelBuilder.New().WithNegativeWeight().Build();
 
             // Act
             (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, productFake);
@@ -105,7 +106,7 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             string url = "/api/v1/products";
-            ProductViewModel productFake = ProductWithLongName();
+            ProductViewModel productFake = ProductViewModelBuilder.New().WithLongName().Build();
 
             // Act
             (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, productFake);
@@ -121,7 +122,7 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             string url = "/api/v1/products";
-            ProductViewModel productFake = ProductWithLargeWeight();
+            ProductViewModel productFake = ProductViewModelBuilder.New().WithLargeWeight().Build();
 
             // Act
             (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, productFake);
@@ -137,11 +138,11 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             string url = "/api/v1/products";
-            ProductViewModel product = ProductWithUniqueName();
+            ProductViewModel product = ProductViewModelBuilder.New().WithUniqueName().Build();
 
             await HttpClientHelper.PostAndReturnResponseAsync(_client, url, product);
 
-            ProductViewModel duplicateProduct = ProductWithUniqueName();
+            ProductViewModel duplicateProduct = ProductViewModelBuilder.New().WithUniqueName().Build();
 
             // Act
             (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, duplicateProduct);
@@ -158,11 +159,8 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             string url = "/api/v1/products";
-            ProductViewModel product1 = NewProduct();
-            product1.Weight = 1.5;
-
-            ProductViewModel product2 = NewProduct();
-            product2.Weight = 1.5;
+            ProductViewModel product1 = ProductViewModelBuilder.New().WithWeight(1.5).Build();
+            ProductViewModel product2 = ProductViewModelBuilder.New().WithWeight(1.5).Build();
 
             // Act
             (HttpResponseMessage response1, ResponseViewModel? _) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, product1);
@@ -182,8 +180,9 @@ namespace DemoApi.Api.Test.Products
 
             for (int i = 0; i < 5; i++)
             {
-                ProductViewModel product = NewProduct();
-                product.Name = $"Concurrent Product {Guid.NewGuid()}";
+                ProductViewModel product = ProductViewModelBuilder.New()
+                    .WithName($"Concurrent Product {Guid.NewGuid()}")
+                    .Build();
                 tasks.Add(_client.PostAsJsonAsync(url, product));
             }
 

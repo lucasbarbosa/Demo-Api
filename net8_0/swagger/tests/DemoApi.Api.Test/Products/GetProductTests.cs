@@ -1,3 +1,4 @@
+using DemoApi.Api.Test.Builders.Products;
 using DemoApi.Api.Test.Configuration;
 using DemoApi.Api.Test.Factories;
 using DemoApi.Api.Test.Helpers;
@@ -163,9 +164,9 @@ namespace DemoApi.Api.Test.Products
             // Arrange
             string url = "/api/v1/products";
             
-            await _client.PostAsJsonAsync(url, NewProduct());
-            await _client.PostAsJsonAsync(url, NewProduct());
-            await _client.PostAsJsonAsync(url, NewProduct());
+            await _client.PostAsJsonAsync(url, ProductViewModelBuilder.New().Build());
+            await _client.PostAsJsonAsync(url, ProductViewModelBuilder.New().Build());
+            await _client.PostAsJsonAsync(url, ProductViewModelBuilder.New().Build());
 
             // Act
             HttpResponseMessage response = await _client.GetAsync(url);
