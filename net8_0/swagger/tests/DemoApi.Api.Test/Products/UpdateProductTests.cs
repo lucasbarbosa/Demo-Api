@@ -21,8 +21,8 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             string url = "/api/v1/products";
-            
-            // Update the created product
+
+            ProductViewModel createdProduct = await GetLastCreatedProduct();
             ProductViewModel productToUpdate = ProductViewModelBuilder.New()
                 .WithId(createdProduct!.Id)
                 .WithName("Updated Product Name")

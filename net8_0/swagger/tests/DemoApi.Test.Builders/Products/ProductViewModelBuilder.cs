@@ -98,7 +98,7 @@ namespace DemoApi.Test.Builders.Products
 
         public ProductViewModelBuilder WithUniqueName()
         {
-            _name = $"Unique Product Name {Guid.NewGuid()}";
+            _name = "Unique Product Name Test";
             return this;
         }
 
