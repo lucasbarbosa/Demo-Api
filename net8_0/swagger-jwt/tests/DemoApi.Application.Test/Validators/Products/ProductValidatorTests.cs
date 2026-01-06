@@ -1,5 +1,5 @@
 using DemoApi.Application.Models.Products;
-using DemoApi.Application.Test.Builders.Products;
+using DemoApi.Test.Builders.Products;
 using DemoApi.Application.Validators.Products;
 using FluentAssertions;
 using FluentValidation.Results;

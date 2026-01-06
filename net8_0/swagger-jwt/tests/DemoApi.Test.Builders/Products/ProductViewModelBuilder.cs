@@ -1,7 +1,7 @@
-Ôªøusing Bogus;
+using Bogus;
 using DemoApi.Application.Models.Products;
 
-namespace DemoApi.Api.Test.Builders.Products
+namespace DemoApi.Test.Builders.Products
 {
     public class ProductViewModelBuilder
     {
@@ -92,7 +92,7 @@ namespace DemoApi.Api.Test.Builders.Products
 
         public ProductViewModelBuilder WithUnicodeName()
         {
-            _name = "Product √ß√£o √£√© √±‰∏≠Êñá";
+            _name = "Product Á„o „È Ò??";
             return this;
         }
 

@@ -1,5 +1,5 @@
 using DemoApi.Application.Services;
-using DemoApi.Application.Test.Builders.Products;
+using DemoApi.Test.Builders.Products;
 using DemoApi.Domain.Entities;
 using DemoApi.Domain.Interfaces;
 using FluentAssertions;

@@ -51,7 +51,6 @@ namespace DemoApi.Api.Test.Products
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
 
-            // Create a product first
             var createdProduct = await GetLastCreatedProduct();
             string url = $"/api/v1/products/{createdProduct.Id}";
 
