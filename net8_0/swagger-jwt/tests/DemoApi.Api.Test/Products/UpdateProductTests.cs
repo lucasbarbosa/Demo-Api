@@ -24,6 +24,8 @@ namespace DemoApi.Api.Test.Products
             ProductViewModel productFake = await GetLastCreatedProduct();
             ProductViewModel productToUpdate = ProductViewModelBuilder.New()
                 .WithId(productFake.Id)
+                .WithName("Updated Product Name")
+                .WithWeight(5.0)
                 .Build();
 
             // Act
@@ -40,7 +42,7 @@ namespace DemoApi.Api.Test.Products
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
-                .WithName(string.Empty)
+                .WithEmptyName()
                 .Build();
 
             // Act
@@ -60,7 +62,7 @@ namespace DemoApi.Api.Test.Products
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
-                .WithName(null!)
+                .WithNullName()
                 .Build();
 
             // Act
@@ -80,7 +82,7 @@ namespace DemoApi.Api.Test.Products
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
-                .WithWeight(0)
+                .WithZeroWeight()
                 .Build();
 
             // Act
@@ -100,7 +102,7 @@ namespace DemoApi.Api.Test.Products
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
-                .WithWeight(-1.5)
+                .WithNegativeWeight()
                 .Build();
 
             // Act
@@ -120,7 +122,7 @@ namespace DemoApi.Api.Test.Products
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
-                .WithId(999999)
+                .WithNonExistentId()
                 .Build();
 
             // Act
@@ -139,7 +141,7 @@ namespace DemoApi.Api.Test.Products
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
-                .WithId(0)
+                .WithIdZero()
                 .Build();
 
             // Act

@@ -41,7 +41,8 @@ namespace DemoApi.Api.Test.Products
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
-                .WithName(string.Empty)
+                .WithEmptyName()
+                .WithWeight(2.5)
                 .Build();
 
             // Act
@@ -61,7 +62,8 @@ namespace DemoApi.Api.Test.Products
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
-                .WithName(null!)
+                .WithNullName()
+                .WithWeight(2.5)
                 .Build();
 
             // Act
@@ -81,7 +83,8 @@ namespace DemoApi.Api.Test.Products
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
-                .WithWeight(0)
+                .WithName("Test Product")
+                .WithZeroWeight()
                 .Build();
 
             // Act
@@ -101,7 +104,8 @@ namespace DemoApi.Api.Test.Products
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
-                .WithWeight(-1.5)
+                .WithName("Test Product")
+                .WithNegativeWeight()
                 .Build();
 
             // Act
@@ -121,7 +125,7 @@ namespace DemoApi.Api.Test.Products
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
-                .WithName(new string('A', 100))
+                .WithLongName()
                 .Build();
 
             // Act
@@ -140,7 +144,8 @@ namespace DemoApi.Api.Test.Products
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
-                .WithWeight(1000000.99)
+                .WithName("Heavy Product")
+                .WithLargeWeight()
                 .Build();
 
             // Act
@@ -158,15 +163,14 @@ namespace DemoApi.Api.Test.Products
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
-            string uniqueProductName = "Unique Product Name Test";
             ProductViewModel product = ProductViewModelBuilder.New()
-                .WithName(uniqueProductName)
+                .WithUniqueName()
                 .Build();
 
             await HttpClientHelper.PostAndReturnResponseAsync(client, url, product);
 
             ProductViewModel duplicateProduct = ProductViewModelBuilder.New()
-                .WithName(uniqueProductName)
+                .WithUniqueName()
                 .Build();
 
             // Act

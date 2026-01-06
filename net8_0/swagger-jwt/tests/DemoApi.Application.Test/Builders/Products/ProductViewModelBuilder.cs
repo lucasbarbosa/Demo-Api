@@ -24,7 +24,7 @@ namespace DemoApi.Application.Test.Builders.Products
 
         #endregion
 
-        #region Public Methods
+        #region Id Methods
 
         public ProductViewModelBuilder WithId(uint id)
         {
@@ -32,17 +32,119 @@ namespace DemoApi.Application.Test.Builders.Products
             return this;
         }
 
+        public ProductViewModelBuilder WithIdZero()
+        {
+            _id = 0;
+            return this;
+        }
+
+        public ProductViewModelBuilder WithNonExistentId()
+        {
+            _id = 999999;
+            return this;
+        }
+
+        #endregion
+
+        #region Name Methods
+
         public ProductViewModelBuilder WithName(string name)
         {
             _name = name;
             return this;
         }
 
+        public ProductViewModelBuilder WithEmptyName()
+        {
+            _name = string.Empty;
+            return this;
+        }
+
+        public ProductViewModelBuilder WithNullName()
+        {
+            _name = null!;
+            return this;
+        }
+
+        public ProductViewModelBuilder WithWhitespaceName()
+        {
+            _name = "   ";
+            return this;
+        }
+
+        public ProductViewModelBuilder WithSingleCharacterName()
+        {
+            _name = "A";
+            return this;
+        }
+
+        public ProductViewModelBuilder WithLongName(int length = 100)
+        {
+            _name = new string('A', length);
+            return this;
+        }
+
+        public ProductViewModelBuilder WithSpecialCharactersName()
+        {
+            _name = "Product @#$% 123";
+            return this;
+        }
+
+        public ProductViewModelBuilder WithUnicodeName()
+        {
+            _name = "Product Á„o „È Ò??";
+            return this;
+        }
+
+        #endregion
+
+        #region Weight Methods
+
         public ProductViewModelBuilder WithWeight(double weight)
         {
             _weight = weight;
             return this;
         }
+
+        public ProductViewModelBuilder WithZeroWeight()
+        {
+            _weight = 0;
+            return this;
+        }
+
+        public ProductViewModelBuilder WithNegativeWeight()
+        {
+            _weight = -1.5;
+            return this;
+        }
+
+        public ProductViewModelBuilder WithVerySmallPositiveWeight()
+        {
+            _weight = double.Epsilon;
+            return this;
+        }
+
+        public ProductViewModelBuilder WithMaximumWeight()
+        {
+            _weight = double.MaxValue;
+            return this;
+        }
+
+        public ProductViewModelBuilder WithMinimumWeight()
+        {
+            _weight = double.MinValue;
+            return this;
+        }
+
+        public ProductViewModelBuilder WithPreciseWeight()
+        {
+            _weight = 1.123456789;
+            return this;
+        }
+
+        #endregion
+
+        #region Build Methods
 
         public ProductViewModel Build()
         {

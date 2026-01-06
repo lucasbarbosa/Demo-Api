@@ -21,7 +21,7 @@ namespace DemoApi.Api.Test.Products
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
-                .WithName("   ")
+                .WithWhitespaceName()
                 .Build();
 
             // Act
@@ -41,7 +41,7 @@ namespace DemoApi.Api.Test.Products
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
-                .WithName("Product @#$% 123")
+                .WithSpecialCharactersName()
                 .Build();
 
             // Act
@@ -61,7 +61,7 @@ namespace DemoApi.Api.Test.Products
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
-                .WithName(new string('A', 500))
+                .WithLongName(500)
                 .Build();
 
             // Act
@@ -81,7 +81,7 @@ namespace DemoApi.Api.Test.Products
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
-                .WithName("Produto ??? ?? ???????")
+                .WithUnicodeName()
                 .Build();
 
             // Act
@@ -155,7 +155,7 @@ namespace DemoApi.Api.Test.Products
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
-                .WithWeight(1.123456789)
+                .WithPreciseWeight()
                 .Build();
 
             // Act
@@ -179,8 +179,8 @@ namespace DemoApi.Api.Test.Products
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
-                .WithName(string.Empty)
-                .WithWeight(-1)
+                .WithEmptyName()
+                .WithNegativeWeight()
                 .Build();
 
             // Act
@@ -202,8 +202,8 @@ namespace DemoApi.Api.Test.Products
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
-                .WithName("   ")
-                .WithWeight(0)
+                .WithWhitespaceName()
+                .WithZeroWeight()
                 .Build();
 
             // Act
@@ -229,7 +229,7 @@ namespace DemoApi.Api.Test.Products
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
-                .WithName("   ")
+                .WithWhitespaceName()
                 .Build();
 
             // Act
@@ -272,8 +272,8 @@ namespace DemoApi.Api.Test.Products
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
-                .WithName(string.Empty)
-                .WithWeight(-1)
+                .WithEmptyName()
+                .WithNegativeWeight()
                 .Build();
 
             // Act
@@ -299,7 +299,7 @@ namespace DemoApi.Api.Test.Products
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
-                .WithWeight(double.Epsilon)
+                .WithVerySmallPositiveWeight()
                 .Build();
 
             // Act
@@ -319,7 +319,7 @@ namespace DemoApi.Api.Test.Products
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
-                .WithName("A")
+                .WithSingleCharacterName()
                 .Build();
 
             // Act

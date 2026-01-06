@@ -30,7 +30,7 @@ namespace DemoApi.Application.Test.Validators.Products
         {
             // Arrange
             ProductViewModel model = ProductViewModelBuilder.New()
-                .WithName(string.Empty)
+                .WithEmptyName()
                 .Build();
 
             // Act
@@ -48,7 +48,7 @@ namespace DemoApi.Application.Test.Validators.Products
         {
             // Arrange
             ProductViewModel model = ProductViewModelBuilder.New()
-                .WithName(null!)
+                .WithNullName()
                 .Build();
 
             // Act
@@ -66,7 +66,7 @@ namespace DemoApi.Application.Test.Validators.Products
         {
             // Arrange
             ProductViewModel model = ProductViewModelBuilder.New()
-                .WithName("   ")
+                .WithWhitespaceName()
                 .Build();
 
             // Act
@@ -101,7 +101,7 @@ namespace DemoApi.Application.Test.Validators.Products
         {
             // Arrange
             ProductViewModel model = ProductViewModelBuilder.New()
-                .WithWeight(0)
+                .WithZeroWeight()
                 .Build();
 
             // Act
@@ -119,7 +119,7 @@ namespace DemoApi.Application.Test.Validators.Products
         {
             // Arrange
             ProductViewModel model = ProductViewModelBuilder.New()
-                .WithWeight(-1.5)
+                .WithNegativeWeight()
                 .Build();
 
             // Act
@@ -182,8 +182,8 @@ namespace DemoApi.Application.Test.Validators.Products
         {
             // Arrange
             ProductViewModel model = ProductViewModelBuilder.New()
-                .WithName(string.Empty)
-                .WithWeight(-1)
+                .WithEmptyName()
+                .WithNegativeWeight()
                 .Build();
 
             // Act
@@ -219,7 +219,7 @@ namespace DemoApi.Application.Test.Validators.Products
         {
             // Arrange
             ProductViewModel model = ProductViewModelBuilder.New()
-                .WithWeight(double.Epsilon)
+                .WithVerySmallPositiveWeight()
                 .Build();
 
             // Act
@@ -234,7 +234,7 @@ namespace DemoApi.Application.Test.Validators.Products
         {
             // Arrange
             ProductViewModel model = ProductViewModelBuilder.New()
-                .WithWeight(double.MaxValue)
+                .WithMaximumWeight()
                 .Build();
 
             // Act
@@ -249,7 +249,7 @@ namespace DemoApi.Application.Test.Validators.Products
         {
             // Arrange
             ProductViewModel model = ProductViewModelBuilder.New()
-                .WithWeight(double.MinValue)
+                .WithMinimumWeight()
                 .Build();
 
             // Act
@@ -269,7 +269,7 @@ namespace DemoApi.Application.Test.Validators.Products
         {
             // Arrange
             ProductViewModel model = ProductViewModelBuilder.New()
-                .WithName("     ")
+                .WithWhitespaceName()
                 .Build();
 
             // Act
@@ -285,7 +285,7 @@ namespace DemoApi.Application.Test.Validators.Products
         {
             // Arrange
             ProductViewModel model = ProductViewModelBuilder.New()
-                .WithName("Product @#$% 123")
+                .WithSpecialCharactersName()
                 .Build();
 
             // Act
@@ -299,9 +299,8 @@ namespace DemoApi.Application.Test.Validators.Products
         public void Validate_VeryLongName_ReturnsNoNameError()
         {
             // Arrange
-            string longName = new('A', 1000);
             ProductViewModel model = ProductViewModelBuilder.New()
-                .WithName(longName)
+                .WithLongName(500)
                 .Build();
 
             // Act
@@ -316,7 +315,7 @@ namespace DemoApi.Application.Test.Validators.Products
         {
             // Arrange
             ProductViewModel model = ProductViewModelBuilder.New()
-                .WithName("Product ??? ?? ???????")
+                .WithUnicodeName()
                 .Build();
 
             // Act
@@ -331,7 +330,7 @@ namespace DemoApi.Application.Test.Validators.Products
         {
             // Arrange
             ProductViewModel model = ProductViewModelBuilder.New()
-                .WithName("A")
+                .WithSingleCharacterName()
                 .Build();
 
             // Act
