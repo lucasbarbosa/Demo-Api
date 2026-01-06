@@ -1,7 +1,7 @@
 using Bogus;
 using DemoApi.Application.Models.Products;
 
-namespace DemoApi.Api.Test.Builders.Products
+namespace DemoApi.Test.Builders.Products
 {
     public class ProductViewModelBuilder
     {
@@ -98,7 +98,7 @@ namespace DemoApi.Api.Test.Builders.Products
 
         public ProductViewModelBuilder WithUniqueName()
         {
-            _name = "Unique Product Name Test";
+            _name = $"Unique Product Name {Guid.NewGuid()}";
             return this;
         }
 

@@ -26,6 +26,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\src\DemoApi.Api\DemoApi.Api.csproj" />
 		<ProjectReference Include="..\..\src\DemoApi.Application\DemoApi.Application.csproj" />
+		<ProjectReference Include="..\DemoApi.Test.Builders\DemoApi.Test.Builders.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

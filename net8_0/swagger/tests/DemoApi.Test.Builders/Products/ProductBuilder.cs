@@ -1,7 +1,7 @@
 using Bogus;
 using DemoApi.Domain.Entities;
 
-namespace DemoApi.Application.Test.Builders.Products
+namespace DemoApi.Test.Builders.Products
 {
     public class ProductBuilder
     {

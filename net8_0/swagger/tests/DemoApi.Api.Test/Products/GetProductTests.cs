@@ -1,12 +1,13 @@
-using DemoApi.Api.Test.Builders.Products;
 using DemoApi.Api.Test.Configuration;
 using DemoApi.Api.Test.Factories;
 using DemoApi.Api.Test.Helpers;
 using DemoApi.Application.Models;
 using DemoApi.Application.Models.Products;
+using DemoApi.Test.Builders.Products;
 using FluentAssertions;
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace DemoApi.Api.Test.Products
 {

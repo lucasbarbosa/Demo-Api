@@ -1,9 +1,9 @@
-using DemoApi.Api.Test.Builders.Products;
 using DemoApi.Api.Test.Configuration;
 using DemoApi.Api.Test.Factories;
 using DemoApi.Api.Test.Helpers;
 using DemoApi.Application.Models;
 using DemoApi.Application.Models.Products;
+using DemoApi.Test.Builders.Products;
 using FluentAssertions;
 using System.Net;
 using System.Net.Http.Json;
@@ -21,8 +21,7 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             string url = "/api/v1/products";
-            ProductViewModel createdProduct = await GetLastCreatedProduct();
-
+            
             // Update the created product
             ProductViewModel productToUpdate = ProductViewModelBuilder.New()
                 .WithId(createdProduct!.Id)
@@ -211,8 +210,13 @@ namespace DemoApi.Api.Test.Products
             ProductViewModel createdProduct = await GetLastCreatedProduct();
             createdProduct!.Name = $"Updated Name {Guid.NewGuid()}";
 
+            ProductViewModel productToUpdate = ProductViewModelBuilder.New()
+                .WithId(createdProduct!.Id)
+                .WithUniqueName()
+                .Build();
+
             // Act
-            (HttpResponseMessage response, _) = await HttpClientHelper.PutAndReturnResponseAsync(_client, url, createdProduct);
+            (HttpResponseMessage response, _) = await HttpClientHelper.PutAndReturnResponseAsync(_client, url, productToUpdate);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);

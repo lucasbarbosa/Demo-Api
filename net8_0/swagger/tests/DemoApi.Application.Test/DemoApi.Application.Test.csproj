@@ -23,6 +23,7 @@
     <ProjectReference Include="..\..\src\DemoApi.Application\DemoApi.Application.csproj" />
     <ProjectReference Include="..\..\src\DemoApi.Domain\DemoApi.Domain.csproj" />
     <ProjectReference Include="..\..\src\DemoApi.Infra\DemoApi.Infra.Data.csproj" />
+    <ProjectReference Include="..\DemoApi.Test.Builders\DemoApi.Test.Builders.csproj" />
   </ItemGroup>
 
   <ItemGroup>
