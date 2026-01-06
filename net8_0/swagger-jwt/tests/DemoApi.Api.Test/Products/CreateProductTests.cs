@@ -163,15 +163,12 @@ namespace DemoApi.Api.Test.Products
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
-            ProductViewModel product = ProductViewModelBuilder.New()
-                .WithUniqueName()
-                .Build();
+            string duplicateName = "Duplicate Test Product Name";
+            ProductViewModel product = ProductViewModelBuilder.New().WithName(duplicateName).Build();
 
             await HttpClientHelper.PostAndReturnResponseAsync(client, url, product);
 
-            ProductViewModel duplicateProduct = ProductViewModelBuilder.New()
-                .WithUniqueName()
-                .Build();
+            ProductViewModel duplicateProduct = ProductViewModelBuilder.New().WithName(duplicateName).Build();
 
             // Act
             (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, duplicateProduct);
