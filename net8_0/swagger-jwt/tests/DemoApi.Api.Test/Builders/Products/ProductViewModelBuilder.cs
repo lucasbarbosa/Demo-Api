@@ -1,9 +1,9 @@
 using Bogus;
-using DemoApi.Domain.Entities;
+using DemoApi.Application.Models.Products;
 
-namespace DemoApi.Application.Test.Builders.Products
+namespace DemoApi.Api.Test.Builders.Products
 {
-    public class ProductBuilder
+    public class ProductViewModelBuilder
     {
         #region Properties
 
@@ -16,7 +16,7 @@ namespace DemoApi.Application.Test.Builders.Products
 
         #region Constructors
 
-        public ProductBuilder()
+        public ProductViewModelBuilder()
         {
             _name = _faker.Commerce.ProductName();
             _weight = Math.Round(_faker.Random.Double(0.1, 10.0), 2);
@@ -26,27 +26,27 @@ namespace DemoApi.Application.Test.Builders.Products
 
         #region Public Methods
 
-        public ProductBuilder WithId(uint id)
+        public ProductViewModelBuilder WithId(uint id)
         {
             _id = id;
             return this;
         }
 
-        public ProductBuilder WithName(string name)
+        public ProductViewModelBuilder WithName(string name)
         {
             _name = name;
             return this;
         }
 
-        public ProductBuilder WithWeight(double weight)
+        public ProductViewModelBuilder WithWeight(double weight)
         {
             _weight = weight;
             return this;
         }
 
-        public Product Build()
+        public ProductViewModel Build()
         {
-            return new Product
+            return new ProductViewModel
             {
                 Id = _id,
                 Name = _name,
@@ -54,7 +54,7 @@ namespace DemoApi.Application.Test.Builders.Products
             };
         }
 
-        public static ProductBuilder New() => new();
+        public static ProductViewModelBuilder New() => new();
 
         #endregion
     }
