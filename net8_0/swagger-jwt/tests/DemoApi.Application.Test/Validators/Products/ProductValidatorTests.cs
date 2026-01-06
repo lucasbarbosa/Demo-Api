@@ -1,4 +1,5 @@
 using DemoApi.Application.Models.Products;
+using DemoApi.Application.Test.Builders.Products;
 using DemoApi.Application.Validators.Products;
 using FluentAssertions;
 using FluentValidation.Results;
@@ -28,11 +29,9 @@ namespace DemoApi.Application.Test.Validators.Products
         public void Validate_EmptyName_ReturnsValidationError()
         {
             // Arrange
-            ProductViewModel model = new()
-            { 
-                Name = string.Empty, 
-                Weight = 1.0 
-            };
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithName(string.Empty)
+                .Build();
 
             // Act
             ValidationResult result = _validator.Validate(model);
@@ -48,11 +47,9 @@ namespace DemoApi.Application.Test.Validators.Products
         public void Validate_NullName_ReturnsValidationError()
         {
             // Arrange
-            ProductViewModel model = new()
-            { 
-                Name = null!, 
-                Weight = 1.0 
-            };
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithName(null!)
+                .Build();
 
             // Act
             ValidationResult result = _validator.Validate(model);
@@ -68,11 +65,9 @@ namespace DemoApi.Application.Test.Validators.Products
         public void Validate_WhitespaceName_ReturnsValidationError()
         {
             // Arrange
-            ProductViewModel model = new() 
-            { 
-                Name = "   ", 
-                Weight = 1.0 
-            };
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithName("   ")
+                .Build();
 
             // Act
             ValidationResult result = _validator.Validate(model);
@@ -88,11 +83,7 @@ namespace DemoApi.Application.Test.Validators.Products
         public void Validate_ValidName_ReturnsNoNameError()
         {
             // Arrange
-            ProductViewModel model = new() 
-            { 
-                Name = "Valid Product Name", 
-                Weight = 1.0 
-            };
+            ProductViewModel model = ProductViewModelBuilder.New().Build();
 
             // Act
             ValidationResult result = _validator.Validate(model);
@@ -109,11 +100,9 @@ namespace DemoApi.Application.Test.Validators.Products
         public void Validate_ZeroWeight_ReturnsValidationError()
         {
             // Arrange
-            ProductViewModel model = new() 
-            { 
-                Name = "Test Product", 
-                Weight = 0 
-            };
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithWeight(0)
+                .Build();
 
             // Act
             ValidationResult result = _validator.Validate(model);
@@ -129,11 +118,9 @@ namespace DemoApi.Application.Test.Validators.Products
         public void Validate_NegativeWeight_ReturnsValidationError()
         {
             // Arrange
-            ProductViewModel model = new() 
-            { 
-                Name = "Test Product", 
-                Weight = -1.5 
-            };
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithWeight(-1.5)
+                .Build();
 
             // Act
             ValidationResult result = _validator.Validate(model);
@@ -152,11 +139,9 @@ namespace DemoApi.Application.Test.Validators.Products
         public void Validate_MultipleNegativeWeights_ReturnsValidationError(double weight)
         {
             // Arrange
-            ProductViewModel model = new() 
-            { 
-                Name = "Test Product", 
-                Weight = weight 
-            };
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithWeight(weight)
+                .Build();
 
             // Act
             ValidationResult result = _validator.Validate(model);
@@ -177,11 +162,9 @@ namespace DemoApi.Application.Test.Validators.Products
         public void Validate_PositiveWeight_ReturnsNoWeightError(double weight)
         {
             // Arrange
-            ProductViewModel model = new() 
-            { 
-                Name = "Test Product", 
-                Weight = weight 
-            };
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithWeight(weight)
+                .Build();
 
             // Act
             ValidationResult result = _validator.Validate(model);
@@ -198,11 +181,10 @@ namespace DemoApi.Application.Test.Validators.Products
         public void Validate_InvalidNameAndWeight_ReturnsMultipleValidationErrors()
         {
             // Arrange
-            ProductViewModel model = new() 
-            { 
-                Name = string.Empty, 
-                Weight = -1 
-            };
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithName(string.Empty)
+                .WithWeight(-1)
+                .Build();
 
             // Act
             ValidationResult result = _validator.Validate(model);
@@ -218,12 +200,7 @@ namespace DemoApi.Application.Test.Validators.Products
         public void Validate_AllValidFields_ReturnsNoErrors()
         {
             // Arrange
-            ProductViewModel model = new() 
-            { 
-                Id = 0,
-                Name = "Valid Product", 
-                Weight = 10.5 
-            };
+            ProductViewModel model = ProductViewModelBuilder.New().Build();
 
             // Act
             ValidationResult result = _validator.Validate(model);
@@ -241,11 +218,9 @@ namespace DemoApi.Application.Test.Validators.Products
         public void Validate_VerySmallPositiveWeight_ReturnsNoWeightError()
         {
             // Arrange
-            ProductViewModel model = new() 
-            { 
-                Name = "Test Product", 
-                Weight = double.Epsilon 
-            };
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithWeight(double.Epsilon)
+                .Build();
 
             // Act
             ValidationResult result = _validator.Validate(model);
@@ -258,11 +233,9 @@ namespace DemoApi.Application.Test.Validators.Products
         public void Validate_MaximumWeight_ReturnsNoWeightError()
         {
             // Arrange
-            ProductViewModel model = new() 
-            { 
-                Name = "Test Product", 
-                Weight = double.MaxValue 
-            };
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithWeight(double.MaxValue)
+                .Build();
 
             // Act
             ValidationResult result = _validator.Validate(model);
@@ -275,11 +248,9 @@ namespace DemoApi.Application.Test.Validators.Products
         public void Validate_MinimumWeight_ReturnsValidationError()
         {
             // Arrange
-            ProductViewModel model = new() 
-            { 
-                Name = "Test Product", 
-                Weight = double.MinValue 
-            };
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithWeight(double.MinValue)
+                .Build();
 
             // Act
             ValidationResult result = _validator.Validate(model);
@@ -297,11 +268,9 @@ namespace DemoApi.Application.Test.Validators.Products
         public void Validate_NameWithOnlySpaces_ReturnsValidationError()
         {
             // Arrange
-            ProductViewModel model = new() 
-            { 
-                Name = "     ", 
-                Weight = 1.0 
-            };
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithName("     ")
+                .Build();
 
             // Act
             ValidationResult result = _validator.Validate(model);
@@ -315,11 +284,9 @@ namespace DemoApi.Application.Test.Validators.Products
         public void Validate_NameWithSpecialCharacters_ReturnsNoNameError()
         {
             // Arrange
-            ProductViewModel model = new() 
-            { 
-                Name = "Product @#$% 123", 
-                Weight = 1.0 
-            };
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithName("Product @#$% 123")
+                .Build();
 
             // Act
             ValidationResult result = _validator.Validate(model);
@@ -333,11 +300,9 @@ namespace DemoApi.Application.Test.Validators.Products
         {
             // Arrange
             string longName = new('A', 1000);
-            ProductViewModel model = new() 
-            { 
-                Name = longName, 
-                Weight = 1.0 
-            };
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithName(longName)
+                .Build();
 
             // Act
             ValidationResult result = _validator.Validate(model);
@@ -350,11 +315,9 @@ namespace DemoApi.Application.Test.Validators.Products
         public void Validate_NameWithUnicodeCharacters_ReturnsNoNameError()
         {
             // Arrange
-            ProductViewModel model = new() 
-            { 
-                Name = "Produto ??? ?? ???????", 
-                Weight = 1.0 
-            };
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithName("Product ??? ?? ???????")
+                .Build();
 
             // Act
             ValidationResult result = _validator.Validate(model);
@@ -367,11 +330,9 @@ namespace DemoApi.Application.Test.Validators.Products
         public void Validate_SingleCharacterName_ReturnsNoNameError()
         {
             // Arrange
-            ProductViewModel model = new() 
-            { 
-                Name = "A", 
-                Weight = 1.0 
-            };
+            ProductViewModel model = ProductViewModelBuilder.New()
+                .WithName("A")
+                .Build();
 
             // Act
             ValidationResult result = _validator.Validate(model);

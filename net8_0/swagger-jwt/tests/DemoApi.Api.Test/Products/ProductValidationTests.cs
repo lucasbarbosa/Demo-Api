@@ -1,3 +1,4 @@
+using DemoApi.Api.Test.Builders.Products;
 using DemoApi.Api.Test.Configuration;
 using DemoApi.Api.Test.Factories;
 using DemoApi.Api.Test.Helpers;
@@ -19,7 +20,9 @@ namespace DemoApi.Api.Test.Products
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
-            ProductViewModel productFake = ProductWithWhitespaceName();
+            ProductViewModel productFake = ProductViewModelBuilder.New()
+                .WithName("   ")
+                .Build();
 
             // Act
             (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
@@ -37,7 +40,9 @@ namespace DemoApi.Api.Test.Products
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
-            ProductViewModel productFake = ProductWithSpecialCharactersName();
+            ProductViewModel productFake = ProductViewModelBuilder.New()
+                .WithName("Product @#$% 123")
+                .Build();
 
             // Act
             (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
@@ -55,7 +60,9 @@ namespace DemoApi.Api.Test.Products
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
-            ProductViewModel productFake = ProductWithVeryLongName();
+            ProductViewModel productFake = ProductViewModelBuilder.New()
+                .WithName(new string('A', 500))
+                .Build();
 
             // Act
             (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
@@ -73,7 +80,9 @@ namespace DemoApi.Api.Test.Products
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
-            ProductViewModel productFake = ProductWithUnicodeName();
+            ProductViewModel productFake = ProductViewModelBuilder.New()
+                .WithName("Produto ??? ?? ???????")
+                .Build();
 
             // Act
             (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
@@ -101,7 +110,9 @@ namespace DemoApi.Api.Test.Products
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
-            ProductViewModel productFake = ProductWithSpecificWeight(weight);
+            ProductViewModel productFake = ProductViewModelBuilder.New()
+                .WithWeight(weight)
+                .Build();
 
             // Act
             (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
@@ -123,7 +134,9 @@ namespace DemoApi.Api.Test.Products
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
-            ProductViewModel productFake = ProductWithSpecificWeight(weight);
+            ProductViewModel productFake = ProductViewModelBuilder.New()
+                .WithWeight(weight)
+                .Build();
 
             // Act
             (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
@@ -141,7 +154,9 @@ namespace DemoApi.Api.Test.Products
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
-            ProductViewModel productFake = ProductWithPreciseWeight();
+            ProductViewModel productFake = ProductViewModelBuilder.New()
+                .WithWeight(1.123456789)
+                .Build();
 
             // Act
             (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
@@ -163,7 +178,10 @@ namespace DemoApi.Api.Test.Products
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
-            ProductViewModel productFake = ProductWithInvalidNameAndWeight();
+            ProductViewModel productFake = ProductViewModelBuilder.New()
+                .WithName(string.Empty)
+                .WithWeight(-1)
+                .Build();
 
             // Act
             (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
@@ -183,7 +201,10 @@ namespace DemoApi.Api.Test.Products
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
-            ProductViewModel productFake = ProductWithWhitespaceNameAndZeroWeight();
+            ProductViewModel productFake = ProductViewModelBuilder.New()
+                .WithName("   ")
+                .WithWeight(0)
+                .Build();
 
             // Act
             (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
@@ -207,7 +228,9 @@ namespace DemoApi.Api.Test.Products
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
-            ProductViewModel productFake = ProductWithWhitespaceName();
+            ProductViewModel productFake = ProductViewModelBuilder.New()
+                .WithName("   ")
+                .Build();
 
             // Act
             (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PutAndReturnResponseAsync(client, url, productFake);
@@ -228,7 +251,9 @@ namespace DemoApi.Api.Test.Products
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
-            ProductViewModel productFake = ProductWithSpecificWeight(weight);
+            ProductViewModel productFake = ProductViewModelBuilder.New()
+                .WithWeight(weight)
+                .Build();
 
             // Act
             (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PutAndReturnResponseAsync(client, url, productFake);
@@ -246,7 +271,10 @@ namespace DemoApi.Api.Test.Products
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
-            ProductViewModel productFake = ProductWithInvalidNameAndWeight();
+            ProductViewModel productFake = ProductViewModelBuilder.New()
+                .WithName(string.Empty)
+                .WithWeight(-1)
+                .Build();
 
             // Act
             (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PutAndReturnResponseAsync(client, url, productFake);
@@ -270,7 +298,9 @@ namespace DemoApi.Api.Test.Products
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
-            ProductViewModel productFake = ProductWithVerySmallPositiveWeight();
+            ProductViewModel productFake = ProductViewModelBuilder.New()
+                .WithWeight(double.Epsilon)
+                .Build();
 
             // Act
             (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
@@ -288,7 +318,9 @@ namespace DemoApi.Api.Test.Products
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
-            ProductViewModel productFake = ProductWithSingleCharacterName();
+            ProductViewModel productFake = ProductViewModelBuilder.New()
+                .WithName("A")
+                .Build();
 
             // Act
             (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
