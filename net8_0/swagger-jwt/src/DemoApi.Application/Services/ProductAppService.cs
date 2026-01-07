@@ -21,14 +21,14 @@ namespace DemoApi.Application.Services
 
         public async Task<IList<ProductViewModel>> GetAll()
         {
-            var response = _mapper.Map<IList<ProductViewModel>>(await _productRepository.GetAll());
+            IList<ProductViewModel> response = _mapper.Map<IList<ProductViewModel>>(await _productRepository.GetAll());
 
             return response;
         }
 
         public async Task<ProductViewModel?> GetById(uint id)
         {
-            var response = _mapper.Map<ProductViewModel>(await _productRepository.GetById(id));
+            ProductViewModel? response = _mapper.Map<ProductViewModel>(await _productRepository.GetById(id));
 
             if (response is null)
             {

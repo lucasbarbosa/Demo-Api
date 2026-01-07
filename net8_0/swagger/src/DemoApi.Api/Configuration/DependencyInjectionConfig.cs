@@ -29,7 +29,7 @@ namespace DemoApi.Api.Configuration
 
             #endregion
 
-            #region Validators
+            #region FluentValidation
 
             services.AddFluentValidationAutoValidation();
             services.AddFluentValidationClientsideAdapters();

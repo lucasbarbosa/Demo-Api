@@ -1,4 +1,5 @@
 ﻿using NLog;
+using NLog.Config;
 using NLog.Web;
 
 namespace DemoApi.Api.Configuration
@@ -9,8 +10,8 @@ namespace DemoApi.Api.Configuration
 
         public static Logger AddNLogConfig(this WebApplicationBuilder builder)
         {
-            var config = new NLog.Config.LoggingConfiguration();
-            var nlogConfigPath = Path.Combine(AppContext.BaseDirectory, "nlog.config");
+            _ = new LoggingConfiguration();
+            string nlogConfigPath = Path.Combine(AppContext.BaseDirectory, "nlog.config");
 
             try
             {
@@ -29,14 +30,13 @@ namespace DemoApi.Api.Configuration
                 throw;
             }
 
-            var logger = LogManager.GetCurrentClassLogger();
+            Logger logger = LogManager.GetCurrentClassLogger();
 
             builder.Logging.ClearProviders();
             builder.Host.UseNLog();
 
             return logger;
         }
-
 
         public static void Shutdown()
         {

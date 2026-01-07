@@ -25,6 +25,7 @@ namespace DemoApi.Api.V1.Controllers
         [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseViewModel), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ResponseViewModel), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ResponseViewModel), StatusCodes.Status412PreconditionFailed)]
         public async Task<IActionResult> GetById(uint id)
         {
             ProductViewModel? product = await _productApplication.GetById(id);
@@ -73,6 +74,7 @@ namespace DemoApi.Api.V1.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ResponseViewModel), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ResponseViewModel), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ResponseViewModel), StatusCodes.Status412PreconditionFailed)]
         public async Task<IActionResult> Delete(uint id)
         {
             return await _productApplication.DeleteById(id)

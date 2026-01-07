@@ -118,11 +118,11 @@ namespace DemoApi.Api.Controllers
 
         protected void ErrorModelState(ModelStateDictionary modelState)
         {
-            var erros = modelState.Values.SelectMany(e => e.Errors);
+            IEnumerable<ModelError> erros = modelState.Values.SelectMany(e => e.Errors);
 
-            foreach (var erro in erros)
+            foreach (ModelError erro in erros)
             {
-                var errorMsg = erro.Exception == null ? erro.ErrorMessage : erro.Exception.Message;
+                string errorMsg = erro.Exception == null ? erro.ErrorMessage : erro.Exception.Message;
                 AddError(errorMsg);
             }
         }
