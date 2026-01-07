@@ -16,7 +16,7 @@ namespace DemoApi.Application.Test.Products
             // Arrange
             (Mock<INotificatorHandler> notificator, Mock<IProductRepository> productRepository, ProductAppService productApplication) = SetProductAppService();
 
-            Product productFake = ProductBuilder.New().WithId(1).Build();
+            Product productFake = ProductBuilder.New().Build();
             ProductViewModel productViewModel = _mapper.Map<ProductViewModel>(productFake);
 
             productRepository
@@ -57,8 +57,7 @@ namespace DemoApi.Application.Test.Products
             // Arrange
             (Mock<INotificatorHandler> notificator, Mock<IProductRepository> productRepository, ProductAppService productApplication) = SetProductAppService();
 
-            Product productFake = ProductBuilder.New().WithId(1).Build();
-            ProductViewModel productViewModel = _mapper.Map<ProductViewModel>(productFake);
+            ProductViewModel productViewModel = ProductBuilder.New().Build();
 
             productRepository
                 .Setup(x => x.GetById(productViewModel.Id))
@@ -126,7 +125,7 @@ namespace DemoApi.Application.Test.Products
             // Arrange
             (Mock<INotificatorHandler> notificator, Mock<IProductRepository> productRepository, ProductAppService productApplication) = SetProductAppService();
 
-            Product productFake = ProductBuilder.New().WithId(1).Build();
+            Product productFake = ProductBuilder.New().Build();
             ProductViewModel productViewModel = _mapper.Map<ProductViewModel>(productFake);
 
             productRepository

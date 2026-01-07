@@ -9,7 +9,7 @@ namespace DemoApi.Application.Test.Handlers
         public void Constructor_ShouldInitializeEmptyErrorList()
         {
             // Arrange & Act
-            var notificator = new NotificatorHandler();
+            NotificatorHandler notificator = new();
 
             // Assert
             notificator.HasErrors().Should().BeFalse();
@@ -20,8 +20,8 @@ namespace DemoApi.Application.Test.Handlers
         public void AddError_ShouldAddNotificationToList()
         {
             // Arrange
-            var notificator = new NotificatorHandler();
-            var errorMessage = "Test error message";
+            NotificatorHandler notificator = new();
+            string errorMessage = "Test error message";
 
             // Act
             notificator.AddError(errorMessage);
@@ -36,7 +36,7 @@ namespace DemoApi.Application.Test.Handlers
         public void AddError_ShouldAddMultipleNotifications()
         {
             // Arrange
-            var notificator = new NotificatorHandler();
+            NotificatorHandler notificator = new();
 
             // Act
             notificator.AddError("Error 1");
@@ -52,11 +52,11 @@ namespace DemoApi.Application.Test.Handlers
         public void HasErrors_ShouldReturnTrue_WhenErrorsExist()
         {
             // Arrange
-            var notificator = new NotificatorHandler();
+            NotificatorHandler notificator = new();
             notificator.AddError("Some error");
 
             // Act
-            var result = notificator.HasErrors();
+            bool result = notificator.HasErrors();
 
             // Assert
             result.Should().BeTrue();
@@ -66,10 +66,10 @@ namespace DemoApi.Application.Test.Handlers
         public void HasErrors_ShouldReturnFalse_WhenNoErrors()
         {
             // Arrange
-            var notificator = new NotificatorHandler();
+            NotificatorHandler notificator = new();
 
             // Act
-            var result = notificator.HasErrors();
+            bool result = notificator.HasErrors();
 
             // Assert
             result.Should().BeFalse();
@@ -79,12 +79,12 @@ namespace DemoApi.Application.Test.Handlers
         public void GetErrors_ShouldReturnAllNotifications()
         {
             // Arrange
-            var notificator = new NotificatorHandler();
+            NotificatorHandler notificator = new();
             notificator.AddError("Error 1");
             notificator.AddError("Error 2");
 
             // Act
-            var errors = notificator.GetErrors();
+            IEnumerable<Notification> errors = notificator.GetErrors();
 
             // Assert
             errors.Should().HaveCount(2);
@@ -95,10 +95,10 @@ namespace DemoApi.Application.Test.Handlers
         public void GetErrors_ShouldReturnEmptyList_WhenNoErrorsAdded()
         {
             // Arrange
-            var notificator = new NotificatorHandler();
+            NotificatorHandler notificator = new();
 
             // Act
-            var errors = notificator.GetErrors();
+            IEnumerable<Notification> errors = notificator.GetErrors();
 
             // Assert
             errors.Should().BeEmpty();

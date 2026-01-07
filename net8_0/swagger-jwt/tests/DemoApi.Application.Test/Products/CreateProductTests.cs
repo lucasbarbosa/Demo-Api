@@ -1,8 +1,8 @@
 using DemoApi.Application.Models.Products;
 using DemoApi.Application.Services;
-using DemoApi.Test.Builders.Products;
 using DemoApi.Domain.Entities;
 using DemoApi.Domain.Interfaces;
+using DemoApi.Test.Builders.Products;
 using FluentAssertions;
 using Moq;
 

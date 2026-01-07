@@ -12,7 +12,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Bogus" Version="34.0.2" />
 		<PackageReference Include="coverlet.collector" Version="6.0.0" />
 		<PackageReference Include="FluentAssertions" Version="8.8.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.22" />
@@ -26,11 +25,17 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\src\DemoApi.Api\DemoApi.Api.csproj" />
 		<ProjectReference Include="..\..\src\DemoApi.Application\DemoApi.Application.csproj" />
+		<ProjectReference Include="..\DemoApi.Test.Builders\DemoApi.Test.Builders.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<None Include="..\DemoApi.Api\bin\$(Configuration)\net8.0\DemoApi.Api.deps.json" Link="DemoApi.Api.deps.json" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\DemoApi.Api\bin\$(Configuration)\net8.0\DemoApi.Api.deps.json')" />
-		<None Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="xunit.runner.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 
 	<ItemGroup>

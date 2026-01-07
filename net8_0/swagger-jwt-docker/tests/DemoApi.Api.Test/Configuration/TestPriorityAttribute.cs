@@ -1,17 +1,12 @@
-﻿using Xunit.Abstractions;
+using Xunit.Abstractions;
 using Xunit.Sdk;
 
 namespace DemoApi.Api.Test.Configuration
 {
     [AttributeUsage(AttributeTargets.Method)]
-    public class TestPriorityAttribute : Attribute
+    public class TestPriorityAttribute(int priority) : Attribute
     {
-        public TestPriorityAttribute(int priority)
-        {
-            Priority = priority;
-        }
-
-        public int Priority { get; }
+        public int Priority { get; } = priority;
     }
 
     public class PriorityOrderer : ITestCaseOrderer

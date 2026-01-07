@@ -12,21 +12,24 @@ namespace DemoApi.Api.Test.Middleware
 {
     public class ExceptionMiddlewareTests
     {
+        #region Public Methods
+
         [Fact]
         public async Task InvokeAsync_ShouldCallNextDelegate_WhenNoExceptionOccurs()
         {
             // Arrange
-            var nextDelegateCalled = false;
-            RequestDelegate next = (HttpContext hc) =>
+            bool nextDelegateCalled = false;
+            
+            Task NextDelegate(HttpContext hc)
             {
                 nextDelegateCalled = true;
                 return Task.CompletedTask;
-            };
+            }
 
-            var middleware = new ExceptionMiddleware(next);
-            var context = new DefaultHttpContext();
-            var logger = new Mock<ILogger>();
-            var notificator = new Mock<INotificatorHandler>();
+            ExceptionMiddleware middleware = new(NextDelegate);
+            DefaultHttpContext context = new();
+            Mock<ILogger> logger = new();
+            Mock<INotificatorHandler> notificator = new();
 
             // Act
             await middleware.InvokeAsync(context, logger.Object, notificator.Object);
@@ -40,16 +43,17 @@ namespace DemoApi.Api.Test.Middleware
         public async Task InvokeAsync_ShouldReturn500_WhenUnhandledExceptionOccurs()
         {
             // Arrange
-            var expectedException = new InvalidOperationException("Test exception");
-            RequestDelegate next = (HttpContext hc) => throw expectedException;
+            InvalidOperationException expectedException = new("Test exception");
+            
+            Task NextDelegate(HttpContext hc) => throw expectedException;
 
-            var middleware = new ExceptionMiddleware(next);
-            var context = new DefaultHttpContext();
+            ExceptionMiddleware middleware = new(NextDelegate);
+            DefaultHttpContext context = new();
             context.Response.Body = new MemoryStream();
 
-            var logger = new Mock<ILogger>();
-            var notificator = new Mock<INotificatorHandler>();
-            notificator.Setup(n => n.GetErrors()).Returns(new List<Notification>());
+            Mock<ILogger> logger = new();
+            Mock<INotificatorHandler> notificator = new();
+            notificator.Setup(n => n.GetErrors()).Returns([]);
 
             // Act
             await middleware.InvokeAsync(context, logger.Object, notificator.Object);
@@ -63,16 +67,17 @@ namespace DemoApi.Api.Test.Middleware
         public async Task InvokeAsync_ShouldLogException_WhenExceptionThrown()
         {
             // Arrange
-            var expectedException = new InvalidOperationException("Test exception");
-            RequestDelegate next = (HttpContext hc) => throw expectedException;
+            InvalidOperationException expectedException = new("Test exception");
+            
+            Task NextDelegate(HttpContext hc) => throw expectedException;
 
-            var middleware = new ExceptionMiddleware(next);
-            var context = new DefaultHttpContext();
+            ExceptionMiddleware middleware = new(NextDelegate);
+            DefaultHttpContext context = new();
             context.Response.Body = new MemoryStream();
 
-            var logger = new Mock<ILogger>();
-            var notificator = new Mock<INotificatorHandler>();
-            notificator.Setup(n => n.GetErrors()).Returns(new List<Notification>());
+            Mock<ILogger> logger = new();
+            Mock<INotificatorHandler> notificator = new();
+            notificator.Setup(n => n.GetErrors()).Returns([]);
 
             // Act
             await middleware.InvokeAsync(context, logger.Object, notificator.Object);
@@ -85,27 +90,28 @@ namespace DemoApi.Api.Test.Middleware
         public async Task InvokeAsync_ShouldReturnStandardizedResponse_OnError()
         {
             // Arrange
-            var expectedException = new InvalidOperationException("Test exception message");
-            RequestDelegate next = (HttpContext hc) => throw expectedException;
+            InvalidOperationException expectedException = new("Test exception message");
+            
+            Task NextDelegate(HttpContext hc) => throw expectedException;
 
-            var middleware = new ExceptionMiddleware(next);
-            var context = new DefaultHttpContext();
+            ExceptionMiddleware middleware = new(NextDelegate);
+            DefaultHttpContext context = new();
             context.Response.Body = new MemoryStream();
 
-            var logger = new Mock<ILogger>();
-            var notificator = new Mock<INotificatorHandler>();
-            notificator.Setup(n => n.GetErrors()).Returns(new List<Notification>
-            {
+            Mock<ILogger> logger = new();
+            Mock<INotificatorHandler> notificator = new();
+            notificator.Setup(n => n.GetErrors()).Returns(
+            [
                 new Notification("Domain error 1")
-            });
+            ]);
 
             // Act
             await middleware.InvokeAsync(context, logger.Object, notificator.Object);
 
             // Assert
             context.Response.Body.Seek(0, SeekOrigin.Begin);
-            var responseBody = await new StreamReader(context.Response.Body).ReadToEndAsync();
-            var response = JsonConvert.DeserializeObject<ResponseViewModel>(responseBody);
+            string responseBody = await new StreamReader(context.Response.Body).ReadToEndAsync();
+            ResponseViewModel? response = JsonConvert.DeserializeObject<ResponseViewModel>(responseBody);
 
             response.Should().NotBeNull();
             response!.Success.Should().BeFalse();
@@ -117,33 +123,36 @@ namespace DemoApi.Api.Test.Middleware
         public async Task InvokeAsync_ShouldIncludeDomainErrors_InResponse()
         {
             // Arrange
-            var expectedException = new Exception("Exception message");
-            RequestDelegate next = (HttpContext hc) => throw expectedException;
+            Exception expectedException = new("Exception message");
+            
+            Task NextDelegate(HttpContext hc) => throw expectedException;
 
-            var middleware = new ExceptionMiddleware(next);
-            var context = new DefaultHttpContext();
+            ExceptionMiddleware middleware = new(NextDelegate);
+            DefaultHttpContext context = new();
             context.Response.Body = new MemoryStream();
 
-            var logger = new Mock<ILogger>();
-            var notificator = new Mock<INotificatorHandler>();
-            notificator.Setup(n => n.GetErrors()).Returns(new List<Notification>
-            {
+            Mock<ILogger> logger = new();
+            Mock<INotificatorHandler> notificator = new();
+            notificator.Setup(n => n.GetErrors()).Returns(
+            [
                 new Notification("Validation error 1"),
                 new Notification("Validation error 2")
-            });
+            ]);
 
             // Act
             await middleware.InvokeAsync(context, logger.Object, notificator.Object);
 
             // Assert
             context.Response.Body.Seek(0, SeekOrigin.Begin);
-            var responseBody = await new StreamReader(context.Response.Body).ReadToEndAsync();
-            var response = JsonConvert.DeserializeObject<ResponseViewModel>(responseBody);
+            string responseBody = await new StreamReader(context.Response.Body).ReadToEndAsync();
+            ResponseViewModel? response = JsonConvert.DeserializeObject<ResponseViewModel>(responseBody);
 
             response!.Errors.Should().HaveCount(3);
             response.Errors.Should().Contain("Validation error 1");
             response.Errors.Should().Contain("Validation error 2");
             response.Errors.Should().Contain("Exception message");
         }
+
+        #endregion
     }
 }

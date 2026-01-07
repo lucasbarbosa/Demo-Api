@@ -1,5 +1,8 @@
 using DemoApi.Application.Models.Products;
+using DemoApi.Application.Services;
 using DemoApi.Domain.Entities;
+using DemoApi.Domain.Interfaces;
+using DemoApi.Test.Builders.Products;
 using FluentAssertions;
 using Moq;
 
@@ -11,14 +14,14 @@ namespace DemoApi.Application.Test.Products
         public async Task GetAll_ShouldReturnAllProducts_WhenRepositoryHasProducts()
         {
             // Arrange
-            var (notificator, productRepository, productApplication) = SetProductAppService();
+            (Mock<INotificatorHandler> notificator, Mock<IProductRepository> productRepository, ProductAppService productApplication) = SetProductAppService();
 
-            var productsFake = new List<Product>
-            {
-                NewProduct(),
-                NewProduct(),
-                NewProduct()
-            };
+            List<Product> productsFake =
+            [
+                ProductBuilder.New().Build(),
+                ProductBuilder.New().Build(),
+                ProductBuilder.New().Build()
+            ];
 
             productRepository
                 .Setup(x => x.GetAll())
@@ -26,7 +29,7 @@ namespace DemoApi.Application.Test.Products
 
 
             // Act
-            var result = await productApplication.GetAll();
+            IList<ProductViewModel> result = await productApplication.GetAll();
 
 
             // Assert
@@ -44,9 +47,9 @@ namespace DemoApi.Application.Test.Products
         public async Task GetAll_ShouldReturnEmptyList_WhenRepositoryHasNoProducts()
         {
             // Arrange
-            var (notificator, productRepository, productApplication) = SetProductAppService();
+            (Mock<INotificatorHandler> notificator, Mock<IProductRepository> productRepository, ProductAppService productApplication) = SetProductAppService();
 
-            var productsFake = new List<Product>();
+            List<Product> productsFake = [];
 
             productRepository
                 .Setup(x => x.GetAll())
@@ -54,7 +57,7 @@ namespace DemoApi.Application.Test.Products
 
 
             // Act
-            var result = await productApplication.GetAll();
+            IList<ProductViewModel> result = await productApplication.GetAll();
 
 
             // Assert
@@ -71,9 +74,9 @@ namespace DemoApi.Application.Test.Products
         public async Task GetById_ShouldReturnProduct_WhenProductExists()
         {
             // Arrange
-            var (notificator, productRepository, productApplication) = SetProductAppService();
+            (Mock<INotificatorHandler> notificator, Mock<IProductRepository> productRepository, ProductAppService productApplication) = SetProductAppService();
 
-            var productFake = NewProduct();
+            Product productFake = ProductBuilder.New().Build();
 
             productRepository
                 .Setup(x => x.GetById(productFake.Id))
@@ -81,12 +84,12 @@ namespace DemoApi.Application.Test.Products
 
 
             // Act
-            var result = await productApplication.GetById(productFake.Id);
+            ProductViewModel? result = await productApplication.GetById(productFake.Id);
 
 
             // Assert
             result.Should().NotBeNull();
-            result.Name.Should().Be(productFake.Name);
+            result!.Name.Should().Be(productFake.Name);
             result.Weight.Should().Be(productFake.Weight);
 
             productRepository.Verify(
@@ -104,24 +107,24 @@ namespace DemoApi.Application.Test.Products
         public async Task GetById_ShouldReturnNull_WhenProductDoesNotExist()
         {
             // Arrange
-            var (notificator, productRepository, productApplication) = SetProductAppService();
+            (Mock<INotificatorHandler> notificator, Mock<IProductRepository> productRepository, ProductAppService productApplication) = SetProductAppService();
 
-            uint productId = 99999;
+            Product nonExistentProduct = ProductBuilder.New().WithId(99999).Build();
 
             productRepository
-                .Setup(x => x.GetById(productId))
+                .Setup(x => x.GetById(nonExistentProduct.Id))
                 .ReturnsAsync((Product?)null);
 
 
             // Act
-            var result = await productApplication.GetById(productId);
+            ProductViewModel? result = await productApplication.GetById(nonExistentProduct.Id);
 
 
             // Assert
             result.Should().BeNull();
 
             productRepository.Verify(
-                x => x.GetById(productId),
+                x => x.GetById(nonExistentProduct.Id),
                 Times.Once
             );
 

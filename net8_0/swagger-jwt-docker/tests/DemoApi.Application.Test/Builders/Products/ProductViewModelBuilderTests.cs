@@ -389,7 +389,7 @@ namespace DemoApi.Application.Test.Builders.Products
                 .WithId(finalId)
                 .Build();
 
-            // Assert
+            // Assert - Last method call wins
             product.Id.Should().Be(finalId);
         }
 
@@ -406,7 +406,7 @@ namespace DemoApi.Application.Test.Builders.Products
                 .WithName(finalName)
                 .Build();
 
-            // Assert
+            // Assert - Last method call wins
             product.Name.Should().Be(finalName);
         }
 
@@ -423,7 +423,7 @@ namespace DemoApi.Application.Test.Builders.Products
                 .WithWeight(finalWeight)
                 .Build();
 
-            // Assert
+            // Assert - Last method call wins
             product.Weight.Should().Be(finalWeight);
         }
 
@@ -594,6 +594,7 @@ namespace DemoApi.Application.Test.Builders.Products
             ProductViewModel product2 = ProductViewModelBuilder.New().Build();
 
             // Assert
+            // Note: Names might be different due to Bogus randomization
             product1.Name.Should().NotBeNullOrEmpty();
             product2.Name.Should().NotBeNullOrEmpty();
         }

@@ -19,7 +19,7 @@ namespace DemoApi.Application.Test.Products
 
         public ProductTests()
         {
-            MapperConfiguration config = new MapperConfiguration(cfg =>
+            MapperConfiguration config = new(cfg =>
             {
                 cfg.AddProfile(new AutomapperConfig());
             });
@@ -36,9 +36,9 @@ namespace DemoApi.Application.Test.Products
 
         protected (Mock<INotificatorHandler>, Mock<IProductRepository>, ProductAppService) SetProductAppService()
         {
-            Mock<INotificatorHandler> notificator = new Mock<INotificatorHandler>();
-            Mock<IProductRepository> productRepository = new Mock<IProductRepository>();
-            ProductAppService productApplication = new ProductAppService(
+            Mock<INotificatorHandler> notificator = new();
+            Mock<IProductRepository> productRepository = new();
+            ProductAppService productApplication = new(
                 _mapper,
                 notificator.Object,
                 productRepository.Object

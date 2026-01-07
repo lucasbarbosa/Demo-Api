@@ -76,7 +76,7 @@ namespace DemoApi.Application.Test.Products
             // Arrange
             (Mock<INotificatorHandler> notificator, Mock<IProductRepository> productRepository, ProductAppService productApplication) = SetProductAppService();
 
-            Product productFake = ProductBuilder.New().WithId(1).Build();
+            Product productFake = ProductBuilder.New().Build();
 
             productRepository
                 .Setup(x => x.GetById(productFake.Id))
@@ -109,22 +109,22 @@ namespace DemoApi.Application.Test.Products
             // Arrange
             (Mock<INotificatorHandler> notificator, Mock<IProductRepository> productRepository, ProductAppService productApplication) = SetProductAppService();
 
-            uint productId = 99999;
+            Product nonExistentProduct = ProductBuilder.New().WithId(99999).Build();
 
             productRepository
-                .Setup(x => x.GetById(productId))
+                .Setup(x => x.GetById(nonExistentProduct.Id))
                 .ReturnsAsync((Product?)null);
 
 
             // Act
-            ProductViewModel? result = await productApplication.GetById(productId);
+            ProductViewModel? result = await productApplication.GetById(nonExistentProduct.Id);
 
 
             // Assert
             result.Should().BeNull();
 
             productRepository.Verify(
-                x => x.GetById(productId),
+                x => x.GetById(nonExistentProduct.Id),
                 Times.Once
             );
 

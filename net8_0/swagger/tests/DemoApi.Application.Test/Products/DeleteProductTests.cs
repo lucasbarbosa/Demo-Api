@@ -1,4 +1,3 @@
-using DemoApi.Application.Models;
 using DemoApi.Application.Services;
 using DemoApi.Domain.Entities;
 using DemoApi.Domain.Interfaces;
@@ -16,7 +15,7 @@ namespace DemoApi.Application.Test.Products
             // Arrange
             (Mock<INotificatorHandler> notificator, Mock<IProductRepository> productRepository, ProductAppService productApplication) = SetProductAppService();
 
-            Product productFake = ProductBuilder.New().WithId(1).Build();
+            Product productFake = ProductBuilder.New().Build();
 
             productRepository
                 .Setup(x => x.GetById(productFake.Id))
@@ -56,27 +55,27 @@ namespace DemoApi.Application.Test.Products
             // Arrange
             (Mock<INotificatorHandler> notificator, Mock<IProductRepository> productRepository, ProductAppService productApplication) = SetProductAppService();
 
-            uint productId = 999999;
+            Product nonExistentProduct = ProductBuilder.New().WithId(999999).Build();
 
             productRepository
-                .Setup(x => x.GetById(productId))
+                .Setup(x => x.GetById(nonExistentProduct.Id))
                 .ReturnsAsync((Product?)null);
 
 
             // Act
-            bool result = await productApplication.DeleteById(productId);
+            bool result = await productApplication.DeleteById(nonExistentProduct.Id);
 
 
             // Assert
             result.Should().BeFalse();
 
             productRepository.Verify(
-                x => x.GetById(productId),
+                x => x.GetById(nonExistentProduct.Id),
                 Times.Once
             );
 
             productRepository.Verify(
-                x => x.DeleteById(productId),
+                x => x.DeleteById(nonExistentProduct.Id),
                 Times.Never
             );
 
@@ -92,7 +91,7 @@ namespace DemoApi.Application.Test.Products
             // Arrange
             (Mock<INotificatorHandler> notificator, Mock<IProductRepository> productRepository, ProductAppService productApplication) = SetProductAppService();
 
-            Product productFake = ProductBuilder.New().WithId(1).Build();
+            Product productFake = ProductBuilder.New().Build();
 
             productRepository
                 .Setup(x => x.GetById(productFake.Id))

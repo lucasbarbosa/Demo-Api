@@ -18,14 +18,13 @@ namespace DemoApi.Api.Test.Products
         public async Task Create_ShouldReturnPreconditionFailed_WhenProductNameIsWhitespace()
         {
             // Arrange
-            HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
                 .WithWhitespaceName()
                 .Build();
 
             // Act
-            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, productFake);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
@@ -38,14 +37,13 @@ namespace DemoApi.Api.Test.Products
         public async Task Create_ShouldReturnCreated_WhenProductNameContainsSpecialCharacters()
         {
             // Arrange
-            HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
                 .WithSpecialCharactersName()
                 .Build();
 
             // Act
-            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, productFake);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -58,14 +56,13 @@ namespace DemoApi.Api.Test.Products
         public async Task Create_ShouldReturnCreated_WhenProductNameIsVeryLong()
         {
             // Arrange
-            HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
                 .WithLongName(500)
                 .Build();
 
             // Act
-            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, productFake);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -78,14 +75,13 @@ namespace DemoApi.Api.Test.Products
         public async Task Create_ShouldReturnCreated_WhenProductNameContainsUnicode()
         {
             // Arrange
-            HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
                 .WithUnicodeName()
                 .Build();
 
             // Act
-            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, productFake);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -108,14 +104,13 @@ namespace DemoApi.Api.Test.Products
         public async Task Create_ShouldReturnCreated_WhenProductWeightIsValid(double weight)
         {
             // Arrange
-            HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
                 .WithWeight(weight)
                 .Build();
 
             // Act
-            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, productFake);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -132,14 +127,13 @@ namespace DemoApi.Api.Test.Products
         public async Task Create_ShouldReturnPreconditionFailed_WhenProductWeightIsNegative(double weight)
         {
             // Arrange
-            HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
                 .WithWeight(weight)
                 .Build();
 
             // Act
-            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, productFake);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
@@ -152,14 +146,13 @@ namespace DemoApi.Api.Test.Products
         public async Task Create_ShouldReturnCreated_WhenProductWeightHasManyDecimalPlaces()
         {
             // Arrange
-            HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
                 .WithPreciseWeight()
                 .Build();
 
             // Act
-            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, productFake);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -176,7 +169,6 @@ namespace DemoApi.Api.Test.Products
         public async Task Create_ShouldReturnPreconditionFailed_WithMultipleErrors_WhenNameAndWeightAreInvalid()
         {
             // Arrange
-            HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
                 .WithEmptyName()
@@ -184,7 +176,7 @@ namespace DemoApi.Api.Test.Products
                 .Build();
 
             // Act
-            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, productFake);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
@@ -199,7 +191,6 @@ namespace DemoApi.Api.Test.Products
         public async Task Create_ShouldReturnPreconditionFailed_WithMultipleErrors_WhenNameIsWhitespaceAndWeightIsZero()
         {
             // Arrange
-            HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
                 .WithWhitespaceName()
@@ -207,7 +198,7 @@ namespace DemoApi.Api.Test.Products
                 .Build();
 
             // Act
-            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, productFake);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
@@ -226,14 +217,13 @@ namespace DemoApi.Api.Test.Products
         public async Task Update_ShouldReturnPreconditionFailed_WhenProductNameIsWhitespace()
         {
             // Arrange
-            HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
                 .WithWhitespaceName()
                 .Build();
 
             // Act
-            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PutAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PutAndReturnResponseAsync(_client, url, productFake);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
@@ -249,14 +239,13 @@ namespace DemoApi.Api.Test.Products
         public async Task Update_ShouldReturnPreconditionFailed_WhenProductWeightIsInvalid(double weight)
         {
             // Arrange
-            HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
                 .WithWeight(weight)
                 .Build();
 
             // Act
-            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PutAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PutAndReturnResponseAsync(_client, url, productFake);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
@@ -269,7 +258,6 @@ namespace DemoApi.Api.Test.Products
         public async Task Update_ShouldReturnPreconditionFailed_WithMultipleErrors_WhenAllFieldsAreInvalid()
         {
             // Arrange
-            HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
                 .WithEmptyName()
@@ -277,7 +265,7 @@ namespace DemoApi.Api.Test.Products
                 .Build();
 
             // Act
-            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PutAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PutAndReturnResponseAsync(_client, url, productFake);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
@@ -296,14 +284,13 @@ namespace DemoApi.Api.Test.Products
         public async Task Create_ShouldReturnCreated_WhenProductWeightIsVerySmallPositive()
         {
             // Arrange
-            HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
                 .WithVerySmallPositiveWeight()
                 .Build();
 
             // Act
-            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, productFake);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -316,14 +303,13 @@ namespace DemoApi.Api.Test.Products
         public async Task Create_ShouldReturnCreated_WhenProductNameIsSingleCharacter()
         {
             // Arrange
-            HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
             ProductViewModel productFake = ProductViewModelBuilder.New()
                 .WithSingleCharacterName()
                 .Build();
 
             // Act
-            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(_client, url, productFake);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.Created);

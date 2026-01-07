@@ -1,9 +1,9 @@
-using DemoApi.Test.Builders.Products;
 using DemoApi.Api.Test.Configuration;
 using DemoApi.Api.Test.Factories;
 using DemoApi.Api.Test.Helpers;
 using DemoApi.Application.Models;
 using DemoApi.Application.Models.Products;
+using DemoApi.Test.Builders.Products;
 using FluentAssertions;
 using System.Net;
 using System.Net.Http.Json;
@@ -25,13 +25,13 @@ namespace DemoApi.Api.Test.Products
             ProductViewModel productFake = ProductViewModelBuilder.New().Build();
 
             // Act
-            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.Created);
-            response!.Should().NotBeNull();
-            response!.Success.Should().BeTrue();
-            response!.Data.Should().NotBeNull();
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            viewModel!.Should().NotBeNull();
+            viewModel!.Success.Should().BeTrue();
+            viewModel!.Data.Should().NotBeNull();
         }
 
         [Fact, TestPriority(101)]
@@ -40,19 +40,16 @@ namespace DemoApi.Api.Test.Products
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
-            ProductViewModel productFake = ProductViewModelBuilder.New()
-                .WithEmptyName()
-                .WithWeight(2.5)
-                .Build();
+            ProductViewModel productFake = ProductViewModelBuilder.New().WithEmptyName().Build();
 
             // Act
-            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
-            response!.Should().NotBeNull();
-            response!.Success.Should().BeFalse();
-            response!.Errors.Should().Contain("Name is required");
+            response.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
+            viewModel!.Should().NotBeNull();
+            viewModel!.Success.Should().BeFalse();
+            viewModel!.Errors.Should().Contain("Name is required");
         }
 
         [Fact, TestPriority(102)]
@@ -61,19 +58,16 @@ namespace DemoApi.Api.Test.Products
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
-            ProductViewModel productFake = ProductViewModelBuilder.New()
-                .WithNullName()
-                .WithWeight(2.5)
-                .Build();
+            ProductViewModel productFake = ProductViewModelBuilder.New().WithNullName().Build();
 
             // Act
-            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
-            response!.Should().NotBeNull();
-            response!.Success.Should().BeFalse();
-            response!.Errors.Should().Contain("Name is required");
+            response.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
+            viewModel!.Should().NotBeNull();
+            viewModel!.Success.Should().BeFalse();
+            viewModel!.Errors.Should().Contain("Name is required");
         }
 
         [Fact, TestPriority(103)]
@@ -82,19 +76,16 @@ namespace DemoApi.Api.Test.Products
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
-            ProductViewModel productFake = ProductViewModelBuilder.New()
-                .WithName("Test Product")
-                .WithZeroWeight()
-                .Build();
+            ProductViewModel productFake = ProductViewModelBuilder.New().WithZeroWeight().Build();
 
             // Act
-            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
-            response!.Should().NotBeNull();
-            response!.Success.Should().BeFalse();
-            response!.Errors.Should().Contain("Weight must be greater than 0");
+            response.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
+            viewModel!.Should().NotBeNull();
+            viewModel!.Success.Should().BeFalse();
+            viewModel!.Errors.Should().Contain("Weight must be greater than 0");
         }
 
         [Fact, TestPriority(104)]
@@ -103,19 +94,16 @@ namespace DemoApi.Api.Test.Products
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
-            ProductViewModel productFake = ProductViewModelBuilder.New()
-                .WithName("Test Product")
-                .WithNegativeWeight()
-                .Build();
+            ProductViewModel productFake = ProductViewModelBuilder.New().WithNegativeWeight().Build();
 
             // Act
-            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
-            response!.Should().NotBeNull();
-            response!.Success.Should().BeFalse();
-            response!.Errors.Should().Contain("Weight must be greater than 0");
+            response.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
+            viewModel!.Should().NotBeNull();
+            viewModel!.Success.Should().BeFalse();
+            viewModel!.Errors.Should().Contain("Weight must be greater than 0");
         }
 
         [Fact, TestPriority(105)]
@@ -124,17 +112,15 @@ namespace DemoApi.Api.Test.Products
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
-            ProductViewModel productFake = ProductViewModelBuilder.New()
-                .WithLongName()
-                .Build();
+            ProductViewModel productFake = ProductViewModelBuilder.New().WithLongName().Build();
 
             // Act
-            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.Created);
-            response.Should().NotBeNull();
-            response!.Success.Should().BeTrue();
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            viewModel.Should().NotBeNull();
+            viewModel!.Success.Should().BeTrue();
         }
 
         [Fact, TestPriority(106)]
@@ -143,18 +129,15 @@ namespace DemoApi.Api.Test.Products
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
-            ProductViewModel productFake = ProductViewModelBuilder.New()
-                .WithName("Heavy Product")
-                .WithLargeWeight()
-                .Build();
+            ProductViewModel productFake = ProductViewModelBuilder.New().WithLargeWeight().Build();
 
             // Act
-            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.Created);
-            response.Should().NotBeNull();
-            response!.Success.Should().BeTrue();
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            viewModel.Should().NotBeNull();
+            viewModel!.Success.Should().BeTrue();
         }
 
         [Fact, TestPriority(107)]
@@ -171,13 +154,13 @@ namespace DemoApi.Api.Test.Products
             ProductViewModel duplicateProduct = ProductViewModelBuilder.New().WithName(duplicateName).Build();
 
             // Act
-            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, duplicateProduct);
+            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, duplicateProduct);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-            response.Should().NotBeNull();
-            response!.Success.Should().BeFalse();
-            response.Errors.Should().Contain(e => e.Contains("already registered"));
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            viewModel.Should().NotBeNull();
+            viewModel!.Success.Should().BeFalse();
+            viewModel.Errors.Should().Contain(e => e.Contains("already registered"));
         }
 
         [Fact, TestPriority(108)]
@@ -186,21 +169,16 @@ namespace DemoApi.Api.Test.Products
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
             string url = "/api/v1/products";
-            ProductViewModel product1 = ProductViewModelBuilder.New()
-                .WithWeight(1.5)
-                .Build();
-
-            ProductViewModel product2 = ProductViewModelBuilder.New()
-                .WithWeight(1.5)
-                .Build();
+            ProductViewModel product1 = ProductViewModelBuilder.New().WithWeight(1.5).Build();
+            ProductViewModel product2 = ProductViewModelBuilder.New().WithWeight(1.5).Build();
 
             // Act
-            (HttpResponseMessage result1, ResponseViewModel? _) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, product1);
-            (HttpResponseMessage result2, ResponseViewModel? _) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, product2);
+            (HttpResponseMessage response1, ResponseViewModel? _) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, product1);
+            (HttpResponseMessage response2, ResponseViewModel? _) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, product2);
 
             // Assert
-            result1.StatusCode.Should().Be(HttpStatusCode.Created);
-            result2.StatusCode.Should().Be(HttpStatusCode.Created);
+            response1.StatusCode.Should().Be(HttpStatusCode.Created);
+            response2.StatusCode.Should().Be(HttpStatusCode.Created);
         }
 
         [Fact, TestPriority(109)]
@@ -236,12 +214,12 @@ namespace DemoApi.Api.Test.Products
             ProductViewModel? productFake = null;
 
             // Act
-            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
+            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.PostAndReturnResponseAsync(client, url, productFake);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
-            response.Should().NotBeNull();
-            response!.Success.Should().BeFalse();
+            response.StatusCode.Should().Be(HttpStatusCode.PreconditionFailed);
+            viewModel.Should().NotBeNull();
+            viewModel!.Success.Should().BeFalse();
         }
 
         [Fact, TestPriority(111)]

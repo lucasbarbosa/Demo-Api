@@ -7,12 +7,11 @@ using DemoApi.Test.Builders.Products;
 using FluentAssertions;
 using System.Net;
 using System.Net.Http.Json;
-using System.Text.Json;
 
 namespace DemoApi.Api.Test.Products
 {
     [TestCaseOrderer("DemoApi.Api.Test.Configuration.PriorityOrderer", "DemoApi.Api.Test")]
-    public class GetProductTests(CustomWebApplicationFactory factory) : ProductTests(factory)
+    public class GetProductTests(CustomWebApplicationFactory factory) : ProductApiTests(factory)
     {
         #region Public Methods
 

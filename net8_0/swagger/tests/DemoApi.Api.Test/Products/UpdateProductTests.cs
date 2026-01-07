@@ -12,7 +12,7 @@ using System.Text.Json;
 namespace DemoApi.Api.Test.Products
 {
     [TestCaseOrderer("DemoApi.Api.Test.Configuration.PriorityOrderer", "DemoApi.Api.Test")]
-    public class UpdateProductTests(CustomWebApplicationFactory factory) : ProductTests(factory)
+    public class UpdateProductTests(CustomWebApplicationFactory factory) : ProductApiTests(factory)
     {
         #region Public Methods
 

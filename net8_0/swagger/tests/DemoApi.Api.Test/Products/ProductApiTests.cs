@@ -7,7 +7,7 @@ using System.Text.Json;
 
 namespace DemoApi.Api.Test.Products
 {
-    public class ProductTests(CustomWebApplicationFactory factory) : IClassFixture<CustomWebApplicationFactory>
+    public class ProductApiTests(CustomWebApplicationFactory factory) : IClassFixture<CustomWebApplicationFactory>
     {
         #region Properties
 

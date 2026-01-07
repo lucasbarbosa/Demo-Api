@@ -3,15 +3,13 @@ using DemoApi.Api.Test.Factories;
 using DemoApi.Api.Test.Helpers;
 using DemoApi.Application.Models;
 using DemoApi.Application.Models.Products;
-using DemoApi.Test.Builders.Products;
 using FluentAssertions;
 using System.Net;
-using System.Text.Json;
 
 namespace DemoApi.Api.Test.Products
 {
     [TestCaseOrderer("DemoApi.Api.Test.Configuration.PriorityOrderer", "DemoApi.Api.Test")]
-    public class DeleteProductTests(CustomWebApplicationFactory factory) : ProductTests(factory)
+    public class DeleteProductTests(CustomWebApplicationFactory factory) : ProductApiTests(factory)
     {
         #region Public Methods
 

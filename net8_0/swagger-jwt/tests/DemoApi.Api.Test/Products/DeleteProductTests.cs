@@ -2,6 +2,7 @@ using DemoApi.Api.Test.Configuration;
 using DemoApi.Api.Test.Factories;
 using DemoApi.Api.Test.Helpers;
 using DemoApi.Application.Models;
+using DemoApi.Application.Models.Products;
 using FluentAssertions;
 using System.Net;
 
@@ -20,12 +21,12 @@ namespace DemoApi.Api.Test.Products
             string url = "/api/v1/products/999999";
 
             // Act
-            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.DeleteAndReturnResponseAsync(client, url);
+            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.DeleteAndReturnResponseAsync(client, url);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.NotFound);
-            response?.Should().NotBeNull();
-            response?.Success.Should().BeFalse();
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            viewModel?.Should().NotBeNull();
+            viewModel?.Success.Should().BeFalse();
         }
 
         [Fact, TestPriority(401)]
@@ -36,13 +37,13 @@ namespace DemoApi.Api.Test.Products
             string url = "/api/v1/products/XYZ";
 
             // Act
-            (HttpResponseMessage result, ResponseViewModel? response) = await HttpClientHelper.DeleteAndReturnResponseAsync(client, url);
+            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.DeleteAndReturnResponseAsync(client, url);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-            response?.Should().NotBeNull();
-            response?.Success.Should().BeFalse();
-            response?.Errors.Should().NotBeEmpty();
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            viewModel?.Should().NotBeNull();
+            viewModel?.Success.Should().BeFalse();
+            viewModel?.Errors.Should().NotBeEmpty();
         }
 
         [Fact, TestPriority(402)]
@@ -50,15 +51,95 @@ namespace DemoApi.Api.Test.Products
         {
             // Arrange
             HttpClient client = await GetAuthenticatedClient();
-
-            var createdProduct = await GetLastCreatedProduct();
-            string url = $"/api/v1/products/{createdProduct.Id}";
+            ProductViewModel product = await GetLastCreatedProduct();
+            string url = $"/api/v1/products/{product.Id}";
 
             // Act
-            HttpResponseMessage result = await client.DeleteAsync(url);
+            (HttpResponseMessage response, _) = await HttpClientHelper.DeleteAndReturnResponseAsync(client, url);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        }
+
+        [Fact, TestPriority(403)]
+        public async Task Delete_ShouldReturnNotFound_WhenIdIsZero()
+        {
+            // Arrange
+            HttpClient client = await GetAuthenticatedClient();
+            string url = "/api/v1/products/0";
+
+            // Act
+            (HttpResponseMessage response, ResponseViewModel? viewModel) = await HttpClientHelper.DeleteAndReturnResponseAsync(client, url);
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            viewModel.Should().NotBeNull();
+            viewModel!.Success.Should().BeFalse();
+        }
+
+        [Fact, TestPriority(404)]
+        public async Task Delete_ShouldReturnNotFound_WhenDeletingSameProductTwice()
+        {
+            // Arrange
+            HttpClient client = await GetAuthenticatedClient();
+            ProductViewModel product = await GetLastCreatedProduct();
+            string url = $"/api/v1/products/{product.Id}";
+
+            // Act
+            (HttpResponseMessage firstResponse, _) = await HttpClientHelper.DeleteAndReturnResponseAsync(client, url);
+            
+            // Assert
+            firstResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+            // Act
+            (HttpResponseMessage secondResponse, ResponseViewModel? secondViewModel) = await HttpClientHelper.DeleteAndReturnResponseAsync(client, url);
+
+            // Assert
+            secondResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            secondViewModel.Should().NotBeNull();
+            secondViewModel!.Success.Should().BeFalse();
+        }
+
+        [Fact, TestPriority(405)]
+        public async Task Delete_ShouldMakeProductUnavailable_WhenDeleted()
+        {
+            // Arrange
+            HttpClient client = await GetAuthenticatedClient();
+            ProductViewModel product = await GetLastCreatedProduct();
+            string deleteUrl = $"/api/v1/products/{product.Id}";
+            string getUrl = $"/api/v1/products/{product.Id}";
+
+            // Act
+            (HttpResponseMessage deleteResponse, ResponseViewModel? _) = await HttpClientHelper.DeleteAndReturnResponseAsync(client, deleteUrl);
+            (HttpResponseMessage getResponse, ResponseViewModel? getViewModel) = await HttpClientHelper.GetAndReturnResponseAsync(client, getUrl);
+
+            // Assert
+            deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            getViewModel.Should().NotBeNull();
+            getViewModel!.Success.Should().BeFalse();
+        }
+
+        [Fact, TestPriority(406)]
+        public async Task Delete_ShouldPreventUpdate_AfterDeletion()
+        {
+            // Arrange
+            HttpClient client = await GetAuthenticatedClient();
+            ProductViewModel product = await GetLastCreatedProduct();
+            string deleteUrl = $"/api/v1/products/{product.Id}";
+            string updateUrl = "/api/v1/products";
+
+            // Act
+            (HttpResponseMessage deleteResponse, ResponseViewModel? _) = await HttpClientHelper.DeleteAndReturnResponseAsync(client, deleteUrl);
+            
+            product.Name = "Trying to update deleted product";
+            (HttpResponseMessage updateResponse, ResponseViewModel? updateViewModel) = await HttpClientHelper.PutAndReturnResponseAsync(client, updateUrl, product);
+
+            // Assert
+            deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            updateResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            updateViewModel.Should().NotBeNull();
+            updateViewModel!.Success.Should().BeFalse();
         }
 
         #endregion

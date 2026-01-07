@@ -3,7 +3,6 @@ using Bogus;
 using DemoApi.Application.Automapper;
 using DemoApi.Application.Services;
 using DemoApi.Domain.Interfaces;
-using DemoApi.Test.Builders.Products;
 using Moq;
 
 namespace DemoApi.Application.Test.Products
