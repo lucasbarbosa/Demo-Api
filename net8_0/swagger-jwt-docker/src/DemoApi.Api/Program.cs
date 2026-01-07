@@ -1,9 +1,10 @@
 using DemoApi.Api.Configuration;
 using DemoApi.Application.Automapper;
+using NLog;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-var logger = builder.AddNLogConfig();
+Logger logger = builder.AddNLogConfig();
 
 try
 {
@@ -16,7 +17,7 @@ try
     builder.Services.AddApiConfig();
 
 
-    var app = builder.Build();
+    WebApplication app = builder.Build();
 
     app.UseApiConfig(app.Environment);
 

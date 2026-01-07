@@ -17,14 +17,6 @@ namespace DemoApi.Api.Configuration
 
         public static IServiceCollection AddDependencyInjectionConfig(this IServiceCollection services)
         {
-            #region FluentValidation
-
-            services.AddFluentValidationAutoValidation();
-            services.AddFluentValidationClientsideAdapters();
-            services.AddValidatorsFromAssemblyContaining<ProductValidator>();
-
-            #endregion
-
             #region Applications
 
             services.AddScoped<IProductAppService, ProductAppService>();
@@ -34,6 +26,14 @@ namespace DemoApi.Api.Configuration
             #region Repositories
 
             services.AddScoped<IProductRepository, ProductRepository>();
+
+            #endregion
+
+            #region FluentValidation
+
+            services.AddFluentValidationAutoValidation();
+            services.AddFluentValidationClientsideAdapters();
+            services.AddValidatorsFromAssemblyContaining<ProductValidator>();
 
             #endregion
 

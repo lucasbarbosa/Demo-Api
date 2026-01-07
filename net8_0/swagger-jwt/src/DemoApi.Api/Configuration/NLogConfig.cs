@@ -10,14 +10,13 @@ namespace DemoApi.Api.Configuration
 
         public static Logger AddNLogConfig(this WebApplicationBuilder builder)
         {
-            _ = new LoggingConfiguration();
             string nlogConfigPath = Path.Combine(AppContext.BaseDirectory, "nlog.config");
 
             try
             {
                 if (File.Exists(nlogConfigPath))
                 {
-                    LogManager.Configuration = new NLog.Config.XmlLoggingConfiguration(nlogConfigPath);
+                    LogManager.Configuration = new XmlLoggingConfiguration(nlogConfigPath);
                 }
                 else
                 {
