@@ -12,6 +12,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="TestResults\**" />
+	  <EmbeddedResource Remove="TestResults\**" />
+	  <None Remove="TestResults\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="coverlet.collector" Version="6.0.0" />
 		<PackageReference Include="FluentAssertions" Version="8.8.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.22" />
