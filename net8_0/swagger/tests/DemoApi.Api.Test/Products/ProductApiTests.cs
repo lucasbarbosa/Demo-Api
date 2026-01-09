@@ -1,5 +1,5 @@
-using DemoApi.Api.Test.Factories;
-using DemoApi.Api.Test.Helpers;
+using DemoApi.Api.Test.Common.Factories;
+using DemoApi.Api.Test.Common.Helpers;
 using DemoApi.Application.Models;
 using DemoApi.Application.Models.Products;
 using DemoApi.Test.Builders.Products;

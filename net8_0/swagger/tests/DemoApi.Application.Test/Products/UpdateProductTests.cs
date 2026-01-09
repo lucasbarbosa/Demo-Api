@@ -57,7 +57,7 @@ namespace DemoApi.Application.Test.Products
             // Arrange
             (Mock<INotificatorHandler> notificator, Mock<IProductRepository> productRepository, ProductAppService productApplication) = SetProductAppService();
 
-            ProductViewModel productViewModel = ProductBuilder.New().Build();
+            ProductViewModel productViewModel = ProductViewModelBuilder.New().Build();
 
             productRepository
                 .Setup(x => x.GetById(productViewModel.Id))

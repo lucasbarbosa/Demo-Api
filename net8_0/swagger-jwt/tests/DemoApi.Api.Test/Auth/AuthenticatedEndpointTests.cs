@@ -1,5 +1,5 @@
-using DemoApi.Api.Test.Configuration;
-using DemoApi.Api.Test.Factories;
+using DemoApi.Api.Test.Common.Factories;
+using DemoApi.Api.Test.Common.Configuration;
 using DemoApi.Application.Models;
 using FluentAssertions;
 using System.Net;

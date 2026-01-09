@@ -1,4 +1,4 @@
-using DemoApi.Api.Test.Factories;
+using DemoApi.Api.Test.Common.Factories;
 using DemoApi.Application.Models;
 using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;

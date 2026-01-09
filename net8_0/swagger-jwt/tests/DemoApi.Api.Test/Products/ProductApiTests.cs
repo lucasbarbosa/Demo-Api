@@ -1,12 +1,12 @@
 using DemoApi.Test.Builders.Products;
-using DemoApi.Api.Test.Factories;
-using DemoApi.Api.Test.Helpers;
 using DemoApi.Application.Models;
 using DemoApi.Application.Models.Products;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using DemoApi.Api.Test.Common.Factories;
+using DemoApi.Api.Test.Common.Helpers;
 
 namespace DemoApi.Api.Test.Products
 {
