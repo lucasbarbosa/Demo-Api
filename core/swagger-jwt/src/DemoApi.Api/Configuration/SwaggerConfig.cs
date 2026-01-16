@@ -18,7 +18,7 @@ namespace DemoApi.Api.Configuration
                     Contact = new OpenApiContact
                     {
                         Name = "Lucas Barbosa",
-                        Url = new Uri("https://github.com/lucasbarbosa/Demo-Api")
+                        Url = new Uri("https://github.com/lucasbarbosa/demo-api")
                     },
                     License = new OpenApiLicense
                     {
